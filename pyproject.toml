@@ -1,0 +1,24 @@
+[project]
+name = "Kanchana"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "brotli>=1.1.0",
+    "fontfeatures",
+    "fontmake>=3.10.0",
+    "munch>=4.0.0",
+    "pyyaml>=6.0.2",
+    "ufonormalizer>=0.6.2",
+]
+classifiers = ["Private :: Do Not Upload"]
+
+[tool.uv.sources]
+fontfeatures = { git = "https://github.com/simoncozens/fontFeatures.git" }
+
+[dependency-groups]
+dev = [
+    "fontbakery>=0.13.2",
+    "ruff>=0.9.7",
+]

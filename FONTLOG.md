@@ -1,0 +1,40 @@
+# FONTLOG for Kanchana
+
+This file provides detailed information on the Kanchana font software. This
+information should be distributed along with the Kanchana fonts and any derivative
+works.
+
+## Basic Font Information
+
+Kanchana is a Malayalam typeface with regular, bold, thin variants. Kanchana means anklet. This is the third font after Chilanka and Manjari fonts by Santhosh Thottingal.
+
+Designer: Santhosh Thottingal
+
+Kanchana development is currently hosted at:
+http://gitlab.com/smc/fonts/Kanchana
+
+Released versions of this font is available at [smc.org.in/fonts](smc.org.in/fonts) for download. For old versions and detailed changelog, see https://gitlab.com/smc/fonts/Kanchana/-/releases. Feature requests, bug reports and patches should be directed to our issue
+tracker.
+
+## Design Inspiration
+
+
+## Acknowledgements
+
+(in no particular order)
+
+* [Donald Ervin Knuth](https://en.wikipedia.org/wiki/Donald_Knuth) for inspiration, TeX, Metafont, for his detailed books on these topics.
+* John D. Hobby. [A METAFONT-like System with PostScript Output](http://www.tug.org/TUGboat/Articles/tb10-4/tb26hobby.pdf). TUGboat, 10(4), 1989.
+* [MetaType1](https://mirror.ctan.org/fonts/utilities/metatype1/), a font development system using MetaPost, by Bogusław Jackowski, Janus M. Nowacki, Piotr Strzelczyk. The metapost macros(`plain_ex.mp) from metatype1 package made this font feasible.
+* John D. Hobby. [METAPOST — A User’s Manual](http://www.tug.org/docs/metapost/mpman.pdf.), 2008.
+* Swathanthra Malayalam computing and its volunteers for all help and support.
+* [Latin letter construction](https://www.kellscraft.com/EssentialsofLettering/EssentialsofLetteringCh02.html)
+* [FontFeatures](https://github.com/simoncozens/fontFeatures) python library by Simon Cozens helped programmatic generation of Opentype feature files.
+* Jonathan Hoefler for [the latin kerning tests](https://github.com/hoeflerco/proofs)
+* [Curvature combs and harmonized paths in METAPOST - Linus Romer](https://github.com/fontforge/fontforge/files/12072466/romer-curvetools.pdf). Harmonization for curves in this font is based on this work.
+* [halfken](https://github.com/behdad/halfkern) by Behdad Esfahbod for semi-automating the latin kerning.
+* [On Diacritics](https://ilovetypography.com/2009/01/24/on-diacritics/) - article By David Březina
+* [Fontbakery](https://github.com/fonttools/fontbakery) for the extensive QA on the fonts.
+
+
+For a complete list of authors who contributed to the project, see CONTRIBUTORS.md

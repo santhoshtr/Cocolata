@@ -1,0 +1,8 @@
+fonts
+proofs
+.directory
+.venv
+.vscode
+__pycache__
+*.log
+*.aux
