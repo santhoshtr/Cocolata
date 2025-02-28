@@ -4,7 +4,7 @@
 % Licensed under MIT License
 
 % Depth of reph sign in ക്ര, പ്ര , സ്ര etc
-reph_sign_depth   := -descent*0.8;
+reph_sign_depth   := -descent*0.75;
 u_drop_sign_radius:= condense*(descent-thick)/2;
 % ഉ sign proper overlap with horizontal strokes like ല, പ
 u_drop_sign_vshift:=thick*0.8*contrast*0.75;
@@ -71,7 +71,7 @@ enddef;
 vardef vocalic_r_sign =
     clearxy;
     z0 = (0, thick/4);
-    z1 = ((x0 + x2)/2, -descent*1.2);
+    z1 = ((x0 + x2)/2, -descent);
     z2 = (x0 -0.9mw, (y1+y3)/2);
     z3 = ((x2 +x4)/1.75, y0-m/4);
     z4 = ((x0 + x1)/3, (y1+y2)/2.4);

@@ -1,36 +1,33 @@
 input glyph;
 beginglyph;
-paths[p] := pa_mouth;
-strokes[p] := pa_mouth_stroke(paths[p]);
-
 clearxy;
-p:=p+1;
-z0=(0,0);
-z1=z0 + (0.7mw,0);
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1])+thick/4, thick*thin_horizontal_nib_scale/2 );
+z0= (0, 0.1m);
+z1= (x0+mw/4, 0.4m);
+z2 = (x0+mw/2, y0);
+z3 = (x1 + thick, thick/4);
+z4 = ( x2 + mw/4 , y3);
+z5 = ( x4  , m);
 
+
+paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{right}z4   ;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    cut(thin_horizontal_nib, 30)(0)
-    nib(thin_horizontal_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib scaled 0.8)(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib )(3)
+    nib(thicknib)(4)
 )(paths[p])(strokes[p]);
-strokes[p]:= (xpart point infinity of strokes[p-1], ypart(point 0 of strokes[p])) -- subpath( 1, 3) of strokes[p]--cycle;
-
-
-xshift:=xpart right_extrema(strokes[p]) - vertical_thin_nib_size/2;
-yshift:=0;
 
 p:=p+1;
 clearxy;
 input ./glyphs/include/മ;
-
-for i=2 upto 4:
-  paths[i] := paths[i] shifted (xshift , yshift);
-  strokes[i] := strokes[i] shifted (xshift , yshift);
-endfor;
-
+xshift := xpart point infinity of paths[p-1];
+yshift :=  ypart point infinity of paths[p-1];;
+paths[p] := paths[p] shifted (xshift , yshift);
+strokes[p] := strokes[p] shifted (xshift , yshift);
 
 anchor( "vc", point 0.5 of paths[1]);
 
-anchor( "right", (xpart point 1 of paths[p-1] - u_drop_sign_radius,u_drop_sign_vshift));
+anchor( "right", (xpart point 4 of paths[p] - u_drop_sign_radius,u_drop_sign_vshift));
 endglyph;

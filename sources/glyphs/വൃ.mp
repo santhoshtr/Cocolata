@@ -6,13 +6,13 @@ input ./glyphs/include/വ;
 
 p:=p+1;
 clearxy;
-paths[p] = vocalic_r_sign shifted (xpart point 0 of paths[p-1], 0);
+paths[p] = vocalic_r_sign shifted (xpart point 4 of paths[p-1], 0);
 pen_stroke(
-    nib(middle_down_nib)(0)
-    nib(down_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(top_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+    nib(thicknib  )(0)
+    nib(thicknib )(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib scaled 1.2)(3)
+    nib(thicknib)(4)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", (xpart(point 2 of paths[0]),0));

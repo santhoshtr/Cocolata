@@ -1,15 +1,10 @@
 clearxy;
-z0=(x1+mw/3, m);
+z0=(x1 + mw/6, 0.9m);
 z1=(0, y0 - m/2);
 z2=((x1+x3)/2, undershoot);
-z3=(x2 +  mw/3, 1/3m);
-z4=(x3, m);
-paths[p] = z0..z1{down}..z2{right} ..z3---z4;
+z3=(x2 +  mw/3, 0.8m);
+paths[p] = z0..z1 ..z2  ..{up}z3;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(end_nib rotated terminalangle 0 of paths[p])(0)
-    nib(thicknib  )(1)
-    nib(downnib)(2)
-    nib(thin_vertical_nib)(3)
-    nib(thin_vertical_nib)(4)
+   nib(thicknib)(0, 1, 2, 3,4 )
 )(paths[p])(strokes[p]);

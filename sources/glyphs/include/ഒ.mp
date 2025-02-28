@@ -1,36 +1,23 @@
 
-z0 =(0, (y1 + y3)/2);
-z1 =(x0 + mw/4, y3+0.55m);
-z2=(x1 + mw/4, y0);
-z3=(x2 - mw/4, undershoot);
-z4=(x0, y0);
 
-paths[p] = z0{up}..z1{right}..z2{down}..z3{left}..{up}z4;
-paths[p]:=harmonize(paths[p]);
-pen_stroke(
-    nib(middle_up_nib)(0)
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(down_nib)(3)
-    nib(middle_up_nib)(4)
-)(paths[p])(strokes[p]);
-
-p:=p+1;
 clearxy;
-z0 = point 4 of paths[p-1];
-z1 = ( x0, 0.4m);
-z2 = ( x1 + mw/1.666, m - overshoot); % top
-z3 = ( x2 + mw/2.4, y2 - m/4);
-z4 = ( x3 - mw/3, y3 - m/4); % <
-z5 = ( x3+ mw/10, y4-m/4);
-z6 = ( x4, undershoot);
-paths[p]= z0{up}..z1{up}..z2{right}..z3{down}..{left}z4{right}..z5{down}..{dir 160}z6;
-paths[p]:=harmonize(paths[p]);
+z0 =(thick, (y1 + y3)/1.75);
+z1 =(x0 + mw/4, y3+0.5m);
+z2=(x1 + mw/4, (y1 + y3)/2);
+z3=(x2 - mw/4, undershoot);
+z4=(0, (y1 + y3)/2);
+z5=(x4 + mw/2, 0.95m);
+z6 = (x5+ mw/2, (y5+y7)/2);
+z7=(x6 - mw/6, (y5+y10)/2); % <
+z9=(x7 + mw/3,(y7+y10)/2);
+z10=(x7 ,0);
+
+% Dummy path
+paths[p] = z0 ..z1..z2..z3..z4{dir 100}..  z5{right}..{down}z6;
+% Get the point for extrema
+z8=point 4.1 of paths[p];
+paths[p] := z0{dir 80}..z1..z2..z3..z8{up}..z5{dir 10}
+    ..z6..{dir 190}z7{dir -10} ..z9.. {dir 175}z10;
 pen_stroke(
-    nib(middle_up_nib rotated terminalangle 4 of paths[0])(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(end_nib rotated 90)(4)
-    nib(middle_down_nib)(5)
-    nib(end_nib rotated 60)(6)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11)
 )(paths[p])(strokes[p]);

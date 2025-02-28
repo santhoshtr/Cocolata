@@ -13,5 +13,5 @@ paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}..{dir 60}
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-   nib(thicknib)(0, 1, 2, 3,4,5,6,7)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9)
 )(paths[p])(strokes[p]);

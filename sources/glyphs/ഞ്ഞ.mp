@@ -12,7 +12,7 @@ input ./glyphs/include/_ത_;
 p:=p+1;
 input ./glyphs/include/_ത;
 
-anchor( "right", point infinity of paths[3]);
-anchor( "bottom", point infinity of paths[3]);
+anchor( "right", point infinity of paths[2]);
+anchor( "bottom", point infinity of paths[2]);
 
 endglyph;

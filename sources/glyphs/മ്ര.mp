@@ -2,17 +2,16 @@ input glyph;
 beginglyph;
 input ./glyphs/include/മ;
 
-for i=0 upto 2:
-    paths[i] := paths[i] shifted (mw/3, 0);
-    strokes[i] := strokes[i] shifted (mw/3, 0);
-endfor;
+paths[p] := paths[p] shifted (mw/3, 0);
+strokes[p] := strokes[p] shifted (mw/3, 0);
+
 
 p:=p+1;
 clearxy;
-z0 = (xpart point 4 of paths[p-3], 0);
+z0 = (xpart point 4 of paths[p-1], 0);
 z1 = (3/4(x0-x3), reph_sign_depth  );
 z2 = (0.6(x0-x3), y1);
-z3 = (xpart(point 1 of paths[0]) - mw/4, m);
+z3 = (xpart(point 1 of paths[0]) - mw/3, m);
 paths[p] =  z0{down}..z1---z2..{dir 60}z3;
 dt := directiontime dir 90 of subpath(2, 3) of paths[p];
 paths[p] := insert_nodes(paths[p])(2+ dt);

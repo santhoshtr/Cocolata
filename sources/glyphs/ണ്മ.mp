@@ -6,17 +6,16 @@ input ./glyphs/include/left_arch_with_eye;
 p:=p+1;
 input ./glyphs/include/middle_arch;
 
-xshift:=xpart right_extrema(strokes[p]) - vertical_thin_nib_size/2;
+xshift:=xpart point infinity of paths[p];
 yshift:=0;
 
 p:=p+1;
 clearxy;
 input ./glyphs/include/മ;
 
-for i=3 upto 5:
-  paths[i] := paths[i] shifted (xshift , yshift);
-  strokes[i] := strokes[i] shifted (xshift , yshift);
-endfor;
+paths[p] := paths[p] shifted (xshift , yshift);
+strokes[p] := strokes[p] shifted (xshift , yshift);
 
-anchor( "right", (xpart point 1 of paths[4] - u_drop_sign_radius,u_drop_sign_vshift));
+
+anchor( "right", (xpart point 4 of paths[2] - u_drop_sign_radius,u_drop_sign_vshift));
 endglyph;

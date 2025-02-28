@@ -1,17 +1,12 @@
 
 clearxy;
-z0=z0 = (0, m);
-z1=(x0, 1/3m);
-z2=((x1 + x3)/2, undershoot);
-z3=(x0 +  3/4mw, y2 + m/2);
-z4=(x3 -  mw/3, m);
-paths[p]:= z0---z1..z2{right}..z3{up}..z4;
+z0= point infinity of paths[p-1];
+z1=((x0 + x2)/2, undershoot);
+z2=(x0 +  0.7mw, y1 + m/2);
+z3=(x2 -  mw/6, 0.95m);
+paths[p]:= z0{down}..z1..z2 ..z3;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-    nib(thick_vertical_nib)(0)
-    nib(thick_vertical_nib)(1)
-    nib(downnib)(2)
-    nib(middleupnib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+ nib(thicknib)(0, 1, 2, 3,4 )
 )(paths[p])(strokes[p]);

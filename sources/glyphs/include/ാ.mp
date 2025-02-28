@@ -1,15 +1,17 @@
-z0=(0, 0.7m);
-z1=((x0 + x2)/2.2, m-overshoot);
-z2=(x0 + 2/3mw, (y1+y3)/2);
-z3=(x1, undershoot);
-z4=(x0, y1-y0);
-paths[p] = z0..z1{right} ..z2{down}..z3{left} ..z4;
+z0= (0, 0.45m);
+z1= (0, (y0 + y2)/2.25);
+z2 = ( (x1 + x3)/2.5, 0.85m); % top
+z3 = ( x1 + 0.6mw, (y2+y4)/2);
+z4 = ( x0 , undershoot);
 
+paths[p]:=z0{dir 90}..z1..z2 ..z3{down}..z4  ;
+
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    cut(end_nib, rel 90)(0)
-    cut(end_nib, rel 90)(4)
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(down_nib)(3)
-    ignore_directions(1, 2,3)
+    nib(thicknib)(0)
+    nib(thicknib)(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib scaled 1.1)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
 )(paths[p])(strokes[p]);

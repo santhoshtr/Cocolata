@@ -9,11 +9,10 @@ p:=p+1;
 clearxy;
 input ./glyphs/include/മ;
 
-for i=1 upto 3:
-  paths[i] := paths[i] shifted (xshift , yshift);
-  strokes[i] := strokes[i] shifted (xshift , yshift);
-endfor;
+paths[p] := paths[p] shifted (xshift , yshift);
+strokes[p] := strokes[p] shifted (xshift , yshift);
+
 
 anchor( "vc", (xpart(point infinity of paths[0]),0));
-anchor( "right", (xpart point 1 of paths[2] - u_drop_sign_radius,u_drop_sign_vshift));
+anchor( "right", (xpart point 4 of paths[1] - u_drop_sign_radius,u_drop_sign_vshift));
 endglyph;

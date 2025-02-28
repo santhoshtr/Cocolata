@@ -7,7 +7,7 @@ z2=(x1 + r, y0);
 z3=(x1, y0-r);
 z4=(x0, y0);
 
-paths[p] =  z1{dir 240}..z0..z3..z2..z1 ;
+paths[p] =  z1 ..z0..z3..z2..z1 ;
 paths[p]:= paths[p] shifted (0, -y1);
 paths[p]:=harmonize(paths[p]);
 pen_stroke(

@@ -1,62 +1,38 @@
 input glyph;
 beginglyph;
-paths[p] := pa_mouth;
-paths[p] := paths[p] shifted (mw/3,0);
-strokes[p] := pa_mouth_stroke(paths[p]);
+z0= (0, 0.1m);
+z1= (x0+mw/4, 0.4m);
+z2 = (x0+mw/2, y0);
+z3 = (x1 + thick, thick/4);
+z4 = ( x2 + 0.75mw , y3);
+z5 = ( x4 - mw/4, 0.8m);
+z6 = ( (x3+x4)/2, 0.2m);
 
-p:=p+1;
-clearxy;
-z0=  (0,0);
-z1=(x0 + 1.4mw, y0);
 
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1])+thick/4, thick*thin_horizontal_nib_scale/2 );
-
+paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{dir -0}z4{dir 10}..z5{left}..{dir 290}z6  ;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    cut(thin_horizontal_nib, 30)(0)
-    cut(thin_horizontal_nib, 135)(1)
-)(paths[p])(strokes[p]);
-strokes[p]:= (xpart point infinity of strokes[p-1], ypart(point 0 of strokes[p])) -- subpath( 1, 3) of strokes[p]--cycle;
-
-p:=p+1;
-clearxy;
-z0=(xpart(point 1 of strokes[p-1])-thick/2, thick*tand(20)/2);
-z1=(x0, (y0+y2)/2);
-z2=((x1+x3)/2, m-overshoot);
-z3=(x4, y1);
-z4=(x0 - mw*0.75, ypart(point infinity of paths[p-1]));
-paths[p]:= z0---z1..z2..z3---z4 ;
-pen_stroke(
-    cut(thick_vertical_nib, -20)(0)
-    nib(middle_down_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_up_nib)(3,4)
+    nib(thicknib)(0)
+    nib(thicknib scaled 0.8)(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib )(3,4,5,6)
 )(paths[p])(strokes[p]);
 
-% Clean joint
-strokes[p] :=  subpath(0,  8) of strokes[p]
-    -- (xpart point 8 of strokes[p], ypart  point 2 of strokes[p-1])
-    -- cycle;
-
-
-
 p:=p+1;
 clearxy;
-z0 = (xpart point 0 of paths[p-1], 0);
-z1 = (3/4(x0-x3), reph_sign_depth  );
-z2 = (0.4(x0-x3), y1);
-z3 = (xpart(point 1 of paths[0]) - mw/4, m);
-paths[p] =  z0{down}..z1---z2..{dir 60}z3;
+z0 = point 4.5 of paths[p-1] ;
+z1 = (3/4(x0-x3), -0.6descent  );
+z2 = (0.1(x0-x3), y1);
+z3 = (xpart(point 1 of paths[0]) - mw/3, 0.9m);
+paths[p] =  z0{down}..z1 .. z2..{dir 60}z3;
 dt := directiontime dir 90 of subpath(2, 3) of paths[p];
 paths[p] := insert_nodes(paths[p])(2+ dt);
 pen_stroke(
-    nib(middle_down_nib rotated -10)(0)
-    nib(thick_horizontal_nib)(1,2)
-    nib(end_nib)(3)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib scaled 0.8)(0)
+    nib(thicknib)(1,2,3)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", (xpart(point 2 of paths[0]),0));
-anchor( "right", point 0.5 of paths[p] );
+anchor( "right", point 1 of paths[p] );
 
 endglyph;

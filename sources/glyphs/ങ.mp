@@ -11,6 +11,6 @@ input ./glyphs/include/_ദ;
 
 anchor( "vc", point 5 of paths[0]);
 
-anchor( "right", point 5.6 of paths[2]);
+anchor( "right", point 5.6 of paths[1]);
 
 endglyph;

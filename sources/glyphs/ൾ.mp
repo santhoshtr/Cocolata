@@ -1,24 +1,24 @@
 input glyph;
 beginglyph;
-clearxy;
-z0 = (0, 0.8m);
-z1= (x0+mw/4, 4undershoot);
-z2= (x1+mw/4, (y1 + y3)/2);
-z3 = ( (x2 + x4)/2.5, 0.9m); % top
-z4 = ( x2 + 0.8mw, (y3+y5)/1.6);
-z5 = ( x3+ mw/4 , undershoot); % bottom middle
-z6 = ( (x2+x4)/2.4, m/2);
-z7 = (x4, X);
 
-paths[p]:=z0{dir 260}..{dir 0}z1..z2..z3 ..z4{down}..z5..z6 .. z7; ;
-paths[p] :=harmonize(paths[p]);
+z0 = (x1 + thick/2 , 0.85m);
+z1 = (0, (y0+y2)/2);
+z2 = (x1 + mw/3, undershoot);
+z3 = (x2 + mw/4, (y2 + y4)/2);
+z4 = (x3 + mw/4, 0.85m);
+z5 = (x4 + mw/2, y1);
+z6 = (x5 - mw/4, 0);
+z7 = (x6 -  mw/4, y3);
+z8 = (x6-thick, 1.5m);
+paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5 ..z6{dir 190}..z7{dir 60} .. {dir 120}z8;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib scaled 1.2)(0)
+nib(thicknib )(0)
     nib(thicknib)(1)
     nib(thicknib)(2)
     nib(thicknib)(3)
     nib(thicknib)(4)
-    nib(thicknib)(5,6)
+    nib(thicknib)(5,6,7,8)
 )(paths[p])(strokes[p]);
 
 

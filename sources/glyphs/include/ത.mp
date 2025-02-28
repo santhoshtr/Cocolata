@@ -14,7 +14,7 @@ z8 =(x6 + mw/3, undershoot);
 paths[p]:=z0..z1..z2{right}..z3..z4..z5..z6..z7..z8  ;
 paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib scaled 1.2)(0)
+    nib(thicknib )(0)
     nib(thicknib  )(1)
     nib(thicknib rotated -30)(2)
     nib(thicknib scaled 1.3)(3)

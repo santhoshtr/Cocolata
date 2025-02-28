@@ -13,7 +13,7 @@ clearxy;
 input ./glyphs/include/right_arch_with_eye;
 
 
-for i=4 upto 7:
+for i=3 upto 5:
   paths[i] := paths[i] shifted (xshift , yshift) xscaled 0.8 yscaled 0.75;
   strokes[i] := strokes[i] shifted (xshift , yshift) xscaled 0.8 yscaled 0.75;
 endfor;

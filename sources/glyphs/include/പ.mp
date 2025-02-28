@@ -3,8 +3,8 @@ z0= (0, 0.1m);
 z1= (x0+mw/4, 0.4m);
 z2 = (x0+mw/2, y0);
 z3 = (x1 + thick, thick/4);
-z4 = ( x2 + mw/2 , y3);
-z5 = ( x4  , m); % second top
+z4 = ( x2 + 2/3mw , y3);
+z5 = ( x4  , m);
 
 
 paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{right}z4{dir 100}..z5  ;
