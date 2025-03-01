@@ -8,19 +8,21 @@ z3=(x1, undershoot);
 z4=(x0, m/3);
 z5=(x4-mw/4, y3);
 z6=(x5-mw/4, 0.3m);
-z7=(x2, 0.7m);
-z8=(x2 + mw/4, 0.4m);
-z9=(x8 - thick/2, 0);
-paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}..{dir 45}z6.. z7..{dir 235}z8{dir 0}..{dir 170}z9;
+z7=(x2 + thick/2, 0.7m);
+z8=(x9 + mw/5, (y7+y9)/2);
+z9=(x2 +  mw/4,  (y8+y10)/2); % <
+z10=(x9 + mw/3, (y9+y11)/2);
+z11=(x9 , undershoot);
+paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}
+   ..z5{left}..{dir 45}z6.. z7..z8
+   ..{dir 190}z9{dir -10}..z10..{dir 170}z11;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-   nib(thicknib)(0, 1, 2, 3,4,5,6,7)
-   nib(thicknib scaled 0.8)(8)
-   nib(thicknib scaled 1.2)(9)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11)
 )(paths[p])(strokes[p]);
 
 
-anchor( "vc", point 1 of paths[0]);
+anchor( "vc", point 1 of paths[p]);
 
 endglyph;

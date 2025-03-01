@@ -1,21 +1,16 @@
 input glyph;
 beginglyph;
-z0 = (x1 + mw/6, -0.1*descent);
+z0 = (x1 + mw/4, -0.2*descent);
 z1 = (0, y2 + m/3);
 z2 = ((x1 + x3)/2, -descent*1.1);
 z3 = (x2 + mw/3.5, y2 + m/3);
 z4 = (x2, 0.4m);
 z5 = (x2, m);
 
-paths[p] = z0{dir -80}..{left}z1{left}..z2{dir 10}..z3{up}..z4..z5;
+paths[p] = z0{down} .. z1{dir 235}..z2 ..z3 ..z4..z5;
 paths[p] := paths[p] shifted(-x4+mw*0.15,0);
 pen_stroke(
-    cut(end_nib rotated terminalangle 0 of paths[p], 0)(0)
-    nib(down_nib)(1)
-    nib(down_nib)(2)
-    nib(middle_down_nib scaled 0.8)(3)
-    nib(middle_down_nib scaled 0.8)(4)
-    cut(thick_nib, 0)(5)
+     nib(thicknib)(0,1,2,3,4,5 )
 )(paths[p])(strokes[p]);
 
 rbearing:=rbearing/2;

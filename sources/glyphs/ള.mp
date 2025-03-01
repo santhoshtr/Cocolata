@@ -18,7 +18,7 @@ paths[p] = z0 ..z1..z2..z3..z4{dir 100}..  z5{right}..{down}z6;
 % Get the point for extrema
 z8=point 4.1 of paths[p];
 paths[p] := z0{dir 80}..z1..z2..z3..z8{up}..z5{dir 10}
-    ..z6..{left}z7{right} ..z9..{dir 190}z10{right}..z11;
+    ..z6..{left}z7{right} ..z9..{dir 190}z10{dir 10}..z11;
 pen_stroke(
    nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11)
 )(paths[p])(strokes[p]);

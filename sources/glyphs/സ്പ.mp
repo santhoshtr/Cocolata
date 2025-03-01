@@ -5,7 +5,7 @@ input ./glyphs/include/സ;
 p:=p+1;
 input ./glyphs/include/പ;
 
-xshift := 1.2mw;
+xshift := 0.7mw;
 yshift := -0.75m;
 
 

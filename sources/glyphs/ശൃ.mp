@@ -1,24 +1,31 @@
 input glyph;
 beginglyph;
-
-input ./glyphs/include/ശ;
-
-p:=p+1;
 clearxy;
-% ഋ sign
-z0 = point infinity of paths[p-1];
-z1 = (x0 + mw/2, m/6);
-z2 = (x1 - 0.75mw, -descent);
-z3 = (x2 - mw/3, (y2+y4)/2);
-z4 = (x2, y3+m/6);
-z5 = (x2 + mw/3, y3);
-paths[p] =  z0{right}.. z1{down}.. {left}z2..z3..z4..z5;
-pen_stroke(
-    nib(top_nib)(0)
-    nib(middle_down_nib)(1)
-    nib(down_nib)(2)
-    nib(topnib)(3,4)
-    nib(end_nib rotated 30)(5)
-)(paths[p])(strokes[p]);
+z0 = (x1 + thick/2 , 0.85m);
+z1 = (0, (y0+y2)/2);
+z2 = (x1 + mw/3, undershoot);
+z3 = (x2 + mw/4, (y2 + y4)/2);
+z4 = (x3 + mw/4, 0.85m);
+z5 = (x4 + mw/2, y1);
+z6 = (x5 - mw/4, 0);
+z7 = (x6 -  mw/4, y3);
+z8 = (x7 +  mw/3, 0.6m);
+z9 = (x8 +  mw/2, 0.3m);
+z10 = (x6 , -0.85descent);
+z11 = (x10-mw/4, y10+m/4);
+z12 = (x5 + mw/4, y11);
 
+
+paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
+    ..z6{dir 190}..z7..z8..z9..{dir 160}z10 ..{dir 45}z11..z12;
+paths[p]:=harmonize(paths[p]);
+pen_stroke(
+nib(thicknib )(0)
+    nib(thicknib)(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5,6,7,8,9,10,11,12)
+)(paths[p])(strokes[p]);
+rbearing:=rbearing - thick;
 endglyph;

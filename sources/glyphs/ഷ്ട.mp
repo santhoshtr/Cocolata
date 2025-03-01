@@ -5,24 +5,23 @@ input ./glyphs/include/ഷ.mp;
 
 clearxy;
 p:=p+1;
-down_nib_width = thick*contrast*down_nib_scale/2;
-z0 = (0.75mw, y1-0.12m);
-z1 = ((x0+x2)/2.2, m-overshoot);
-z2 = (0, (y1  + y3)/2.05);
-z3 = ((x2 + x4)/2, (y2 + y4)/2);
-z4 = (x0-down_nib_width/2, (y3+y5)/2);
-z5 = ((x4 + x6)/1.8, undershoot);
-z6 = (x2 - down_nib_width/2, y5+0.12m);
 
-paths[p] = z0..z1{left} ..z2{down}..z3{right}..z4{down}..z5{left} ..z6;
-paths[p] := paths[p] shifted (mw*1.33, -1.1m) xscaled 0.8 yscaled 0.8;
+z0= (x1 + mw/2, m);
+z1 = (0,3/4m);
+z2 = ((x0+x1)/2.5,1/2m);
+z3 = (x0, 1/4m);
+z4 = ( x1 - thick/2, undershoot);
+
+paths[p]:=z0..{dir 220}z1..z2{dir -30}..z3..{dir 170}z4 ;
+paths[p]:=harmonize(paths[p]);
+
+paths[p] := paths[p] shifted (mw, -m) xscaled 0.8 yscaled 0.7;
 pen_stroke(
-  nib(start_up_nib scaled 0.8 rotated terminalangle 0 of paths[p])(0)
-  nib(top_nib  rotated 30 scaled 0.8)(1)
-  nib(middle_down_nib scaled 0.8)(2,4)
-  nib(middle_down_nib scaled 0.8 rotated 90)(3)
-  nib(down_nib scaled 0.8)(5)
-  nib(end_nib scaled 0.8 rotated terminalangle 6 of paths[p])(6)
+    nib(thicknib)(0)
+    nib(thicknib)(1)
+    nib(thicknib rotated 30)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 0.5 of paths[1]);

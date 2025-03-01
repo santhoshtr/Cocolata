@@ -1,20 +1,17 @@
 input glyph;
 beginglyph;
-save r;
-r=0.85;
-z0 = (0, s/2);
-z1 = ((x0 + x2)/2, s - overshoot);
-z2 = (x0 + r*sw, y0);
-z3 = (x1, undershoot);
-z4 = (x0, y0);
-paths[p]:= z0{up}..{right}z1..{down}z2..z3{left}..{up}z4 ;
-paths[p] := harmonize(paths[p]);
+z0=((x1+x3)/2, m );
+z1=(0,(y0+y2)/2);
+z2=(x0,undershoot);
+z3=(x1+ 0.75mw, y1 );
+z4=(x0,0.9m);
 
+paths[0] = z0..z1..z2..z3..{left}z4;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(middle_down_nib)(0, 2, 4)
-   nib(top_nib)(1)
-   nib(down_nib)(3)
+    nib(thicknib)(0,1,2, 3)
 )(paths[0])(strokes[0]);
+
 
 lbearing:=sw/3*0.2;
 rbearing:=sw/3*0.2;

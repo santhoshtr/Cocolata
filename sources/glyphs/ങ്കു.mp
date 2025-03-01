@@ -4,7 +4,7 @@ input ./glyphs/include/കു;
 
 p:=p+1;
 clearxy;
-z0=point 3 of paths[1];
+z0=point 6.25 of paths[p-1];
 z1=(0, (y0+y2)/2);
 z2=((x1+x3)/2, m-overshoot);
 z3=point 0 of paths[p-1];

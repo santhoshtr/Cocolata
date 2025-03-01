@@ -3,33 +3,24 @@ beginglyph;
 
 z0=(0, s);
 z1=(x0  ,-descent);
-paths[p] := z0--z1;
+paths[p] := z0{dir -80}..z1;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+   nib(thicknib)(0,1,2, 3)
 )(paths[p])(strokes[p]);
+
 
 clearxy;
 p:=p+1;
-paths[p]:= p_loop;
+z0=(xpart point 0.2 of paths[p-1], 0.6s);
+z1=(0.56*x2, 0.95s);
+z2=(x0 + 0.8sw, 0.52s);
+z3=(0.46*x2, undershoot);
+z4=(xpart point 0.52 of paths[p-1], 0);
+paths[p] := z0{dir 60}..z1 ..z2 ..z3 ..z4;
+paths[p] :=  harmonize(  paths[p] );
 pen_stroke(
-   nib(middle_up_nib rotated terminalangle 0 of paths[p])(0)
-   nib(middle_down_nib)(2)
-   nib(down_nib)(1)
-   nib(down_nib)(3)
-   nib(middle_up_nib rotated terminalangle 4 of paths[p])(4)
-   ignore_directions(1,2,3)
+   nib(thicknib)(0,1,2, 3,4)
 )(paths[p])(strokes[p]);
-
-
-
-% Serifs
-strokes[0] := top_left_serif(strokes[0], 0);
-strokes[0] := bottom_serif(strokes[0], 3);
-% Leave some extra gap at top, near serif
-strokes[0] :=  subpath(0, 8.85) of strokes[0]
-    -- subpath(9.15, 10) of strokes[0]
-    --  cycle;
-
 
 lbearing:=sw/3*0.1;
 rbearing:=sw/3*0.2;

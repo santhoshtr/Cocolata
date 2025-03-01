@@ -1,27 +1,27 @@
 input glyph;
 beginglyph;
-input ./glyphs/include/ത;
 
 clearxy;
-z8 = (xpart point 4 of paths[p], reph_sign_depth); % ra sign starts
-z9 = (xpart point 1 of paths[p] -mw/6, m);
 
-cut:=6.8;
-paths[p] := (subpath(0, cut) of paths[p]){dir angle(direction cut of paths[p])} .. {left}z8{left} .. {dir 50}z9;
-dt := directiontime dir 90 of subpath( 8, 9) of paths[p];
-paths[p] := insert_nodes(paths[p])(8 + dt);
+z0= (x1 + thick, undershoot);
+z1= (mw/3, (y0 + y2)/2);
+z2 = ( (x1 + x3)/2.5, 0.9m); % top
+z3 = ( x1 + 0.9mw, (y2+y4)/2);
+z4 = ( x2+ mw/4 , 0); % bottom middle
+z5 = ( (x1+x3)/2.2, 0.5m);
+z6 = ( x5 + mw/3, 0.9m);
+z7 = ( x6 + mw/2, 0.5m);
+z8 = ( x4, -descent/2);
+z9 = (0, (y10+y8)/2);
+z10 = (x9+thick/2, 0.95m);
 
-paths[p] := paths[p] shifted (mw/3,0);
+paths[p]:=z0..z1{up}..z2{dir -10}..z3..z4..z5..z6..
+    z7..z8{left}..z9..z10;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(2,6)
-    nib(middle_down_nib)(3, 7)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(1,5)
-    nib(downnib)(8)
-    nib(endnib)(9)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+     nib(thicknib)(0,1,2,3,4,5,6,7,8,9,10)
 )(paths[p])(strokes[p]);
+
 
 anchor( "vc", point 4 of paths[0]);
 anchor( "right", (xpart point 7.4 of paths[p], ypart point 7.5 of paths[p]));

@@ -13,22 +13,21 @@ z7=(x1, 0.65m);
 z8=(x2 + mw/2, 4undershoot);
 z9=(x2, y4);
 z10=(x8, 0.9m);
-z11=(x8+mw/4, 0.4m);
-z12=(x11 + mw/3, 0.1m);
-z13=(x9 + mw/4, -m/3);
-z14=(x12+mw/4, y13);
+z11=(x10 + mw/2, (y10+y12)/2);
+z12=(x11 - mw/4, 0.5m); % <
+z13=(x12 + mw/3, m/3);
+z14=(x2, -descent/2);
+z15=(x13+thick/2, y14);
 
-paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}..{dir 60}z6.. z7..z8 .. {up}z9..z10{dir 10}..{dir 235}z11{dir 20}..z12..{dir 180}z13{right} .. {right}z14;
-
+paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}
+..{dir 60}z6.. z7..z8 .. {up}z9..z10
+..z11..{dir 190}z12{dir -10}..z13{down}..{dir 210}z14{right}..z15;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10)
-   nib(thicknib rotated -30)(11)
-   nib(thicknib scaled 0.8)(13)
-   nib(thicknib scaled 1.2)(14)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11,12,13,14,15)
 )(paths[p])(strokes[p]);
 
-anchor( "vc", point 1 of paths[0]);
+anchor( "vc", point 1 of paths[p]);
 
 endglyph;

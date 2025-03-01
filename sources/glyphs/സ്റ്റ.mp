@@ -5,8 +5,8 @@ p:=p+1;
 
 % Ra
 input ./glyphs/include/റ;
-xshift = 0.6mw;
-yshift = -1.05m;
+xshift = 0.3mw;
+yshift = -m;
 paths[p] := paths[p] shifted (xshift, yshift ) xscaled 0.75 yscaled 0.75;
 strokes[p] := strokes[p] shifted (xshift, yshift ) xscaled 0.75 yscaled 0.75;
 

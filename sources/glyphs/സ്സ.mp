@@ -9,5 +9,5 @@ for i = 2 upto 3:
 endfor;
 
 anchor( "vc", z3);
-anchor( "right", (point 5 of paths[3]));
+anchor( "right", (point 3 of paths[p]));
 endglyph;

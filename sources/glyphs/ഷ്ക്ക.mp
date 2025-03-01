@@ -6,9 +6,9 @@ p:=p+1;
 clearxy;
 input ./glyphs/include/ക്ക;
 
-for i=4 upto p:
-    paths[i]:=paths[i] shifted (0, -1.05m) scaled 0.8 ;
-    strokes[i]:=strokes[i] shifted (0, -1.05m) scaled 0.8 ;
+for i=1 upto p:
+    paths[i]:=paths[i] shifted (0, -1.05m) scaled 0.75 ;
+    strokes[i]:=strokes[i] shifted (0, -1.05m) scaled 0.75 ;
 endfor;
 
 anchor( "vc", point 0.5 of paths[1]);
