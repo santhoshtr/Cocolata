@@ -1,45 +1,26 @@
 input glyph;
 beginglyph;
-paths[p] := pa_mouth;
-strokes[p] := pa_mouth_stroke(paths[p]);
-
 clearxy;
-p:=p+1;
-z0=(0,0);
-z1=z0 + (0.8mw,0);
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1])+thick/4, thick*thin_horizontal_nib_scale/2 );
+z0= (0, 0.1m);
+z1= (x0+mw/4, 0.4m);
+z2 = (x0+mw/2, y0);
+z3 = (x1 + thick, thick/4);
+z4 = ( x2 + 2/3mw , y3);
+z5 = ( x4- mw/3  ,(y4+y6)/2);
+z6 = ( x4  , 0.9m);
+z7 = ( x4 + mw/2, y5);
+z8 = ( x4, -descent/2);
+z9 = ( x7+thick/2, y8);
 
+
+paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{right}z4{dir 160}..z5 ..z6{dir 10}..z7..{dir 200}z8{right} ..z9 ;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    cut(thin_horizontal_nib, 30)(0)
-    cut(thin_horizontal_nib, -45)(1)
-)(paths[p])(strokes[p]);
-strokes[p]:= (xpart point infinity of strokes[p-1], ypart(point 0 of strokes[p])) -- subpath( 1, 3) of strokes[p]--cycle;
-
-
-p:=p+1;
-input ./glyphs/include/റ;
-xshift = xpart(point 1 of paths[p-1]) - mw/4;
-paths[p] := subpath(0, 3) of paths[p] shifted (xpart(point 1 of paths[p-1]) - mw/4, 0);
-clearxy;
-z4 = ( xpart point 2 of paths[p],  -m/8);
-z5 = (  xpart point 3 of paths[0], y4);
-z6 = ( xpart point 1 of paths[0], (y5+y7)/2);
-z7 = ( x5, -descent);
-z8 = ( xpart point infinity of paths[p]+thick, y7);
-paths[p] := paths[p] ..z4---z5..z6{down}..z7---z8;
-
-pen_stroke(
-    nib(start_up_nib rotated 90)(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(down_nib)(4)
-    nib(down_nib)(5)
-    nib(down_nib rotated 70)(6)
-    nib(thick_horizontal_nib)(7,8)
+    nib(thicknib)(0)
+    nib(thicknib scaled 0.8)(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib )(3,4,5,6,7,8,9)
 )(paths[p])(strokes[p]);
 
-anchor( "vc", point 0.5 of paths[1]);
-
+anchor( "vc", point 0.5 of paths[p]);
 endglyph;

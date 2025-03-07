@@ -11,15 +11,15 @@ z7=(x2, y2);
 z8=(x7+mw/4, y6);
 z9=(x2 + mw/4, undershoot);
 z10 = ( x9 + 0.9mw , y9);
-z11 = ( x14, 0.45m);
-z12 = ( x14-mw/2  , 0.75m);
-z13 = ( x14  , 0.6m);
-z14 = ((x9+x10)/1.9 , 0.1m);
+z11 = ( x10 - 0.6mw, 0.7m);
+z12 = ( (x11+x13)/2  , 0.95m);
+z13 = ( x10   , 0.7m);
+z14 = ((x9+x10)/2 , 0.1m);
 
 paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}
     ..z5{left}..{dir 60}z6.. z7..{left}z9{right}
-    ..{right}z10{dir 90}
-    ..z11..{dir 100}z12..z13..{down}z14;
+    ..{right}z10{dir 120}
+    ..z11..z12..z13..{dir -80}z14;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(

@@ -3,16 +3,12 @@ beginglyph;
 
 input ./glyphs/include/ഷ;
 
-for i=0 upto 3:
-    paths[i] := paths[i] shifted (mw/3, 0);
-    strokes[i] := strokes[i] shifted (mw/3, 0);
-endfor;
-
-
+paths[p] := paths[p] shifted (mw/3, 0);
+strokes[p] := strokes[p] shifted (mw/3, 0);
 
 p:=p+1;
 clearxy;
-z0 = (xpart point 0 of paths[p-2], 0);
+z0 = (xpart point 4 of paths[p-1], 0);
 z1 = (3/4(x0-x3), reph_sign_depth  );
 z2 = (0.5(x0-x3), y1);
 z3 = (xpart(point 1 of paths[0]) - mw/4, m);
@@ -25,7 +21,7 @@ pen_stroke(
     nib(end_nib)(3)
     nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
 )(paths[p])(strokes[p]);
-anchor( "vc", point 0.5 of paths[1]);
+anchor( "vc", point 0.5 of paths[0]);
 anchor( "right",  point 0.6 of paths[p]);
 
 endglyph;

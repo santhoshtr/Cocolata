@@ -16,7 +16,7 @@ pen_stroke(
     nib(thicknib)(0)
     nib(thicknib)(1)
     nib(thicknib rotated -30)(2)
-    nib(thicknib scaled 1.3)(3,4)
+    nib(thicknib )(3,4)
 )(paths[p])(strokes[p]);
 absolute_position := 1;
 endglyph;

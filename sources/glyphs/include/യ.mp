@@ -10,7 +10,7 @@ z6 = (x1, (y0+y7)/2);
 z7 = ((x6 + x8)/2, undershoot);
 z8 = (x7 + mw/3, (y7+y9)/1.8);
 z9 = (x8 - mw/8, m);
-paths[0] = z0{up}..z1{right}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..z9;
+paths[0] = z0 ..z1{right}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..z9;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(thicknib)(0)

@@ -2,42 +2,31 @@ input glyph;
 beginglyph;
 input ./glyphs/include/സ;
 
-for i=0 upto p:
-    paths[i] := paths[i] shifted (mw/3, 0);
-    strokes[i] := strokes[i] shifted (mw/3, 0);
-endfor;
-
-% Make room for ത്ര
-paths[p] := paths[p] yscaled 0.9 shifted (0, 0.1m);
-strokes[p] := strokes[p] yscaled 0.9 shifted (0, 0.1m);
-
 p:=p+1;
 clearxy;
-%  ത്ര
-input ./glyphs/include/ത;
-paths[p] := paths[p] shifted (2mw, -0.95m) scaled 0.6;
 
-clearxy;
-z8 = (xpart point 4 of paths[p], -1.4*descent); % ra sign starts
-z9 = (xpart point 1 of paths[p] -mw/6, 0);
+z0= (x1 + thick/2, undershoot);
+z1= (mw/3, (y0 + y2)/2);
+z2 = ( (x1 + x3)/2.5, 0.9m); % top
+z3 = ( x1 + 0.9mw, (y2+y4)/1.6);
+z4 = ( x2+ mw/4 , 0); % bottom middle
+z5 = ( (x1+x3)/2.2, m/2);
+z6 =(x5 + mw/2, 0.85m);
+z7 =(x6 + mw/2.5, 0.5m);
+z8 = ( x4, -descent/2);
+z9 = (0, (y10+y8)/2);
+z10 = (x9+thick/2, 0.95m);
 
-cut:=6.8;
-paths[p] := (subpath(0, cut) of paths[p]){dir angle(direction cut of paths[p])} .. {left}z8{left} .. {dir 50}z9;
-dt := directiontime dir 90 of subpath( 8, 9) of paths[p];
-paths[p] := insert_nodes(paths[p])(8 + dt);
-
-paths[p] := paths[p] shifted (mw/3,0);
+paths[p]:=z0..z1..z2 ..z3..z4..z5..z6..
+    z7..z8{left}..z9..z10;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    nib(start_up_nib scaled 0.8 rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib scaled 0.8)(2,6)
-    nib(middle_down_nib scaled 0.8)(3, 7)
-    nib(down_nib scaled 0.8)(4)
-    nib(middle_up_nib scaled 0.8)(1,5)
-    nib(downnib scaled 0.8)(8)
-    nib(endnib scaled 0.8)(9)
-    nib(end_nib scaled 0.8 rotated terminalangle infinity of paths[p])(infinity)
+     nib(thicknib)(0,1,2,3,4,5,6,7,8,9,10)
 )(paths[p])(strokes[p]);
 
-anchor( "vc", (xpart point infinity of paths[0],0));
+paths[p]:=paths[p] shifted (0.75mw, -0.85m) scaled 0.75 ;
+strokes[p]:=strokes[p] shifted (0.75mw, -0.85m) scaled 0.75 ;
+
+anchor( "vc", (x3,0));
 
 endglyph;

@@ -2,7 +2,7 @@ clearxy;
 z0 = point infinity of paths[p-1];
 z1 = ( x0+mw/3 , 0.9m);
 z2 = ( x1+mw/3 , (y1+y3)/2.5);
-z3 = ( x2 - 0.1mw, 0);
+z3 = ( x2 - mw/4, 0);
 paths[p]= z0{up}..z1{dir 20}..z2..z3;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(

@@ -1,31 +1,20 @@
 clearxy;
-z0 = (xpart right_extrema(strokes[p-1]) - vertical_thin_nib_size/2, vertical_thin_nib_size/2);
-z1= (x0, m*0.6);
-z2 = ( (x1 + x3)/2, m-overshoot); % top
-z3 = ( x1 + 0.9mw, (y2+y4)/2.5);
-z4 = ( x3 - mw/4, 2undershoot); % bottom middle
-z5 = ( (x1+x3)/2.1, (y4+y6)/2.5);
-z6 = ( (x5 + x7)/1.85, y2); % second top
-z7 = ( x1 + 1.45mw, (y6+y8)/2);
-z8 = ( x7 - mw/3, (y6+y10)/2); % <
-z9 = ( x8 + mw/2.5,  y8-m/3);
-z10 = ( x6, y0 - m/6); %
-z11 = ( xpart (point 0 of paths[p-1]), y10);
-z12 = ( xpart (point 1 of paths[p-1]), (y11+y13)/2);
-z13 = ( x11, -descent);
-z14 = ( x9+thick/2, y13);
-paths[p] = z0..z1{up}..z2{right}..z3..{left}z4{left}..z5..z6{right}..z7{down}..{left}z8{right}..z9..z10---z11..z12..z13---z14;
-paths[p]:=harmonize(paths[p]);
+z0 =  point infinity of paths[p-1];
+z1= (x0, (y0 + y2)/2);
+z2 = ( x1+ mw/2.5, 0.85m); % top
+z3 = ( x1 +  0.9mw, (y2+y4)/1.6);
+z4 = ( x3 - mw/4 , 0); % bottom middle
+z5 = (  x4 - mw/4, 0.5m);
+z6 = ( x5 + mw/3, 0.85m);
+z7 = ( x6 + mw/2, 0.75m);
+z8 = ( x6 + mw/3, 0.45m);
+z9 = ( x8 + mw/3, 0.25m);
+z10 = ( x4, -descent/2);
+z11 = ( x9, y10);
+
+paths[p]:=z0{up}..z2{dir 10}..z3..z4..z5..z6..z7
+    ..{dir 200}z8{dir -10}..z9..{dir 200}z10{dir 10}..z11;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-     cut(thin_vertical_nib, -45)(0)
-    nib(thin_vertical_nib)(1)
-    nib(top_nib)(2,6)
-    nib(middle_down_nib)(3, 7, 9)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(5)
-    nib(thin_vertical_nib rotated 90)(8)
-    nib(down_nib)(10)
-    nib(down_nib)(11)
-    nib(down_nib rotated 70)(12)
-    nib(thick_horizontal_nib)(13,14)
+     nib(thicknib)(0,1,2,3,4,5,6,7,8,9,10,11)
 )(paths[p])(strokes[p]);

@@ -15,7 +15,7 @@ z8=point 4.1 of paths[p];
 
 z7 = (x1, -descent/2);
 z9=(x6+thick, y7);
-paths[p] := z0{dir 80}..z1..z2..z3..z8{up}..z5{right}..z6..{left}z7{right}..z9;
+paths[p] := z0{dir 80}..z1..z2..z3..z8{up}..z5{right}..z6..{dir 190}z7{right}..z9;
 pen_stroke(
    nib(thicknib)(0, 1, 2, 3,4,5,6,7)
    nib(thicknib scaled 1.2)(8)

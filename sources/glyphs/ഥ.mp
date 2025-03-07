@@ -15,7 +15,7 @@ nib(thicknib )(0)
     nib(thicknib)(2)
     nib(thicknib)(3)
     nib(thicknib)(4)
-    nib(thicknib)(5,6,7,8)
+    nib(thicknib)(5)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", (xpart( point 1 of paths[p]),0));

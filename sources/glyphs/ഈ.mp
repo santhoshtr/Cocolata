@@ -15,11 +15,12 @@ pen_stroke(
      nib(thicknib)(0,1,2, 3)
      nib(thicknib scaled 1.2)(4)
 )(paths[p])(strokes[p]);
-% Au sign
 
+
+% Au sign
 clearxy;
 p:=p+1;
-xshift:=xpart point 2 of paths[p-1] + mw/4;
+xshift:=xpart point 2 of paths[p-1] + mw/6;
 input ./glyphs/include/ൗ;
 
 for i=2 upto p:
