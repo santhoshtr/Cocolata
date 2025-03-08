@@ -14,6 +14,9 @@ UFODIR=${SOURCEDIR}/ufo
 INSTALLDIR=~/.fonts/$(FAMILY)
 
 UFO=$(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
+TTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.ttf)
+OTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.otf)
+WEBFONTS=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.woff2)
 
 .PHONY: $(STYLES) ufo clean glyphs build proofs autobuild update-deps init update
 
@@ -53,36 +56,32 @@ $(UFODIR)/$(FAMILY)-%.ufo: %
 ufo: glyphs $(UFO)
 
 # Build targets for prepating the fonts from master UFO sources.
-Kanchana: $(FONTSDIR)/Kanchana-Regular/otf \
-	$(FONTSDIR)/Kanchana-Thin/otf \
-	$(FONTSDIR)/Kanchana-Regular/ttf \
-	$(FONTSDIR)/Kanchana-Thin/ttf \
-	$(FONTSDIR)/Kanchana/webfonts
+Kanchana: glyphs $(TTF) $(OTF) $(WEBFONTS)
 
 # Create ttf instances if a designspace e
 
 # Compile otf from UFO file. This target will be picked up only if designspace is missing for the variant
-$(FONTSDIR)/%/otf: ${UFODIR}/%.ufo
+$(FONTSDIR)/%.otf: ${UFODIR}/%.ufo
 	fontmake --validate-ufo \
 		--verbose=WARNING \
 		--optimize-cff 1 \
 		--flatten-components \
 		--filter DecomposeTransformedComponentsFilter  \
 		--output otf \
-		--output-dir $@ \
+		--output-dir $(FONTSDIR) \
 		--ufo-paths $(UFODIR)/$*.ufo
-	$(PY) tools/fix_font.py $@/*
+	$(PY) tools/fix_font.py $@
 
 # Compile ttf from UFO file. This target will be picked up only if designspace is missing for the variant
-$(FONTSDIR)/%/ttf: ${UFODIR}/%.ufo
+$(FONTSDIR)/%.ttf: ${UFODIR}/%.ufo
 	@fontmake --verbose=WARNING \
 		--output ttf \
 		--flatten-components \
 		--filter DecomposeTransformedComponentsFilter \
 		--optimize-cff 1 \
-		--output-dir $@ \
+		--output-dir $(FONTSDIR) \
 		--ufo-paths $(UFODIR)/$*.ufo
-	$(PY) tools/fix_font.py $@/*.ttf
+	$(PY) tools/fix_font.py $@
 
 # Package the ufo in fonts directory, directly from the source UFO.
 $(FONTSDIR)/%/ufo: ${UFODIR}/%.ufo
@@ -91,9 +90,9 @@ $(FONTSDIR)/%/ufo: ${UFODIR}/%.ufo
 # Create woff2 formatted webfonts for all the otfs available
 # Could be done using fonttools but using a python script to avoid hassles of loop
 # and filename mangling in Makefile
-$(FONTSDIR)/%/webfonts:
-	@mkdir -p  $@
-	$(PY) -m fontTools.ttLib.woff2 compress -o $@/Kanchana-VF.woff2 $(FONTSDIR)/$*/otf-variable/*.otf
+$(FONTSDIR)/%.woff2: ${FONTSDIR}/%.ttf
+	$(PY) -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
+
 
 clean:
 	@find -iname "*.pyc" -delete
@@ -101,14 +100,14 @@ clean:
 
 proofs:
 	@mkdir -p ${PROOFDIR}
-	hb-view $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf \
+	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/ligatures.txt \
 		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf \
+	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -116,14 +115,14 @@ proofs:
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf \
+	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/kerning.txt \
 		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -138,7 +137,8 @@ test: proofs
 
 install: $(FONTSDIR)/Kanchana/otf-variable
 	@mkdir -p $(INSTALLDIR);
-	@cp $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf $(INSTALLDIR);
+	@cp $(FONTSDIR)/Kanchana-Regular.otf $(INSTALLDIR);
+	@cp $(FONTSDIR)/Kanchana-Thin.otf $(INSTALLDIR);
 	@fc-cache -fr
 
 release:

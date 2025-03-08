@@ -1,36 +1,26 @@
 input glyph;
 beginglyph;
-
 input ./glyphs/include/left_arch_with_eye;
 
 p:=p+1;
+input ./glyphs/include/_ത_;
+
+
 clearxy;
-z0=(thick/2-thin/2, undershoot);
-z1= (x0, m*0.6);
-z2 = ( x1 + mw/3, m - overshoot); % top
-z3 = ( x2 + mw/4, 0.875m);
-
-
-paths[p] :=z0---z1{up}..{right}z2..z3;
-paths[p] := paths[p] shifted (xpart(point infinity of paths[p-1]), 0);
-
-pen_stroke(
-    cut(thin_vertical_nib, -45)(0)
-    nib(thin_vertical_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib rotated terminalangle 3 of paths[p])(3)
- )(paths[p])(strokes[p]);
-
-
-% ജ
 p:=p+1;
-shift = xpart point infinity of paths[p-1] - mw/6;
-input ./glyphs/include/ജ;
-for i=p-2 upto p:
-    paths[i] := paths[i] shifted (shift, 0);
-    strokes[i] := strokes[i] shifted (shift, 0);
-endfor;
+z0=point infinity of paths[p-1] ;
+z1=(x0 + mw/3, 0.9m);
+z2=(x1 + mw/3, 0.45m);
+z3=(x0 - mw/4, -descent/3);
+z4=(x2 , 0);
+z5 = (x4, y3);
+z6 = (x4 - mw/3, y4);
+paths[p] = z0{up}..{dir 20}z1..z2..{dir 220}z3{dir 30}..z4 ..z5..z6;
+paths[p]:=harmonize(paths[p]);
+pen_stroke(
+     nib(thicknib)(0,1,2, 3,4,5)
+     nib(thicknib scaled 0.8)(6)
+)(paths[p])(strokes[p]);
 
-anchor( "right", point infinity of paths[p]);
 
 endglyph;

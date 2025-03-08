@@ -5,35 +5,21 @@ z0=(0, s);
 z1=(x0, 0);
 paths[p] := z0--z1;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+     nib(thicknib)(0,1)
 )(paths[p])(strokes[p]);
 
 % m has two condensed n archs
 p:=p+1;
-paths[p] := n_arch xscaled 0.9 shifted(xpart(point 1 of paths[p-1]), 0);
+clearxy;
+z0=point infinity of paths[p-1];
+z1=(0.5*x2, 0.85s);
+z2=(x0 + 0.7sw, undershoot);
+z3=(x2 + 0.33sw, 0.8s);
+z4=(x2 + 0.7sw, undershoot);
+paths[p] := z0{dir 80}..{dir 40}z1..{dir -90}z2{dir 80}..{dir 40}z3..{dir -100}z4;
+% paths[p] :=  harmonize(paths[p] );
 pen_stroke(
-    cut(end_nib scaled 2/3, rel 90)(0)
-    nib(top_nib)(1)
-    nib(thick_vertical_nib)(2,3)
-
+   nib(thicknib)(0,1,2, 3,4)
 )(paths[p])(strokes[p]);
 
-p:=p+1;
-paths[p] := n_arch xscaled 0.9 shifted(xpart(point 3 of paths[p-1]), 0);
-pen_stroke(
-    cut(end_nib scaled 2/3, rel 90)(0)
-    nib(top_nib)(1)
-    nib(thick_vertical_nib)(2,3)
-
-)(paths[p])(strokes[p]);
-
-
-% Serifs
-strokes[0] := top_left_serif(strokes[0], 0);
-strokes[0] := bottom_serif(strokes[0], 3);
-strokes[1] := bottom_serif(strokes[1], 3);
-strokes[2] := bottom_serif(strokes[2], 3);
-
-lbearing:=sw/3*0.1;
-rbearing:=sw/3*0.1;
 endglyph;

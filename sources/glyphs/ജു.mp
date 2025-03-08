@@ -1,32 +1,27 @@
 input glyph;
 beginglyph;
-
-input ./glyphs/include/ജ;
-
-p:=p+1;
 clearxy;
-z0 = point infinity of paths[p-1];
-z1 =(x0 + mw/2, m/2);
-z2 =(x1 + mw/3, (y1+y3)/2);
-z3 =(x2 - mw/3, -m/6);
-z4 =(xpart point 7 of paths[p-2], y3);
-z5 =(xpart point 6 of paths[p-2], (y4+y6)/2);
-z6 =(x4, -descent);
-z7 =(x2 + thick/2, y6);
-paths[p]:=z0{dir angle(direction infinity of paths[p-1])}..z1{right}..z2{down}..z3---z4..z5..z6---z7;
+input ./glyphs/include/left_arch_with_eye;
 
+clearxy;
+p:=p+1;
+z0=point infinity of paths[p-1] ;
+z1=(x0 + mw/3, 0.9m);
+z2=(x1 + mw/3, 0.45m);
+z3=(x0 - mw/4, -descent/3);
+z4=(x2 , 0);
+z5 = (x4, y3);
+z6 = (x4 - mw/3, y4);
+z7 = (x4 + mw/3, y5);
+z8 = (x3 + mw/3, -descent);
+z9 = (x7+mw/4, y8);
 
+paths[p] = z0{up}..{dir 20}z1..z2..{dir 220}z3{dir 30}..z4
+    ..z5..z6 ..{down}z7..{left}z8{right}..z9;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(middle_up_nib)(0)
-    nib(top_nib scaled 0.8)(1)
-    nib(down_nib)(3)
-    nib(middle_down_nib scaled 0.8)(2)
-    nib(down_nib)(3,4)
-    nib(down_nib rotated 70)(5)
-    nib(thick_horizontal_nib)(6,7)
+    nib(thicknib)(0,1,2, 3,4,5,6,7,8,9)
 )(paths[p])(strokes[p]);
-
-
-anchor( "vc", point 6 of paths[0]);
+rbearing:=-mw/4;
 
 endglyph;

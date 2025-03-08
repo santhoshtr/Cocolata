@@ -28,12 +28,5 @@ pen_stroke(
 )(paths[2])(strokes[2]);
 
 
-% Serifs
-strokes[0] := top_serif(strokes[0], 0);
-strokes[0] := bottom_serif(strokes[0], 1+2);
-
-strokes[1] := top_serif(strokes[1], 0);
-strokes[1] := bottom_serif(strokes[1], 1+2);
-
 anchor( "top", (xpart(point 0.5 of paths[2]), 1.2X));
 endglyph;

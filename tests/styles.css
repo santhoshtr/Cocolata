@@ -3,8 +3,6 @@
 @layer proof {
   :root {
     --font-weight: 400;
-    --font-slant: 0;
-    --font-opsz-enabled: "auto";
     --font-width: 100;
     --font-family-name: "Kanchana";
     --font-size: 20;
@@ -50,6 +48,7 @@
     text-align: var(--text-align);
     font-family: var(--font-family-name), sans;
     line-height: var(--font-line-height);
+    font-weight: var(--font-weight);
     letter-spacing: calc(var(--font-letter-spacing) * 1px);
     font-size: calc(var(--font-size) * 1px);
     padding: 2rem;
@@ -58,9 +57,7 @@
     margin-right: auto;
     outline: none;
     max-width: 75ch;
-    font-variation-settings: "wght" var(--font-weight), "slnt" var(--font-slant),
-      "wdth" var(--font-width), "opsz" var(--font-opsz);
-    font-optical-sizing: var(--font-opsz-enabled);
+
     hyphens: auto;
     hyphenate-character: "";
 

@@ -1,13 +1,13 @@
 input glyph;
 beginglyph;
 
-z0= (x1 + mw/2, m);
-z1 = (0,3/4m);
+z0= (x1 + mw/2, 0.95m);
+z1 = (0, 3/4m);
 z2 = ((x0+x1)/2.5,1/2m);
 z3 = (x0, 1/4m);
-z4 = ( x1 - thick/2, undershoot);
+z4 = ( x1 - 0.1mw, 0.1m);
 
-paths[p]:=z0..{dir 220}z1..z2{dir -30}..z3..{dir 170}z4 ;
+paths[p]:=z0{dir 170}..{dir 235}z1..z2{dir -24}..z3..{dir 170}z4 ;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
