@@ -12,9 +12,9 @@ pen_stroke(
 p:=p+1;
 clearxy;
 z0=point infinity of paths[p-1];
-z1=(0.5*x2, 0.85s);
+z1=(0.5(x0+x2), 0.85s);
 z2=(x0 + 0.7sw, undershoot);
-paths[p] := z0{dir 80}..{dir 40}z1..{dir -90}z2;
+paths[p] := z0{dir 80}...z1...{dir -80}z2;
 % paths[p] :=  harmonize(paths[p] );
 pen_stroke(
    nib(thicknib)(0,1,2)

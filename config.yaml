@@ -2,6 +2,7 @@ name: Kanchana
 styles: [
   "Regular",
   "Thin",
+  "Bold"
 ]
 version: 1.000
 unitsPerEm: 1000

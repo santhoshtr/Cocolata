@@ -219,14 +219,7 @@ function init() {
 			Kanchana: "Kanchana",
 		},
 	});
-	const weightCtrl = pane.addBinding(config, "font-weight", {
-		label: "Weight",
-		options: {
-			Thin: 100,
-			Regular: 400,
-			Bold: 900,
-		},
-	});
+
 
 	const themeCtrl = pane.addBinding(config, "theme", {
 		label: "Theme",
@@ -239,6 +232,11 @@ function init() {
 		label: "Font size",
 		min: 8,
 		max: 256,
+	});
+	pane.addBinding(config, "font-weight", {
+		label: "Weight",
+		min: 100,
+		max: 800,
 	});
 	pane.addBinding(config, "font-line-height", {
 		label: "Line height",

@@ -6,9 +6,9 @@
 vardef n_arch =
     clearxy;
     z0=point infinity of paths[p-1];
-    z1=(0.5*x2, 0.85s);
+    z1=(0.5(x0+x2), 0.85s);
     z2=(x0 + 0.7sw, undershoot);
-    harmonize(z0{dir 80}..{dir 40}z1 ..{dir -90}z2)
+    harmonize(z0{dir 80}...z1...{dir -80}z2)
 enddef;
 
 % For the loops of p and b
