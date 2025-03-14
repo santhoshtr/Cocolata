@@ -1,9 +1,9 @@
 input glyph;
 beginglyph;
 
-z0=(0, s);
-z1=(x0, 0);
-paths[p] := z0--z1;
+z0=(0, s-overshoot);
+z1=(x0+0.1sw, undershoot);
+paths[p] := z0{dir -80}..z1;
 pen_stroke(
      nib(thicknib)(0,1)
 )(paths[p])(strokes[p]);

@@ -1,34 +1,18 @@
 input glyph;
 beginglyph;
-paths[p] := p_loop xyscaled(-1, -1) shifted (xpart(point 2 of p_loop), m);
-pen_stroke(
-    nib(middle_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(down_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
 
+z0 = (x1 + sw/2, 0.9s);
+z1 = (0, 0.55(y0+y2));
+z2 = (0.35(x1 + x3), undershoot);
+z3 = (x0 + 0.05sw, 0.75s);
+z4 = (x3  + 0.05sw, -descent);
+z5 = (x4  + 0.3sw, -0.75descent);
+paths[p] = z0{dir 180}..z1 ..z2...{dir 80}z3{dir -90}...{dir -80}z4{dir 45}...z5;
+pen_stroke(
+    nib(thicknib)(0, 1, 2, 3, 4,5 )
 )(paths[p])(strokes[p]);
 
-clearxy;
-p:=p+1;
-z0=(0, s);
-z1=(0, 0.85s);
-z2=(x1, -descent+thick/4);
-paths[p] := z0--z1---z2;
-paths[p] := paths[p] shifted(xpart(point 0 of paths[0]),0);
+rbearing:=-0.3sw;
 
-pen_stroke(
-    nib(thick_vertical_nib)(0,1,2)
-)(paths[p])(strokes[p]);
-
-strokes[p] := top_right_serif(strokes[p], 5);
-strokes[p] := bottom_serif(strokes[p], 2);
-% Leave some extra gap at bottom, near serif
-strokes[p] :=  subpath(0.75, 11.85) of strokes[p]
-    --  cycle;
-
-lbearing:=sw/3*0.3;
-rbearing:=sw/3*0.25;
-
+anchor( "top", (xpart(point 0 of paths[0]), 1.2s));
 endglyph;

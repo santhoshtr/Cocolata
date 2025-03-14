@@ -16,16 +16,13 @@ z4= ( x3 +mw/4, 0.8m);
 paths[p] := z0{up}..{dir 30}z1 ..z2{dir 270}..z3{dir 30}..{up}z4;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-     nib(thicknib)(0,1,2,3)
-     nib(thicknib rotated 30)(4)
+     nib(thicknib)(0,1,2,3,4)
 )(paths[p])(strokes[p]);
 
 
 clearxy;
 p:=p+1;
 input ./glyphs/include/right_arch_dha;
-paths[p]:=paths[p] shifted (xpart(point infinity of paths[p-1]), 0);
-strokes[p]:=strokes[p] shifted (xpart(point infinity of paths[p-1]), 0);
 
 anchor( "vc", (xpart(point 1 of paths[2]),0));
 anchor( "right", point 2.25 of paths[3]);

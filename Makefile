@@ -97,6 +97,7 @@ $(FONTSDIR)/%.woff2: ${FONTSDIR}/%.ttf
 clean:
 	@find -iname "*.pyc" -delete
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
+	rm -rf sources/svgs/*/*.svg
 
 proofs:
 	@mkdir -p ${PROOFDIR}

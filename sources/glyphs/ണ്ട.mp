@@ -1,11 +1,15 @@
 input glyph;
 beginglyph;
-input ./glyphs/include/ണ;
-% Third arch
+input ./glyphs/include/left_arch_with_eye;
 
-p:=2;
+% Second arch
+p:=p+1;
+input ./glyphs/include/middle_arch;
+
+
+p:=p+1;
 clearxy;
-z0 = point infinity of paths[1];
+z0 = point infinity of paths[p-1];
 z1 = ( x0 + mw/2.2, m - overshoot); % top
 z2 = ( x1 + mw/3, y3 + m/8);
 z3= ( x2 - mw/5, y4 + m/6);
@@ -17,8 +21,7 @@ z7 = ( x1 - mw/8, thick*0.6);
 paths[p] := z0{up}..z1{dir 10}..z2 ..z3 ..z4..z5 ..z6 ..{dir 150}z7;
 
 pen_stroke(
-      nib(thicknib)(0,1,2,3,4,5,6)
-      nib(thicknib rotated -30)(7)
+      nib(thicknib)(0,1,2,3,4,5,6,7)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 1 of paths[1]);

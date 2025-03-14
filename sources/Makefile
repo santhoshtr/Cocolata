@@ -9,7 +9,7 @@ default: all
 
 all: $(SVGS)
 
-svgs/$(VARIANT)/%.svg: $(SRCDIR)/%.mp glyph.mp  pens.mp config/$(VARIANT).mp malayalam.mp latin.mp config.mp
+svgs/$(VARIANT)/%.svg: $(SRCDIR)/%.mp   pens.mp config/$(VARIANT).mp
 	@echo " BUILD GLYPH   $@"
 ifeq ($(VARIANT), debug)
 	@mpost  -s 'outputtemplate="$@"' -s 'jobname="config/$(VARIANT).mp"' --interaction=nonstopmode $< end

@@ -1,15 +1,16 @@
 input glyph;
 beginglyph;
 
-z0 = (x4, y1 - s/4.5);
-z1 = ((x0+x2)/2, s-overshoot);
-z2 = (x6+ thick/2, (y1 +y3)/2);
-z3 = ((x2 + x4)/2, (y2 + y4)/2);
-z4 = (0.7sw, (y3 + y5)/2);
-z5 = ((x4 + x6)/1.8, undershoot);
-z6 = (0, y5+s/4);
+z0 = (x6 + 0.6sw, 0.8s);
+z1 = (x0 - 0.05sw, 0.9s);
+z2 = (x1 - sw/2, 0.75s);
+z3 = (x2 + 0.3sw, 0.5s);
+z4 = (x1, 0.4s);
+z5 = (x4 + 0.2sw, 0.1s);
+z6 = (0, 0.1s);
 
-paths[p] = z0   ..z1 ..z2  ..z3..z4..z5  ..  z6;
+
+paths[p] = z0..{dir 140}z1{dir 190}..{dir 210}z2..{dir -30}z3...z4{dir -30}...{dir 210}z5...z6;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(thicknib)(0,1 ,2,3,4,5,6)
