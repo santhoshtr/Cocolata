@@ -136,14 +136,13 @@ class SVGGlyph:
         self.onum = None
         if len(filename.split(".")) > 1:
             variant = filename.split(".")[1]
-            if variant == "alt":
+            alt_suffixes = ["alt", "wide", "narrow"]
+            if variant in alt_suffixes:
                 self.alt = variant
             elif variant == "oldnum":
                 self.onum = variant
             elif variant == "sups":
                 self.sups = variant
-            elif variant == "wrap":
-                self.alt = variant
         self.unicode = None
         if len(self.name) == 1:
             self.unicode = [ord(self.name)]

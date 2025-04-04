@@ -69,7 +69,7 @@ glyphs:
       "ý","ŷ","ÿ", "ỳ",
       "ź","ž","ż",
     ]
-    LATIN_LIGATURES:  [ "tt", "ff", "ft", "fi", "ij" ] # [ "ffi", "th", ]
+    LATIN_LIGATURES:  [ "ff", "ft" ] # [ "ffi", "th", ]
     ML_CONSONANTS: കഖഗഘങചഛജഝഞടഠഡഢണതഥദധനപഫബഭമയരലവറശഷസഹളഴ
     ML_VOWEL_SIGNS: ['ാ', 'ി','ീ', "ു", "ൂ", "ൃ", "ൄ", "ൢ", "ൣ", "െ", "േ", "ൈ", "ൊ", "ോ","ൌ", "ൗ"]
     ML_VOWEL_SIGNS_CONJOINING: ["ു", "ൂ", "ൃ", "ൄ", "ൢ", "ൣ"]
@@ -340,10 +340,16 @@ glyphs:
       - [['ന്റ', 'ൻ്റ'], "ീ", 40 ]
       - [["ഴ", "ഴു", "ഴൂ"], ['ക', 'കു', 'കൂ', 'ക്ക', 'ക്കു', 'ക്കൂ'], -30 ]
       - [["ഴ", "ഴു", "ഴൂ"], ['ച', 'ചൂ', 'ച്ച', 'ച്ചു', 'ച്ചൂ', 'ഛ'], -50 ]
-  # calts:
-  #   malayalam:
-  #     - ['ന', "ി", 'wrap' ]
-variablefonts:
+  calts:
+    malayalam:
+      - ['ട', "ി", 'narrow' ]
+      - ['ന്റ', "ി", 'narrow' ]
+      - ['ട്ട', "ി", 'narrow' ]
+      - ['ഴ', "ി", 'narrow' ]
+      - ['ട', "ീ", 'narrow' ]
+      - ['ന്റ', "ീ", 'narrow' ]
+      - ['ട്ട',"ീ", 'narrow' ]
+      - ['ഴ',"ീ", 'narrow' ]
   Kanchana:
     designspace: Kanchana.designspace
     stat:

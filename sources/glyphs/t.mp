@@ -8,8 +8,7 @@ pen_stroke(
      nib(thicknib)(0,1,2)
 )(paths[p])(strokes[p]);
 %bar
-z4 = (0, s);
-z5 = (x2 + sw/4, y4);
+
 clearxy;
 p:=p+1;
 z0 =(0, s);

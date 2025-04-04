@@ -806,7 +806,7 @@ class MalayalamFont(Font):
 
         # Add space
         space = Glyph(name="space")
-        space.width = self["i"].width
+        space.width = self["i"].width * 1.5
         space.unicodes = [0x0020]
         self.addGlyph(space)
         # NBSP width must be same as Space width

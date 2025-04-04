@@ -7,8 +7,7 @@ z0= (-rbearing, 1.2X);
 z1=( x0, y0 - 0.4X);
 paths[p] = z0..z1;
 pen_stroke(
-    nib(thinterminalnib rotated terminalangle 0 of paths[p])(0)
-    nib(thinterminalnib rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib)(0,1)
 )(paths[p])(strokes[p]);
 
 rbearing:=0;

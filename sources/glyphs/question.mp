@@ -1,20 +1,20 @@
 input glyph;
 beginglyph;
-z0 = (0, 3/4X);
-z1 = (x0+ Xw/4, X-overshoot);
+z0 = (0, y1-0.3s);
+z1 = (x0+ Xw/6, 1.1s);
 z2 = (x1+ Xw/5, y0);
 z3 = (x0+ Xw/5, X/4);
 
-paths[0] := z0{up}..z1..z2{down}..{dir -80}z3;
-soften:=0;
-paths[1] = fullcircle scaled (thick*1.5)  shifted(x3, 0);
+paths[0] := z0..z1{dir 10}..z2..{dir -80}z3;
 
 pen_stroke(
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(thicknib scaled 1.2 rotated terminalangle 0 of paths[p])(0)
-    nib(end_nib rotated terminalangle infinity of paths[0])(infinity)
+    nib(thicknib)(0,1,2)
 )(paths[0])(strokes[0]);
-strokes[1] = paths[1];
+
+p:=p+1;
+clearxy;
+soften:=0;
+paths[p] = circle(thick*1.5) yscaled 0.8 shifted(xpart point 3 of strokes[p-1], 0);
+strokes[p] = paths[p];
 
 endglyph;

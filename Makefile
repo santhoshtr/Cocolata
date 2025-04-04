@@ -74,7 +74,7 @@ $(FONTSDIR)/%.otf: ${UFODIR}/%.ufo
 
 # Compile ttf from UFO file. This target will be picked up only if designspace is missing for the variant
 $(FONTSDIR)/%.ttf: ${UFODIR}/%.ufo
-	@fontmake --verbose=WARNING \
+	fontmake --verbose=WARNING \
 		--output ttf \
 		--flatten-components \
 		--filter DecomposeTransformedComponentsFilter \

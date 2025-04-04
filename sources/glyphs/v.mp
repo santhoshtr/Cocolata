@@ -3,8 +3,6 @@ beginglyph;
 z0 = (0, 0.9s);
 z1 = (0.5(x0 + x2), undershoot);
 z2 = (0.6sw, y0);
-
-
 paths[p] =  z0{dir -80} ...z1...{dir 80}z2 ;
 pen_stroke(
     nib(thicknib)(0, 1, 2, 3, 4 )

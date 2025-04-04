@@ -1,15 +1,29 @@
+
 input glyph;
 beginglyph;
 
-z0 = (x1 + sw/2, 0.9s);
-z1 = (0, 0.55(y0+y2));
-z2 = (0.35(x1 + x3), undershoot);
-z3 = (x0 + 0.05sw, X);
-z4 = (x3  + 0.15sw, 0);
-paths[p] = z0{dir 180}..z1 ..z2...{dir 90}z3{dir -90}...z4;
+z0 = (x1+0.2sw, y1-0.1s);
+z1 = (sw/2, 0.9s);
+z2 = (0, 0.5s);
+z3 = ((x2+x4)/2, undershoot);
+z4 = (x0, 0.5s );
+
+paths[p]:=z0...z1{dir 190}...z2{dir 250}...z3 ...{up}z4;
+paths[p] := harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib)(0, 1, 2, 3, 4 )
+     nib(thicknib)(0,1,2,3,4)
 )(paths[p])(strokes[p]);
 
-anchor( "top", (xpart(point 0 of paths[0]), 1.2s));
+
+clearxy;
+p:=p+1;
+z0=(xpart point 4 of strokes[p-1], X);
+z1=(x0 , 0);
+paths[p] := z0{dir -100}...{dir -80}z1;
+pen_stroke(
+   nib(thicknib)(0,1)
+)(paths[p])(strokes[p]);
+anchor( "top", (xpart(point 1 of paths[0]), 1.2X));
+anchor( "bottom", (xpart(point 3 of paths[0]), 0));
+
 endglyph;

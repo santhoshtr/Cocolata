@@ -1,22 +1,22 @@
 input glyph;
 beginglyph;
-r = 0.8;
-z0 = (Xw*r/3, 0);
-z1 = (x0 + Xw*r/3, .25X);
-z2 = (x0, y1 + .25X);
-z3=  (x0 - Xw*r/3, y2 + .25X);
-z4=  ((x3+x5)/2, X);
-z5=  (x1*0.9, y3);
-z6=  (x2, y2);
+z0= (x1 + mw/2, 0.9m);
+z1 = (0, 3/4m);
+z2 = ((x0+x1)/2.5,1/2m);
+z3 = (x0, 1/4m);
+z4 = ( x2, 0);
+z5 = ( x1, 0.3m);
+z6 = ( x3+0.1sw, 0.8m);
 
-paths[0] =  z2..(x3, y1){down}..z0{right}..z1{up}..z2..z3{up}..z4{right}..z5{down}..z6 ;
+paths[p]:=z0{dir 120}...{dir 235}z1..z2{dir -24}..z3..z4..z5{dir 50}..{dir 20}z6;
+paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-    nib(middle_down_nib)(1, 3,5)
-    nib(down_nib)(2)
-    nib(top_nib)(6)
-    cut(end_nib rotated terminalangle 0 of paths[p], 60)(0)
-    cut(end_nib rotated terminalangle 8 of paths[0], 60)(8)
-)(paths[0])(strokes[0]);
+    nib(thicknib)(0)
+    nib(thicknib)(1)
+    nib(thicknib rotated 30)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4,5,6)
+)(paths[p])(strokes[p]);
 
 endglyph;

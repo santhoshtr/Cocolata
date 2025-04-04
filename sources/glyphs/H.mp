@@ -2,30 +2,29 @@ input glyph;
 beginglyph;
 
 z0=(0, X);
-z1=(x0, X/2);
-z2=(x1, 0);
-z3=(x0 + 0.6X, X);
-
-paths[p] = z0--z2;
+z1=(x0 , undershoot);
+paths[p] := z0{dir -100}...{dir -80}z1;
 pen_stroke(
-  nib(thick_vertical_nib)(0,1,2)
-)(paths[0])(strokes[0]);
+   nib(thicknib)(0,1)
+)(paths[p])(strokes[p]);
 
+clearxy;
 p:=p+1;
-
-z5=(x3, 0);
-paths[p] = z3--z5;
+z0=(0.5Xw, 0.95X);
+z1=(x0 , 0);
+paths[p] := z0{dir -100}...{dir -80}z1;
 pen_stroke(
-  nib(thick_vertical_nib)(0,1,2)
-)(paths[1])(strokes[1]);
+   nib(thicknib)(0,1)
+)(paths[p])(strokes[p]);
 
+clearxy;
 p:=p+1;
-z6 = point 0.5 of paths[0];
-z7 = point 0.5 of paths[1];
-paths[p]:= z6..z7;
+z0=point 4.5 of strokes[p-2];
+z1=(x0+ 0.6sw, y0);
+paths[p] = z0{dir 10}..z1;
 pen_stroke(
-     nib(end_nib rotated 90)(0,1)
-)(paths[2])(strokes[2]);
+   nib(thicknib)(0,1)
+)(paths[p])(strokes[p]);
 
 
 anchor( "top", (xpart(point 0.5 of paths[2]), 1.2X));

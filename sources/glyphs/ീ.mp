@@ -2,21 +2,22 @@
 input glyph;
 beginglyph
 clearxy;
-z0= (mw/4, (y2+y4)/2);
-z1= ((x3 + x5)/2, (y0 + y2)/2);
-z2 = (x4, m); % bottom of loop
-z3 = ( x0, y1);
-z4 = ( (x3 + x5)/2.5, X); % top
-z5 = ( x0 + 0.6mw, m);
-z6 = ( x5 , -0.2m);
+z0= (x2 + 0.2mw , (y1+y3)/1.85);
+z1 = (x0 + 0.1mw, 1.1m); % bottom of loop
+z2 = ( 0, 1.25m);
+z3 = ( x4 - mw/4, X); % top
+z4 = ( x2 + 0.8mw, 1.1m);
+z5 = ( x4 , -0.2m);
 
-paths[p]:=z0..z1..z2 ..z3...z4..z5..z6   ;
+paths[p]:=z0 ..z1...z2{dir 60} ...z3..z4{down}..z5   ;
 
-paths[p] :=harmonize(paths[p]);
-paths[0] := paths[0] shifted (-x1 + 2/3thick  , 0);
+% paths[p] :=harmonize(paths[p]);
+paths[0] := paths[0] shifted (-x4 + 2/3thick  , 0);
 pen_stroke(
     nib(thicknib scaled 0.8)(0,1)
-    nib(thicknib)(2,3,4,5,6)
+    nib(thicknib scaled 0.9)(2)
+    nib(thicknib)(3,4,5)
 )(paths[p])(strokes[p]);
+
 absolute_position := 1;
 endglyph;
