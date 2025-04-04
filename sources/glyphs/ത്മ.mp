@@ -7,10 +7,7 @@ yshift:=0;
 
 p:=p+1;
 clearxy;
-input ./glyphs/include/മ;
-
-paths[p] := paths[p] shifted (xshift , yshift);
-strokes[p] := strokes[p] shifted (xshift , yshift);
+input ./glyphs/include/_മ;
 
 
 anchor( "vc", (xpart(point infinity of paths[0]),0));
