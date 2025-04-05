@@ -1,5 +1,5 @@
 
 input ./config/Regular;
 
-thick := 0.3u;
+thick := 0.36u;
 contrast := 0.3;

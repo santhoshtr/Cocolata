@@ -2,6 +2,12 @@ name: Kanchana
 styles: [
   "Regular",
   "Thin",
+  "Light",
+  "ExtraLight",
+  "Medium",
+  "SemiBold",
+  "ExtraBold",
+  "Black",
   "Bold"
 ]
 version: 1.000

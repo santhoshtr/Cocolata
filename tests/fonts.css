@@ -1,26 +1,5 @@
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Regular.ttf) format("truetype"),
-		url(../fonts/Kanchana-Regular.otf) format("opentype");
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-	unicode-range:
-		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
-		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
-		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
-		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
-		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
-		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
-		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
-		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
-		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
-		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
-		U+2E42;
-}
-
-@font-face {
-	font-family: "Kanchana";
 	src: url(../fonts/Kanchana-Thin.ttf) format("truetype"),
 		url(../fonts/Kanchana-Thin.otf) format("opentype");
 	font-weight: 100;
@@ -42,9 +21,155 @@
 
 @font-face {
 	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-ExtraLight.ttf) format("truetype"),
+		url(../fonts/Kanchana-ExtraLight.otf) format("opentype");
+	font-weight: 200;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-Light.ttf) format("truetype"),
+		url(../fonts/Kanchana-Light.otf) format("opentype");
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-Regular.ttf) format("truetype"),
+		url(../fonts/Kanchana-Regular.otf) format("opentype");
+	font-weight: 400;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-Medium.ttf) format("truetype"),
+		url(../fonts/Kanchana-Medium.otf) format("opentype");
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-SemiBold.ttf) format("truetype"),
+		url(../fonts/Kanchana-SemiBold.otf) format("opentype");
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
 	src: url(../fonts/Kanchana-Bold.ttf) format("truetype"),
 		url(../fonts/Kanchana-Bold.otf) format("opentype");
+	font-weight: 700;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-ExtraBold.ttf) format("truetype"),
+		url(../fonts/Kanchana-ExtraBold.otf) format("opentype");
 	font-weight: 800;
+	font-style: normal;
+	font-display: swap;
+	unicode-range:
+		U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00B1,
+		U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B, U+012E-0133,
+		U+0135-0137, U+0139-013E, U+0141-0148, U+014A-014D, U+0150-0161,
+		U+0164-0165, U+0168-017E, U+01CD-01CE, U+01F0, U+0218-021B, U+0237,
+		U+02BB, U+02C6-02C7, U+02D8-02DD, U+0300-0304, U+0306-0308,
+		U+030A-030C, U+0312, U+0326-0328, U+03A9, U+03C0, U+0951-0952,
+		U+0D00-0D0C, U+0D0E-0D10, U+0D12-0D44, U+0D46-0D48, U+0D4A-0D4F,
+		U+0D54-0D63, U+0D66-0D7F, U+1E80-1E85, U+1E9E, U+1EF2-1EF3,
+		U+200C-200D, U+2013-2014, U+2018-201A, U+201C-201E, U+2022, U+2026,
+		U+2039-203A, U+2044, U+20A9, U+20AC, U+20B9, U+2122, U+2212, U+25CC,
+		U+2E42;
+}
+
+@font-face {
+	font-family: "Kanchana";
+	src: url(../fonts/Kanchana-Black.ttf) format("truetype"),
+		url(../fonts/Kanchana-Black.otf) format("opentype");
+	font-weight: 900;
 	font-style: normal;
 	font-display: swap;
 	unicode-range:
@@ -63,7 +188,7 @@
 
 /* If class is applied, update custom property and
    apply modern font-variant-* when supported */
-	.Kanchana-aalt {
+.Kanchana-aalt {
 	--Kanchana-aalt: "aalt" on;
 }
 
@@ -100,7 +225,7 @@
 
 /* Apply current state of all custom properties
    whenever a class is being applied */
-	.Kanchana-aalt,
+.Kanchana-aalt,
 .Kanchana-liga,
 .Kanchana-liga-off,
 .Kanchana-onum,

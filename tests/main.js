@@ -51,24 +51,7 @@ const fontVariations = {
 		slant: 0,
 		opsz: 12,
 	},
-	"Kanchana-semicondensed": {
-		weight: 400,
-		width: 87.501,
-		slant: 0,
-		opsz: 12,
-	},
-	"Kanchana-expanded": {
-		weight: 400,
-		width: 125,
-		slant: 0,
-		opsz: 12,
-	},
-	"Kanchana-semiexpanded": {
-		weight: 400,
-		width: 112.501,
-		slant: 0,
-		opsz: 12,
-	},
+
 	"Kanchana-medium": {
 		weight: 500,
 		width: 100,
@@ -231,12 +214,25 @@ function init() {
 	pane.addBinding(config, "font-size", {
 		label: "Font size",
 		min: 8,
+		step: 1,
 		max: 256,
 	});
 	pane.addBinding(config, "font-weight", {
 		label: "Weight",
 		min: 100,
-		max: 800,
+		max: 900,
+		step: 100,
+		// options: {
+		// 	Thin: 100,
+		// 	Extralight: 200,
+		// 	Light: 300,
+		// 	Regular: 400,
+		// 	Medium: 500,
+		// 	Semibold: 600,
+		// 	Bold: 700,
+		// 	Extrabold: 800,
+		// 	Black: 900,
+		// },
 	});
 	pane.addBinding(config, "font-line-height", {
 		label: "Line height",
@@ -246,6 +242,7 @@ function init() {
 	pane.addBinding(config, "font-letter-spacing", {
 		label: "Letter spacing",
 		min: -3,
+		step: 0.1,
 		max: 3,
 	});
 
