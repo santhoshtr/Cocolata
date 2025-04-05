@@ -26,8 +26,8 @@ X   := Xheight;
 sw  := s * condense * 0.95; % Width of Latin small letters
 mw  := m * condense; % Width of Malayalm letters
 Xw  := X * condense * 0.95; % Width of Latin capital letters
-lbearing := 0.6u;   % Default left bearing
-rbearing := 0.6u;   % Default right bearing
+lbearing := 0.5u;   % Default left bearing
+rbearing := 0.5u;   % Default right bearing
 
 absolute_position := 0;
 thin := thick - thick*contrast;
