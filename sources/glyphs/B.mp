@@ -1,8 +1,8 @@
 input glyph;
 beginglyph;
 
-z0=(0, X);
-z1=(x0 , 0);
+z0=(mw/6, 0.8X);
+z1=(x0 , .1X);
 paths[p] := z0{dir -100}...{dir -80}z1;
 pen_stroke(
    nib(thicknib)(0,1)
@@ -10,11 +10,11 @@ pen_stroke(
 
 clearxy;
 p:=p+1;
-z0=(xpart point 1 of paths[p-1], 0.8X);
-z1=(x0 + 0.2X, 0.95X);
-z2=(x0 + 0.4X, 1.1s);
-z3=(x0+0.1sw, 0.8s);
-z4=(x0+0.4Xw, (y3+y5)/2.5);
+z0=(0, 0.8X);
+z1=(x0 + 0.3Xw, 0.95X);
+z2=(x0 + 0.5Xw, 1.1s);
+z3=point 0.4 of paths[p-1];
+z4=(x0+0.5Xw, (y3+y5)/2.5);
 z5=(x0, undershoot);
 paths[p] = z0{dir 60}..z1..z2{dir 260}..{dir 180}z3{dir -10}..z4...{dir 180}z5;
 pen_stroke(
