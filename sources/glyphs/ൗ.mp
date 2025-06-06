@@ -1,4 +1,6 @@
 input glyph;
+% Malayalam au sign
 beginglyph;
 input ./glyphs/include/ൗ;
-endglyph;
+lbearing:=0;
+endglyph; 

@@ -1,4 +1,5 @@
 input glyph;
+
 beginglyph;
 paths[0] = (0, s/2){dir 5}..(0.75sw, s/2);
 paths[1] := paths[0] crotated 85;

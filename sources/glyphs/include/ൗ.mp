@@ -1,4 +1,6 @@
 clearxy;
+
+% Malayalam AU sign
 z0= (0, 0.7m);
 z1= (x0+ mw/3, 0.45m);
 z2= (x1, (y1 + y3)/2.25);

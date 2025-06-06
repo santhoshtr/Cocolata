@@ -1,9 +1,9 @@
 input glyph;
 beginglyph;
-z0= (0,0.66m);
-z1 = ( (x0 + x2)/2, m); % top
+z0= (0,0.75m);
+z1 = ( (x0 + x2)/2, 0.8X); % top
 z2 = ( x0 +  0.68mw, (y1+y3)/1.5);
-z3 = ( x0   , 0);
+z3 = ( x0   , undershoot);
 z4 = ( x2   ,y3);
 
 paths[p]:=z0 ..z1 ..z2..{dir 245}z3{dir 5}.. z4   ;
