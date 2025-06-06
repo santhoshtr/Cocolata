@@ -1,42 +1,29 @@
 input glyph;
 beginglyph;
 
-z0 = (x4, y1 - X/5);
-z1 = ((x0 + x2)/2, X-overshoot);
-z2 = (x6 + thick/2, (y1 + y3)/2);
-z3 = ((x2 + x4)/2, (y2 + y4)/2);
-z4 = (0.6Xw, (y3 + y5)/2);
-z5 = ((x4 + x6)/1.8, undershoot);
-z6 = (0, y5 + X/3.5);
+z0 = (x6 + 0.5Xw, 0.7X);
+z1 = (x0 - 0.05Xw, 0.85X);
+z2 = (x1 - Xw/2, 0.7X);
+z3 = (x2 + 0.25Xw, 0.5X);
+z4 = (x1, 0.4X);
+z5 = (x4 + 0.1Xw, 0.1X);
+z6 = (0, 0.1X);
 
-paths[p] = z0{dir 90}  ..z1{left}..z2{down} ..z3..z4{down} ..z5{left} ..  z6;
 
+paths[p] = z0..{dir 140}z1{dir 190}...{dir 210}z2...{dir -30}z3...z4{dir -30}...{dir 210}z5...z6;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(thick_nib scaled 1.1 rotated terminalangle 0 of paths[p] )(0)
-   nib(top_nib scaled 0.85)(1)
-   nib(middle_down_nib)(2,4)
-   nib(middle_down_nib  rotated 90)(3)
-   nib(down_nib  scaled 0.85)(5)
-   nib(thick_nib scaled 1.1  rotated terminalangle 6 of paths[0] )(6)
-   ignore_directions(1, 3, 5)
+   nib(thicknib)(0,1 ,2,3,4,5,6)
 )(paths[p])(strokes[p]);
-
-% Serif
-
-% Serif styling
-
-strokes[p] :=  subpath(0.25, 6) of strokes[p]{left}
-    ..subpath(7.25, 13) of strokes[p]{right}
-    .. cycle;
 
 % bar
 p:=p+1;
 clearxy;
-z0=(xpart(point 3 of paths[0]) , X*1.1);
+z0=(xpart(point 1.35 of paths[0]) , X);
 z1=(x0, -0.2s);
 paths[p]=z0---z1;
 pen_stroke(
-    cut(middle_down_nib scaled 2/3 rotated terminalangle 1 of paths[p], rel 90)(0,1)
+    nib(thicknib)(0,1)
 )(paths[p])(strokes[p]);
 
 
