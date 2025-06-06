@@ -1,8 +1,7 @@
 #!/usr/bin/make -f
 SHELL:=/bin/bash
-PY=python3
 FAMILY=Kanchana
-STYLES=$(shell $(PY) tools/read_config.py styles)
+STYLES=$(shell uv run tools/read_config.py styles)
 SOURCEDIR=sources
 FONTSDIR=fonts
 PROOFDIR=proofs
@@ -18,7 +17,7 @@ TTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.ttf)
 OTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.otf)
 WEBFONTS=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.woff2)
 
-.PHONY: $(STYLES) ufo clean glyphs build proofs autobuild update-deps init update
+.PHONY: $(STYLES) ufo clean glyphs build proofs autobuild
 
 
 default: build
@@ -48,8 +47,8 @@ $(STYLES):
 $(UFODIR)/$(FAMILY)-%.ufo: %
 	@echo " BUILD UFO  $(@F)"
 	@mkdir -p ${UFODIR}
-	$(PY) tools/builder.py --style $* --source $(SOURCEDIR)/svgs/$* --output $@
-	@ufonormalizer -q -m $@
+	uv run tools/builder.py --style $* --source $(SOURCEDIR)/svgs/$* --output $@
+	uv run ufonormalizer -q -m $@
 	@# remove dangling semicolons in features.fea which font editors cannot handle
 	@sed -i 's/ ;$\//g' $@/features.fea
 
@@ -62,7 +61,7 @@ Kanchana: glyphs $(TTF) $(OTF) $(WEBFONTS)
 
 # Compile otf from UFO file. This target will be picked up only if designspace is missing for the variant
 $(FONTSDIR)/%.otf: ${UFODIR}/%.ufo
-	fontmake --validate-ufo \
+	uv run fontmake --validate-ufo \
 		--verbose=WARNING \
 		--optimize-cff 1 \
 		--flatten-components \
@@ -70,18 +69,18 @@ $(FONTSDIR)/%.otf: ${UFODIR}/%.ufo
 		--output otf \
 		--output-dir $(FONTSDIR) \
 		--ufo-paths $(UFODIR)/$*.ufo
-	$(PY) tools/fix_font.py $@
+	uv run tools/fix_font.py $@
 
 # Compile ttf from UFO file. This target will be picked up only if designspace is missing for the variant
 $(FONTSDIR)/%.ttf: ${UFODIR}/%.ufo
-	fontmake --verbose=WARNING \
+	uv run fontmake --verbose=WARNING \
 		--output ttf \
 		--flatten-components \
 		--filter DecomposeTransformedComponentsFilter \
 		--optimize-cff 1 \
 		--output-dir $(FONTSDIR) \
 		--ufo-paths $(UFODIR)/$*.ufo
-	$(PY) tools/fix_font.py $@
+	uv run tools/fix_font.py $@
 
 # Package the ufo in fonts directory, directly from the source UFO.
 $(FONTSDIR)/%/ufo: ${UFODIR}/%.ufo
@@ -91,7 +90,7 @@ $(FONTSDIR)/%/ufo: ${UFODIR}/%.ufo
 # Could be done using fonttools but using a python script to avoid hassles of loop
 # and filename mangling in Makefile
 $(FONTSDIR)/%.woff2: ${FONTSDIR}/%.ttf
-	$(PY) -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
+	uv run python -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
 
 
 clean:
@@ -133,8 +132,8 @@ proofs:
 test: proofs
 	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when https://github.com/microsoft/Font-Validator/issues/62 fixed
 	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	fontbakery check-opentype $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf
-	fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/Kanchana/ttf-variable/Kanchana-VF.ttf
+	uv run fontbakery check-opentype $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf
+	uv run fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/Kanchana/ttf-variable/Kanchana-VF.ttf
 
 install: $(FONTSDIR)/Kanchana/otf-variable
 	@mkdir -p $(INSTALLDIR);
@@ -156,16 +155,6 @@ release:
 	zip -r $(FONTSDIR)/Kanchana-$(VERSION).zip README.md OFL.txt $(FONTSDIR)/Kanchana
 	sha256sum $(FONTSDIR)/Kanchana-$(VERSION).zip > $(FONTSDIR)/Kanchana-$(VERSION).zip.sha256
 	md5sum $(FONTSDIR)/Kanchana-$(VERSION).zip > $(FONTSDIR)/Kanchana-$(VERSION).zip.md5
-
-init:
-	uv venv --python 3.12
-	uv sync
-
-update: update-deps init
-
-update-deps:
-	poetry update
-	poetry install --no-root --with dev,test
 
 # Vertical Metrics Reporting
 metrics-report:

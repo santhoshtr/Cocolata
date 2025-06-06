@@ -20,5 +20,6 @@ fontfeatures = { git = "https://github.com/simoncozens/fontFeatures.git" }
 [dependency-groups]
 dev = [
     "fontbakery>=0.13.2",
+    "pyright>=1.1.401",
     "ruff>=0.9.7",
 ]
