@@ -78,20 +78,6 @@ apt-get update -y
 apt-get install -y make python3-pip python3-venv python3-yaml texlive-metapost libharfbuzz-bin
 ```
 
-To build, set up the virtual environment and activate it.
-
-```bash
-virtualenv -p python3 venv
-source venv/bin/activate
-```
-
-Then install requirements:
-
-```bash
-pip install poetry
-poetry install --no-root --with dev,test
-```
-
 Then run make to build everything
 
 ```bash
