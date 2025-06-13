@@ -1,54 +1,32 @@
-
-paths[p] := pa_mouth;
-strokes[p] := pa_mouth_stroke(paths[p]);
-
-p:=p+1;
 clearxy;
-z0=(0,0);
-z1=(x0 + mw, y0);
-z2=(x1, m);
+z0= (0, 0.1m);
+z1= (x0+mw/4, 0.4m);
+z2 = (x0+mw/2, y0);
+z3 = (x1 + thick, thick/4);
+z4 = ( x2 + 0.75mw , y3);
+z5 = ( x4  , 0.8m);
 
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1])+thick/4, thick*thin_horizontal_nib_scale/2 );
+
+paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{right}z4{dir 100}..z5  ;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    cut(thin_horizontal_nib, 45)(0)
-    nib(thin_horizontal_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib scaled 0.8)(1)
+    nib(thicknib rotated -30)(2)
+    nib(thicknib )(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
 )(paths[p])(strokes[p]);
 
-p:=p+1;
 clearxy;
-z0=(0, 0);
-z1=(x0, 0.8m);
-
-paths[p]:= z0--z1;
-
-paths[p]:= paths[p] shifted (xpart(point 1 of paths[p-1]), 0);
-
-pen_stroke(
-    nib(thick_vertical_nib)(0)
-    nib(thick_vertical_nib)(1)
-)(paths[p])(strokes[p]);
-
 p:=p+1;
-clearxy;
-z0=(0, 0);
-z1=((x0  + x2)/2, -descent*0.8);
-z2=(x0 - mw/1.8,0);
-z3=(x2, m/3);
-z4=(x0, m-overshoot);
-z5=(x0 + mw/2, m/3);
-z6=(x5 - mw/4, y1);
-
-paths[p]:= z0{down}..z1{left}..{up}z2..z3{up}..z4{right}..z5 ..z6;
-paths[p]:=harmonize(paths[p]);
-paths[p]:= paths[p] shifted (xpart(point 0 of paths[p-1]), 0);
+z0= point 4 of paths[p-1];
+z1= (x0-mw/4, y0-0.4m);
+z2 = (x1-mw/4, 0.4m);
+z3 = (x0, 0.95m);
+z4 = (x3+mw/3, 0.5m);
+z5 = (x4, 0);
+paths[p]:=z0{down}..z1..z2..z3..z4..z5;
 pen_stroke(
-    nib(middle_down_nib rotated -10)(0,4)
-    nib(down_nib)(1)
-    nib(middleupnib)(2)
-    nib(middle_up_nib)(3)
-    nib(topnib)(4)
-    nib(middle_down_nib)(5)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib)(0,1,2,3,4,5)
 )(paths[p])(strokes[p]);

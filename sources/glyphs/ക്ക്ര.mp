@@ -28,6 +28,6 @@ nib(thicknib rotated -30)(12)
 
 
 anchor( "vc", point 1 of paths[0]);
-anchor( "right", point 1.75 of paths[p]);
+anchor( "right", point 11.25 of paths[p]);
 
 endglyph;

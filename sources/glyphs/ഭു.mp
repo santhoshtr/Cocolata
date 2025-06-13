@@ -1,31 +1,24 @@
 input glyph;
 beginglyph;
 
-z0 = ( x1 + 0.15mw , 0);
-z1 = ( 0, (y0 + y2)/2);
-z2 = ( x1 + mw/2, m - overshoot); % top
-z3 = ( x2 + mw/3, y4 + m/8);
-z4= ( x3 - mw/5, y5 + m/7);
-z5= ( x4 - mw/4, m/2);
-z6= ( x4, y5 - m/7);
-z7 = ( x6 + mw/4, y6 - m/5);
-z8= (x7 - mw/3, y7 - m/4);
-z9= (x8 - mw/3, y8);
-z10=(0, (y9+y11)/2);
-z11=(x9,  -descent*0.8);
-z12=(x7+ thick/2,  y11);
+clearxy;
+z0 = (0, undershoot);
+z1 = ( x0 + mw/2.2, 0.95m - overshoot); % top
+z2 = ( x1 + mw/3, (y1 + y3)/2);
+z3= ( x2 - mw/5, (y2 + y4)/2);
+z4= ( x3 - mw/5, (y3+y5)/2); % <
+z5= ( x3, (y4 +y6)/2);
+z6 = ( x5 + mw/4, (y5 + 0)/2);
+z7 = ( x1 - mw/8, -m/3);
+z8 = (x6+thick, y7);
+paths[p] := z0..z1{dir 10}..z2 ..z3{dir 190} ...z4...{dir -10}z5 ...z6
+ ...{dir 200}z7{dir 10}..z8;
 
-paths[p] := z0..z1{up}..z2{right}..z3{down}..z4{left}..z5{down}..z6{right} ..z7{down}..z8---z9..z10..z11---z12 ;
-paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(middledownnib)(3,5, 7)
-    nib(down_nib)(8, 9)
-    nib(down_nib rotated 70)(10)
-    nib(top_nib scaled 0.8)(4, 6)
-    nib(thick_horizontal_nib)(11,12)
+      nib(thicknib)(0,1,2,3,4,5,6)
+      nib(thicknib)(7)
+      nib(thicknib rotated -30)(8)
 )(paths[p])(strokes[p]);
 
+rbearing := 0;
 endglyph;

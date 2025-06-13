@@ -28,6 +28,6 @@ pen_stroke(
 
 
 anchor( "vc", point 1 of paths[p]);
-anchor( "right", (xpart(point 10 of paths[p]) - u_drop_sign_radius,0));
+anchor( "right", (xpart(point 9 of paths[p]) - u_drop_sign_radius,0));
 
 endglyph;

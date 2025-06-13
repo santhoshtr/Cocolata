@@ -8,6 +8,6 @@ p:=p+1;
 clearxy;
 input ./glyphs/include/_ത്ര;
 
-anchor( "vc", point 0 of paths[1]);
-anchor( "right", point .75 of paths[p]);
+anchor( "vc", point 0 of paths[p]);
+anchor( "right", point 6.5 of paths[p]);
 endglyph;
