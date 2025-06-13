@@ -39,9 +39,10 @@ if __name__ == "__main__":
         logging.error("Invalid log level: {}".format(options.log_level))
         sys.exit(1)
 
+    # Basd on font style - Regular, light, bold etc, calculate the weight value(400, 100, 600 etc.) AI!
     config = DefaultMunch.fromDict(yaml.load(options.config, Loader=yaml.FullLoader))
 
-    font: MalayalamFont = MalayalamFont(config, style=options.style, weight=options.weight)
+    font: MalayalamFont = MalayalamFont(config, style=options.style, weight=weight)
     font.build(options.source)
     font.buildFeatures()
     font.setFontInfo()
