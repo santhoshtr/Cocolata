@@ -1,14 +1,12 @@
 #!/usr/bin/make -f
 SHELL:=/bin/bash
 FAMILY=Kanchana
-STYLES=$(shell uv run tools/read_config.py styles)
+PY=uv run
+STYLES=$(shell $(PY) tools/read_config.py styles)
 SOURCEDIR=sources
 FONTSDIR=fonts
 PROOFDIR=proofs
 TESTSDIR=tests
-TTFDIR=${FONTSDIR}/ttf
-OTFDIR=${FONTSDIR}/otf
-WEBFONTSDIR=${FONTSDIR}/webfonts
 UFODIR=${SOURCEDIR}/ufo
 INSTALLDIR=~/.fonts/$(FAMILY)
 
@@ -47,51 +45,84 @@ $(STYLES):
 $(UFODIR)/$(FAMILY)-%.ufo: %
 	@echo " BUILD UFO  $(@F)"
 	@mkdir -p ${UFODIR}
-	uv run tools/builder.py --style $* --source $(SOURCEDIR)/svgs/$* --output $@
-	uv run ufonormalizer -q -m $@
+	$(PY) tools/builder.py --style $* --source $(SOURCEDIR)/svgs/$* --output $@
+	$(PY) ufonormalizer -q -m $@
 	@# remove dangling semicolons in features.fea which font editors cannot handle
 	@sed -i 's/ ;$\//g' $@/features.fea
 
 ufo: glyphs $(UFO)
 
 # Build targets for prepating the fonts from master UFO sources.
-Kanchana: glyphs $(TTF) $(OTF) $(WEBFONTS)
+Kanchana: $(FONTSDIR)/ttf-variable\
+	$(FONTSDIR)/otf-variable \
+	$(FONTSDIR)/otf \
+	$(FONTSDIR)/ttf \
+	$(FONTSDIR)/webfonts \
+	$(FONTSDIR)/ufo
 
-# Create ttf instances if a designspace e
-
-# Compile otf from UFO file. This target will be picked up only if designspace is missing for the variant
-$(FONTSDIR)/%.otf: ${UFODIR}/%.ufo
-	uv run fontmake --validate-ufo \
-		--verbose=WARNING \
-		--optimize-cff 1 \
-		--flatten-components \
+# Create ttf instances if a designspace exist
+$(FONTSDIR)/ttf: $(FAMILY).designspace
+	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
 		--filter DecomposeTransformedComponentsFilter  \
-		--output otf \
-		--output-dir $(FONTSDIR) \
-		--ufo-paths $(UFODIR)/$*.ufo
-	uv run tools/fix_font.py $@
+		--interpolate \
+		--flatten-components  \
+		--verbose WARNING \
+		--output-dir $@  \
+		--output ttf  \
+		--optimize-cff 0
+	$(PY) tools/fix_font.py $(FONTSDIR)/$*/ttf/*.ttf
 
-# Compile ttf from UFO file. This target will be picked up only if designspace is missing for the variant
-$(FONTSDIR)/%.ttf: ${UFODIR}/%.ufo
-	uv run fontmake --verbose=WARNING \
-		--output ttf \
-		--flatten-components \
-		--filter DecomposeTransformedComponentsFilter \
+# Create otf instances if a designspace exist
+$(FONTSDIR)/otf : $(FAMILY).designspace
+	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
+		--verbose WARNING \
+		--filter DecomposeTransformedComponentsFilter  \
+		--flatten-components  \
+		--interpolate  \
 		--optimize-cff 1 \
-		--output-dir $(FONTSDIR) \
-		--ufo-paths $(UFODIR)/$*.ufo
-	uv run tools/fix_font.py $@
+		--output-dir $@ \
+		--output otf
+	$(PY) tools/fix_font.py $@/*.otf
+
+# Create ttf variablefont from the given designspace
+$(FONTSDIR)/ttf-variable: ufo $(FAMILY).designspace
+	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
+		--filter DecomposeTransformedComponentsFilter \
+		--flatten-components \
+		--verbose WARNING \
+		--output-dir $@ \
+		--output variable
+	$(PY) tools/fix_font.py $@/*.ttf
+	$(PY) tools/stat.py $* $@/*.ttf
+
+# Create otf variablefont from the given designspace
+$(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
+	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
+		--filter DecomposeTransformedComponentsFilter  \
+		--flatten-components \
+		--output-dir $@ \
+		--verbose WARNING \
+		--optimize-cff 1 \
+		--output variable-cff2
+
+	$(PY) tools/fix_font.py $@/*.otf
+	$(PY) tools/stat.py $* $@/*.otf
+
+# Create UFO instances from the given designspace
+$(FONTSDIR)/ufo: %.designspace
+	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
+		--interpolate \
+		--output ufo
 
 # Package the ufo in fonts directory, directly from the source UFO.
-$(FONTSDIR)/%/ufo: ${UFODIR}/%.ufo
+$(FONTSDIR)/ufo: ${UFODIR}
 	@cp -r $</ $@/
 
 # Create woff2 formatted webfonts for all the otfs available
 # Could be done using fonttools but using a python script to avoid hassles of loop
 # and filename mangling in Makefile
 $(FONTSDIR)/%.woff2: ${FONTSDIR}/%.ttf
-	uv run python -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
-
+	$(PY) python -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
 
 clean:
 	@find -iname "*.pyc" -delete
@@ -100,14 +131,14 @@ clean:
 
 proofs:
 	@mkdir -p ${PROOFDIR}
-	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/ligatures.txt \
 		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -115,14 +146,14 @@ proofs:
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/kerning.txt \
 		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/Kanchana-Regular.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -132,12 +163,12 @@ proofs:
 test: proofs
 	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when https://github.com/microsoft/Font-Validator/issues/62 fixed
 	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	uv run fontbakery check-opentype $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf
-	uv run fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/Kanchana/ttf-variable/Kanchana-VF.ttf
+	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/Kanchana-VF.otf
+	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/Kanchana-VF.ttf
 
 install: $(OTF)
 	@mkdir -p $(INSTALLDIR);
-	@cp $(FONTSDIR)/*.otf $(INSTALLDIR);
+	@cp $(FONTSDIR)/otf/*.otf $(INSTALLDIR);
 	@fc-cache -fr
 
 release:
@@ -147,15 +178,15 @@ release:
 	@$(eval VERSION=$(shell git describe --tags `git rev-list --tags --max-count=1`))
 	@echo "Creating release for version $(VERSION)"
 	# Tar files - Kanchana
-	tar czvf $(FONTSDIR)/Kanchana-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)/Kanchana
-	sha256sum $(FONTSDIR)/Kanchana-$(VERSION).tar.gz > $(FONTSDIR)/Kanchana-$(VERSION).tar.gz.sha256
-	md5sum $(FONTSDIR)/Kanchana-$(VERSION).tar.gz > $(FONTSDIR)/Kanchana-$(VERSION).tar.gz.md5
+	tar czvf $(FONTSDIR)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
+	sha256sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.sha256
+	md5sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.md5
 	# Zip files
-	zip -r $(FONTSDIR)/Kanchana-$(VERSION).zip README.md OFL.txt $(FONTSDIR)/Kanchana
-	sha256sum $(FONTSDIR)/Kanchana-$(VERSION).zip > $(FONTSDIR)/Kanchana-$(VERSION).zip.sha256
-	md5sum $(FONTSDIR)/Kanchana-$(VERSION).zip > $(FONTSDIR)/Kanchana-$(VERSION).zip.md5
+	zip -r $(FONTSDIR)-$(VERSION).zip README.md OFL.txt $(FONTSDIR)
+	sha256sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.sha256
+	md5sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.md5
 
 # Vertical Metrics Reporting
 metrics-report:
 	# May need `pip install font-line` to install font-line
-	font-line report $(FONTSDIR)/Kanchana/otf-variable/*.otf
+	$(PY) font-line report $(FONTSDIR)/otf-variable/*.otf

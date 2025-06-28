@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<designspace format="4.0">
+  <axes>
+    <axis tag="wght" name="weight" minimum="100" maximum="900" default="400"/>
+  </axes>
+  <sources>
+    <source filename="sources/ufo/Kanchana-Thin.ufo" name="Thin" familyname="Kanchana" stylename="Thin">
+      <location>
+        <dimension name="weight" xvalue="100"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-ExtraLight.ufo" name="Extra Light" familyname="Kanchana" stylename="ExtraLight">
+      <location>
+        <dimension name="weight" xvalue="200"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-Light.ufo" name="Light" familyname="Kanchana" stylename="Light">
+      <location>
+        <dimension name="weight" xvalue="300"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-Regular.ufo" name="Regular" familyname="Kanchana" stylename="Regular">
+      <location>
+        <dimension name="weight" xvalue="400"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-Medium.ufo" name="Medium" familyname="Kanchana" stylename="Medium">
+      <location>
+        <dimension name="weight" xvalue="500"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-SemiBold.ufo" name="Semi Bold" familyname="Kanchana" stylename="SemiBold">
+      <location>
+        <dimension name="weight" xvalue="600"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-Bold.ufo" name="Bold" familyname="Kanchana" stylename="Bold">
+      <location>
+        <dimension name="weight" xvalue="700"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-ExtraBold.ufo" name="Extra Bold" familyname="Kanchana" stylename="ExtraBold">
+      <location>
+        <dimension name="weight" xvalue="800"/>
+      </location>
+    </source>
+    <source filename="sources/ufo/Kanchana-Black.ufo" name="Black" familyname="Kanchana" stylename="Black">
+      <location>
+        <dimension name="weight" xvalue="900"/>
+      </location>
+    </source>
+  </sources>
+  <instances>
+    <instance familyname="Kanchana" stylename="Thin" filename="fonts/Kanchana/ufo/Kanchana-Thin.ufo">
+      <location>
+        <dimension name="weight" xvalue="100"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="ExtraLight" filename="fonts/Kanchana/ufo/Kanchana-ExtraLight.ufo">
+      <location>
+        <dimension name="weight" xvalue="200"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Light" filename="fonts/Kanchana/ufo/Kanchana-Light.ufo">
+      <location>
+        <dimension name="weight" xvalue="300"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Regular" filename="fonts/Kanchana/ufo/Kanchana-Regular.ufo">
+      <location>
+        <dimension name="weight" xvalue="400"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Medium" filename="fonts/Kanchana/ufo/Kanchana-Medium.ufo">
+      <location>
+        <dimension name="weight" xvalue="500"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="SemiBold" filename="fonts/Kanchana/ufo/Kanchana-SemiBold.ufo">
+      <location>
+        <dimension name="weight" xvalue="600"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Bold" filename="fonts/Kanchana/ufo/Kanchana-Bold.ufo">
+      <location>
+        <dimension name="weight" xvalue="700"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="ExtraBold" filename="fonts/Kanchana/ufo/Kanchana-ExtraBold.ufo">
+      <location>
+        <dimension name="weight" xvalue="800"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Black" filename="fonts/Kanchana/ufo/Kanchana-Black.ufo">
+      <location>
+        <dimension name="weight" xvalue="900"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+    <instance familyname="Kanchana" stylename="Black Oblique" filename="fonts/Kanchana/ufo/Kanchana-Black.ufo">
+      <location>
+        <dimension name="weight" xvalue="900"/>
+      </location>
+      <kerning/>
+      <info/>
+    </instance>
+  </instances>
+</designspace>

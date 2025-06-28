@@ -1,7 +1,7 @@
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Thin.ttf) format("truetype"),
-		url(../fonts/Kanchana-Thin.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Thin.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Thin.otf) format("opentype");
 	font-weight: 100;
 	font-style: normal;
 	font-display: swap;
@@ -21,8 +21,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-ExtraLight.ttf) format("truetype"),
-		url(../fonts/Kanchana-ExtraLight.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-ExtraLight.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-ExtraLight.otf) format("opentype");
 	font-weight: 200;
 	font-style: normal;
 	font-display: swap;
@@ -42,8 +42,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Light.ttf) format("truetype"),
-		url(../fonts/Kanchana-Light.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Light.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Light.otf) format("opentype");
 	font-weight: 300;
 	font-style: normal;
 	font-display: swap;
@@ -63,8 +63,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Regular.ttf) format("truetype"),
-		url(../fonts/Kanchana-Regular.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Regular.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Regular.otf) format("opentype");
 	font-weight: 400;
 	font-style: normal;
 	font-display: swap;
@@ -83,8 +83,8 @@
 }
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Medium.ttf) format("truetype"),
-		url(../fonts/Kanchana-Medium.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Medium.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Medium.otf) format("opentype");
 	font-weight: 500;
 	font-style: normal;
 	font-display: swap;
@@ -104,8 +104,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-SemiBold.ttf) format("truetype"),
-		url(../fonts/Kanchana-SemiBold.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-SemiBold.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-SemiBold.otf) format("opentype");
 	font-weight: 600;
 	font-style: normal;
 	font-display: swap;
@@ -125,8 +125,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Bold.ttf) format("truetype"),
-		url(../fonts/Kanchana-Bold.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Bold.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Bold.otf) format("opentype");
 	font-weight: 700;
 	font-style: normal;
 	font-display: swap;
@@ -146,8 +146,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-ExtraBold.ttf) format("truetype"),
-		url(../fonts/Kanchana-ExtraBold.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-ExtraBold.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-ExtraBold.otf) format("opentype");
 	font-weight: 800;
 	font-style: normal;
 	font-display: swap;
@@ -167,8 +167,8 @@
 
 @font-face {
 	font-family: "Kanchana";
-	src: url(../fonts/Kanchana-Black.ttf) format("truetype"),
-		url(../fonts/Kanchana-Black.otf) format("opentype");
+	src: url(../fonts/ttf/Kanchana-Black.ttf) format("truetype"),
+		url(../fonts/otf/Kanchana-Black.otf) format("opentype");
 	font-weight: 900;
 	font-style: normal;
 	font-display: swap;
