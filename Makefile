@@ -135,10 +135,9 @@ test: proofs
 	uv run fontbakery check-opentype $(FONTSDIR)/Kanchana/otf-variable/Kanchana-VF.otf
 	uv run fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/Kanchana/ttf-variable/Kanchana-VF.ttf
 
-install: $(FONTSDIR)/Kanchana/otf-variable
+install: $(OTF)
 	@mkdir -p $(INSTALLDIR);
-	@cp $(FONTSDIR)/Kanchana-Regular.otf $(INSTALLDIR);
-	@cp $(FONTSDIR)/Kanchana-Thin.otf $(INSTALLDIR);
+	@cp $(FONTSDIR)/*.otf $(INSTALLDIR);
 	@fc-cache -fr
 
 release:
