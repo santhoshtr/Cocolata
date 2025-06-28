@@ -28,7 +28,7 @@ help:
 	@echo " make proof: Creates HTML proof documents in the proof/ directory"
 	@echo
 
-build: ufo Kanchana
+build: ufo $(FAMILY)
 # Recursively watch the file changes and make the (debug) svgs.
 # Useful in design workflow.
 # Package inotify-tools are available in linux distros
@@ -53,12 +53,12 @@ $(UFODIR)/$(FAMILY)-%.ufo: %
 ufo: glyphs $(UFO)
 
 # Build targets for prepating the fonts from master UFO sources.
-Kanchana: $(FONTSDIR)/ttf-variable\
-	$(FONTSDIR)/otf-variable \
-	$(FONTSDIR)/otf \
+$(FAMILY): $(FONTSDIR)/otf \
 	$(FONTSDIR)/ttf \
-	$(FONTSDIR)/webfonts \
-	$(FONTSDIR)/ufo
+	$(FONTSDIR)/ttf-variable \
+	$(FONTSDIR)/otf-variable \
+	$(FONTSDIR)/ufo \
+	$(FONTSDIR)/webfonts
 
 # Create ttf instances if a designspace exist
 $(FONTSDIR)/ttf: $(FAMILY).designspace
