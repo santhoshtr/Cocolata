@@ -6,7 +6,8 @@ z2 = (0.6sw, 0.6s);
 z3 = (0.5(x2 + x4), y1);
 z4 = (x2  + 0.6sw, y0);
 
-paths[p] =  z0{dir -80} ...z1...{dir 80}z2{dir -80}... z3...{dir 85}z4 ;
+paths[p] =  z0{dir -90} ...z1...{dir 80}z2{dir -80}... z3...{dir 90}z4 ;
+paths[p] := harmonize(paths[p]);
 pen_stroke(
     nib(thicknib)(0, 1, 2, 3, 4 )
 )(paths[p])(strokes[p]);

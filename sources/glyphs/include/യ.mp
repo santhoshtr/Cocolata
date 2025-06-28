@@ -10,19 +10,10 @@ z6 = (x1, (y0+y7)/2);
 z7 = ((x6 + x8)/2, undershoot);
 z8 = (x7 + mw/3, (y7+y9)/1.8);
 z9 = (x8 - mw/8, m);
-paths[0] = z0 ..z1{right}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..z9;
+paths[0] = z0{dir 80} ..z1{right}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..z9;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(thicknib)(0)
-    nib(thicknib )(1)
-    nib(thicknib scaled 1.2)(2)
-    nib(thicknib)(3)
-    nib(thicknib)(4)
-    nib(thicknib)(5)
-    nib(thicknib)(6)
-    nib(thicknib)(7)
-    nib(thicknib)(8)
-    nib(thicknib)(9)
-)(paths[0])(strokes[0]);
+   nib(thicknib)(0,1,2,3,4,5,6,7,8,9)
+)(paths[0])(strokes[0]) ;
 
 

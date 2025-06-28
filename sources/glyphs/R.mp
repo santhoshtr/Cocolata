@@ -18,7 +18,7 @@ z4=(x2, undershoot);
 paths[p] = z0{dir 60}..z1..z2{dir 260}..{dir 190}z3{dir -15}..z4;
 pen_stroke(
    nib(thicknib)(0,1,2,3)
-   nib(thicknib rotated 30)(4)
+   nib(thicknib rotated 20)(4)
 )(paths[p])(strokes[p]);
 
 anchor( "top", (xpart(point 1 of paths[1]), 1.1X));

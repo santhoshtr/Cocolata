@@ -10,7 +10,7 @@ z5 = (x4 + 0.2sw, 0.1s);
 z6 = (0, 0.1s);
 
 
-paths[p] = z0..{dir 140}z1{dir 190}..{dir 210}z2..{dir -30}z3...z4{dir -30}...{dir 210}z5...z6;
+paths[p] = z1{dir 190}..{dir 210}z2..{dir -30}z3...z4{dir -30}...{dir 210}z5...z6;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(thicknib)(0,1 ,2,3,4,5,6)
