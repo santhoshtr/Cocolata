@@ -11,14 +11,14 @@ pen_stroke(
      nib(thicknib)(0,1,2,3,4)
 )(paths[p])(strokes[p]);
 
+
+
 p:=p+1;
 clearxy;
 z0=(xpart point 1 of strokes[p-1], 0.9X);
-z1=(x0+0.05s, y0-0.08X);
-paths[p] = z0..z1;
-pen_stroke(
-   nib(thicknib rotated 30)(0,1)
-)(paths[p])(strokes[p]);
+z1=(x0+0.15s, y0-0.08X);
+paths[p] = z0..z1..cycle;
+strokes[p]:=paths[p];
 
 absolute_position := 1;
 
