@@ -174,8 +174,11 @@ install: $(OTF)
 release:
 .PHONY: release
 
+interpolation-test: ufo
+	uv run fonttools varLib.interpolatable --pdf report.pdf Kanchana.designspace
+
 release:
-	@$(eval VERSION=$(shell git describe --tags `git rev-list --tags --max-count=1`))
+	@$(eval VERSION=$(shell git describe --tags `git rev-list --tags --max-count=2`))
 	@echo "Creating release for version $(VERSION)"
 	# Tar files - Kanchana
 	tar czvf $(FONTSDIR)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
