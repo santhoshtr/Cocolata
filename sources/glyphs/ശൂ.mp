@@ -22,7 +22,8 @@ paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
     ..z11..{dir 190}z12{right}..z13;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib )(0,1,2,3,4,5,6,7,8,9,10,11,12,13)
+    nib(thicknib rotated 20)(0)
+    nib(thicknib )(1,2,3,4,5,6,7,8,9,10,11,12,13)
 )(paths[p])(strokes[p]);
 rbearing:=rbearing - thick;
 endglyph;

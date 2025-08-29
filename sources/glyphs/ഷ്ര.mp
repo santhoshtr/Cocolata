@@ -2,6 +2,9 @@ input glyph;
 beginglyph;
 
 input ./glyphs/include/ഷ;
+paths[p-1] := paths[p-1] shifted (mw/3, 0);
+strokes[p-1] := strokes[p-1] shifted (mw/3, 0);
+
 
 paths[p] := paths[p] shifted (mw/3, 0);
 strokes[p] := strokes[p] shifted (mw/3, 0);

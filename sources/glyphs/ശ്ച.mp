@@ -20,7 +20,7 @@ paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
     ..z6{dir 190}..z7..z8..z9...{dir 190}z10{dir 15}... {dir -10}z11{dir 100}..z12;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-nib(thicknib )(0)
+nib(thicknib rotated 20 )(0)
     nib(thicknib)(1)
     nib(thicknib)(2)
     nib(thicknib)(3)
