@@ -15,5 +15,5 @@ paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(thicknib  )(0)
     nib(thicknib)(1,2,3,4,5,6)
-    nib(thicknib rotated -30)(7)
+    nib(thicknib rotated -20)(7)
 )(paths[p])(strokes[p]);

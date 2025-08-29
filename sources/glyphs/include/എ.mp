@@ -25,8 +25,9 @@ z1= (x0-mw/4, y0-0.4m);
 z2 = (x1-mw/4, 0.4m);
 z3 = (x0, 0.95m);
 z4 = (x3+mw/3, 0.5m);
-z5 = (x4, 0);
-paths[p]:=z0{down}..z1..z2..z3..z4..z5;
+z5 = (x3+mw/4, 0);
+paths[p]:=z0{down}..z1..z2..z3..z4...z5;
 pen_stroke(
-    nib(thicknib)(0,1,2,3,4,5)
+    nib(thicknib)(0,1,2,3,4)
+    nib(thicknib rotated 30)(5)
 )(paths[p])(strokes[p]);

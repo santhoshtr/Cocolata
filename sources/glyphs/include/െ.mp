@@ -14,5 +14,5 @@ z8=point 4.1 of paths[p];
 paths[p] := z0{dir 80}..z1..z2..z3..z8{up}..z5{right}..{down}z6..z7;
 pen_stroke(
    nib(thicknib)(0, 1, 2, 3,4,5)
-   nib(thicknib scaled 1.2)(6, 7)
+   nib(thicknib scaled 1.1)(6, 7)
 )(paths[p])(strokes[p]);

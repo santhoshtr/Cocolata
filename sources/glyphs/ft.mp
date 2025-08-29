@@ -29,7 +29,7 @@ z0 =(0, 0.9s);
 z1 = (xpart point infinity of paths[p-1], s);
 paths[p] = z0{dir 10}.. z1;
 pen_stroke(
-     nib(thicknib)(0,1)
+     nib(thicknib rotated 10)(0,1)
 )(paths[p])(strokes[p]);
 
 endglyph;
