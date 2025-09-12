@@ -15,7 +15,7 @@ z10 = (x7 , -descent/2);
 z11 = (x9 + thick, y10);
 
 
-paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
+paths[p] = z0{dir -110} ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
     ..z6{dir 190}..z7..z8..z9..{dir 190}z10{dir 0}..z11;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(

@@ -3,8 +3,9 @@ beginglyph;
 
 input ./glyphs/include/പ;
 
-anchor( "vc", (xpart(point 2 of paths[0]),0));
-anchor( "bottom", point 4 of paths[p]);
-anchor( "right", (point 4 of paths[0] - (u_drop_sign_radius, 0)));
+anchor( "vc", (xpart(point 0.3 of paths[1]),0));
+anchor( "bottom", point 2 of paths[p]);
+anchor( "right", (point 2 of paths[p] - (u_drop_sign_radius, 0)));
 
 endglyph;
+

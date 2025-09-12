@@ -17,7 +17,7 @@ z12 = (x7 , -descent/2);
 z13 = (x9 + thick, y12);
 
 
-paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
+paths[p] = z0{dir -110} ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
     ..z6{dir 190}..z7..z8..z9..{dir 190}z10{dir -10}
     ..z11..{dir 190}z12{right}..z13;
 paths[p]:=harmonize(paths[p]);
