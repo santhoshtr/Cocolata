@@ -1,5 +1,3 @@
-
-
 clearxy;
 
 z0 =  point infinity of paths[p-1];
@@ -13,17 +11,9 @@ z7 =(x6 + mw/2.5, (y6+y8)/2);
 z8 = (x4, -m/3);
 z9 = (x7+ thick/2, y8   );
 
-paths[p]:=z0{up}..{dir 20}z2..z3..z4..z5..{dir 10}z6..z7{down} ..{left}z8{dir -10}.. z9;
+paths[p]:=z0{up}..{dir 20}z2..z3..z4..z5..{dir 10}z6..z7{down} ..{left}z8--z9;
 paths[p] :=harmonize(paths[p]);
+
 pen_stroke(
-    nib(thicknib scaled 1.2)(0)
-    nib(thicknib  )(1)
-    nib(thicknib rotated -30)(2)
-    nib(thicknib scaled 1.3)(3)
-    nib(thicknib)(4)
-    nib(thicknib)(5)
-    nib(thicknib)(6)
-    nib(thicknib rotated 30)(7)
-    nib(thicknib scaled 0.8)(8)
-    nib(thicknib scaled 1.2)(9)
+    nib(thicknib  )(0,1,2,3,4,5,6,7,8, 9)
 )(paths[p])(strokes[p]);

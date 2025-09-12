@@ -19,10 +19,10 @@ p:=p+1;
 clearxy;
 z0= point infinity of paths[p-1];
 z1=((x0 + x2)/2, undershoot);
-z2=(x0 +  0.7mw, y1 + m/2);
-z3=(x2 -  mw/4, 0.95m);
-z4=z2;
-paths[p]:= z0{down}..z1..z2 ..z3..{right}z4;
+z2=(x0 +  0.8mw, y1 + m/2);
+z3=(x2 -  mw/3, 0.95m);
+z4=(x2, 0.4m);
+paths[p]:= z0{down}..z1..z2{up} ..z3..{right}z4;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(

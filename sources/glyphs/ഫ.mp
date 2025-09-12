@@ -5,13 +5,12 @@ z0= (0, 0.1m);
 z1= (x0+mw/4, 0.4m);
 z2 = (x0+mw/2, (y1+ y3)/2);
 z3 = (x1 + thick, thick/4);
-paths[p]:=z0{dir 90}..z1..z2{dir -95}..{left}z3;
+paths[p]:=z0{dir 90}..z1..{dir 200}z3;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
     nib(thicknib)(0)
     nib(thicknib)(1)
     nib(thicknib)(2)
-    nib(thicknib)(3)
 )(paths[p])(strokes[p]);
 
 clearxy;

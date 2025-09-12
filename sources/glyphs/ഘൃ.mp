@@ -12,7 +12,7 @@ z7 = (x4, undershoot);
 z8 = (x7+mw/2, 0.9m);
 
 
-paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{dir -0}z4{dir 10}
+paths[p]:=z0{dir 90}..z1..{dir 200}z3{right}..{dir -0}z4{dir 10}
 ..z5{left}..{dir 290}z6 ..z7 ..{dir 100}z8;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
@@ -23,11 +23,10 @@ p:=p+1;
 clearxy;
 paths[p] = vocalic_r_sign shifted (xpart point infinity of paths[p-1], 0);
 pen_stroke(
-    nib(middle_down_nib)(0)
-    nib(down_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(top_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+    nib(thicknib)(0)
+    nib(thicknib)(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
 )(paths[p])(strokes[p]);
 
 endglyph;

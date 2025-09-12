@@ -12,7 +12,7 @@ z7 = (x4, undershoot);
 z8 = (x7+mw/2, 0.9m);
 
 
-paths[p]:=z0{dir 90}..z1..z2..{left}z3{right}..{dir -0}z4{dir 10}
+paths[p]:=z0{dir 90}..z1..{dir 200}z3{right}..{dir -0}z4{dir 10}
 ..z5{left}..{dir 290}z6 ..z7 ..{dir 100}z8;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
