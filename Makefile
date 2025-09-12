@@ -93,7 +93,7 @@ $(FONTSDIR)/ttf-variable: ufo $(FAMILY).designspace
 		--output-dir $@ \
 		--output variable
 	$(PY) tools/fix_font.py $@/*.ttf
-	$(PY) tools/stat.py $* $@/*.ttf
+	$(PY) tools/stat.py $(FAMILY) $@/*.ttf
 
 # Create otf variablefont from the given designspace
 $(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
@@ -106,7 +106,7 @@ $(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
 		--output variable-cff2
 
 	$(PY) tools/fix_font.py $@/*.otf
-	$(PY) tools/stat.py $* $@/*.otf
+	$(PY) tools/stat.py $(FAMILY) $@/*.otf
 
 # Create UFO instances from the given designspace
 $(FONTSDIR)/ufo: %.designspace

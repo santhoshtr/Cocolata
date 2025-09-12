@@ -182,7 +182,7 @@ glyphs:
 
       2.A: AÆ
       2.J: J
-      2.PARANTHESIS: "()"
+      2.PARENTHESIS: "()"
       2.QUOTES: ["'","\"","‘","’","“","”"]
       2.ROUNDS: CGOQ
       2.S: S
@@ -335,7 +335,7 @@ glyphs:
 
     malayalam:
       - ['്',"2.QUOTES", 125 ]
-      - ['്',"2.PARANTHESIS", 100 ]
+      - ['്',"2.PARENTHESIS", 100 ]
       - ['്',"!", 100 ]
       - ['്',"?", 125 ]
       - [['ത', 'ന', 'നു', 'ന്ന', "സ", 'ഗ'],"ം", -20 ]
@@ -356,6 +356,7 @@ glyphs:
       - ['ന്റ', "ീ", 'narrow' ]
       - ['ട്ട',"ീ", 'narrow' ]
       - ['ഴ',"ീ", 'narrow' ]
+variablefonts:
   Kanchana:
     designspace: Kanchana.designspace
     stat:
