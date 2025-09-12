@@ -5,7 +5,7 @@ z1 = (x0+ Xw/6, 1.1s);
 z2 = (x1+ Xw/5, y0);
 z3 = (x0+ Xw/5, X/4);
 
-paths[p] := z0..z1{dir 10}..z2..{dir -80}z3;
+paths[p] := z0{dir 90}..z1{dir 10}..z2..{dir -80}z3;
 
 pen_stroke(
     nib(thicknib)(0,1,2,3)

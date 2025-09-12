@@ -9,7 +9,7 @@ z4 = (x3 + mw/4, 0.9m);
 z5 = (x4 + mw/2.5, y1);
 z6 = (x2, y7);
 z7 = (x5, -descent/2);
-paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5 ..{dir 200}z6{dir 10}..z7;
+paths[p] = z0{dir -110} ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5 ..{dir 200}z6{dir 10}..z7;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
 nib(thicknib )(0)
@@ -22,3 +22,4 @@ nib(thicknib )(0)
 
 anchor( "vc", point 3 of paths[p]);
 endglyph;
+

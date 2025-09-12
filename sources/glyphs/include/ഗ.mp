@@ -6,7 +6,7 @@ z3 = (x2 + mw/4, (y2 + y4)/2);
 z4 = (x3 + mw/4, 0.9m);
 z5 = (x4 + mw/2.5, y1);
 z6 = (x5 - mw/4, 0);
-paths[p] = z0 ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5 ..z6;
+paths[p] = z0{dir -110} ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5 ..z6;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
 nib(thicknib )(0)

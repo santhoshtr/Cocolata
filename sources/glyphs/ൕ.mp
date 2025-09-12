@@ -13,12 +13,12 @@ z6 = (x1, (y0+y7)/2);
 z7 = ((x6 + x8)/2, undershoot);
 z8 = (x7 + mw/3, (y7+y9)/2);
 z9 = (x8 - mw/8, X);
-paths[0] = z0 ..z1{dir 10}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..{dir 80}z9;
+paths[0] = z0{up} ..z1{dir 10}..z2 ..z3..z4{up} ..z5{dir 10} ..z6..z7..z8..{dir 80}z9;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(thicknib)(0)
     nib(thicknib )(1)
-    nib(thicknib scaled 1.2)(2)
+    nib(thicknib)(2)
     nib(thicknib)(3)
     nib(thicknib)(4)
     nib(thicknib)(5)
