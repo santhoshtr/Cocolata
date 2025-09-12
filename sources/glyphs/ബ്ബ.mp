@@ -12,8 +12,7 @@ z2 = (xpart(point 8 of paths[p-1]), y1) ;
 z3 = (xpart(point 8 of paths[p-1]), 0) ;
 paths[p] := z0 ..{left}z1{right}...{right}z2{up}..{up}z3;
 pen_stroke(
-    nib(thicknib)(0)
-    nib(thicknib)(1,2,3)
+    nib(thicknib)(0,1,2,3)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", (xpart(point 5 of paths[0]),0));

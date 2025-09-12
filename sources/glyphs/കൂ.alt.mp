@@ -14,16 +14,14 @@ z8=(x2 + mw/4, 0.3m);
 z9=(x8 + mw/4.5, 0);
 z10=(x0, -m/2);
 z11=(0, 0.9m);
-paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}
-..{dir 45}z6.. z7..{dir 235}z8{dir 0}..z9..z10{left}..{dir 60}z11;
+paths[p] := z0 ..{right}z1..{down}z2..z3{left}
+  ..{up}z4{down}..z5{left}..{dir 45}z6
+.. z7..{dir 235}z8{dir 0}..z9..z10{left}..{dir 60}z11;
 paths[p]:=harmonize(paths[p]);
 
 pen_stroke(
-   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8)
-   nib(thicknib scaled 0.8)(10)
-   nib(thicknib scaled 1.2)(11)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11)
 )(paths[p])(strokes[p]);
-
 
 
 anchor( "vc", point 1 of paths[0]);
