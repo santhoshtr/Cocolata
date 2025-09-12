@@ -636,7 +636,7 @@ class MalayalamFont(Font):
         self.build_calt()
         self.build_aalt()
         self.build_salt()
-        self.build_onum()
+        # self.build_onum()
         self.build_sups()
         self.features.text = self.getFeatures()
 
