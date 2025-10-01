@@ -114,13 +114,6 @@ function init() {
     "font-name": "Cocolata", //must be at last in array to override variation props
   };
 
-  const themeCtrl = pane.addBinding(config, "theme", {
-    label: "Theme",
-    options: {
-      Light: "light",
-      Dark: "dark",
-    },
-  });
   pane.addBinding(config, "font-size", {
     label: "Font size",
     min: 8,
@@ -272,11 +265,6 @@ function init() {
   });
   otFolder.addBinding(config.opentypeFeatures, "salt", {
     options: { ss01: 1, ss02: 2 },
-  });
-
-  // Event handlers
-  themeCtrl.on("change", (ev) => {
-    root.setAttribute("color-scheme", ev.value);
   });
 
   otFolder.on("change", () => {

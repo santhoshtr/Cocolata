@@ -74,75 +74,10 @@
     "wdth" var(--font-width);
   }
 
-  :root {
-    color-scheme: dark;
-    /* set defaults */
-
-    --text-1: var(--text-1-light);
-    --surface-1: var(--surface-1-light);
-  }
 
   @media (max-width: 600px) {
     main {
       grid-template-columns: 1fr;
     }
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      color-scheme: dark;
-
-      --tp-base-background-color: hsla(220, 16%, 16%, 1);
-      --tp-base-shadow-color: hsla(220, 16%, 20%, 1);
-      --tp-button-background-color: hsla(220, 16%, 26%, 1);
-      --tp-button-background-color-active: hsla(220, 16%, 29%, 1);
-      --tp-button-background-color-focus: hsla(220, 16%, 26%, 1);
-      --tp-button-background-color-hover: hsla(220, 16%, 29%, 1);
-      --tp-button-foreground-color: hsla(220, 16%, 92%, 1);
-      --tp-container-background-color: hsla(220, 16%, 29%, 1);
-      --tp-container-background-color-active: hsla(220, 16%, 20%, 1);
-      --tp-container-background-color-focus: hsla(220, 16%, 26%, 1);
-      --tp-container-background-color-hover: hsla(220, 16%, 29%, 1);
-      --tp-container-foreground-color: hsla(220, 16%, 92%, 1);
-      --tp-groove-foreground-color: hsla(220, 16%, 20%, 1);
-      --tp-input-background-color: hsla(220, 16%, 16%, 1);
-      --tp-input-background-color-active: hsla(220, 16%, 20%, 1);
-      --tp-input-background-color-focus: hsla(220, 16%, 26%, 1);
-      --tp-input-background-color-hover: hsla(220, 16%, 29%, 1);
-      --tp-input-foreground-color: hsla(220, 16%, 92%, 1);
-      --tp-label-foreground-color: hsla(220, 16%, 92%, 1);
-      --tp-monitor-background-color: hsla(220, 16%, 16%, 1);
-      --tp-monitor-foreground-color: hsla(220, 16%, 92%, 1);
-    }
-  }
-
-  [color-scheme="light"] {
-    color-scheme: light;
-
-    --tp-base-background-color: hsla(220, 16%, 95%, 1);
-    --tp-base-shadow-color: hsla(220, 16%, 90%, 1);
-    --tp-button-background-color: hsla(220, 16%, 70%, 1);
-    --tp-button-background-color-hover: hsla(220, 16%, 70%, 1);
-    --tp-button-background-color-active: hsla(220, 16%, 65%, 1);
-    --tp-button-background-color-focus: hsla(220, 16%, 60%, 1);
-    --tp-button-foreground-color: hsla(220, 16%, 10%, 1);
-    --tp-container-background-color: hsla(220, 16%, 85%, 1);
-    --tp-container-background-color-active: hsla(220, 16%, 80%, 1);
-    --tp-container-background-color-focus: hsla(220, 16%, 75%, 1);
-    --tp-container-background-color-hover: hsla(220, 16%, 80%, 1);
-    --tp-container-foreground-color: hsla(220, 16%, 10%, 1);
-    --tp-groove-foreground-color: hsla(220, 16%, 80%, 1);
-    --tp-input-background-color: hsla(220, 16%, 90%, 1);
-    --tp-input-background-color-active: hsla(220, 16%, 80%, 1);
-    --tp-input-background-color-focus: hsla(220, 16%, 75%, 1);
-    --tp-input-background-color-hover: hsla(220, 16%, 80%, 1);
-    --tp-input-foreground-color: hsla(220, 16%, 10%, 1);
-    --tp-label-foreground-color: hsla(220, 16%, 10%, 1);
-    --tp-monitor-background-color: hsla(220, 16%, 90%, 1);
-    --tp-monitor-foreground-color: hsla(220, 16%, 10%, 1);
-  }
-
-  [color-scheme="dark"] {
-    color-scheme: dark;
   }
 }
