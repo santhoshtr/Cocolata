@@ -109,7 +109,7 @@ $(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
 	$(PY) tools/stat.py $(FAMILY) $@/*.otf
 
 # Create UFO instances from the given designspace
-$(FONTSDIR)/ufo: %.designspace
+$(FONTSDIR)/ufo: $(FAMILY).designspace
 	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
 		--interpolate \
 		--output ufo
@@ -119,10 +119,9 @@ $(FONTSDIR)/ufo: ${UFODIR}
 	@cp -r $</ $@/
 
 # Create woff2 formatted webfonts for all the otfs available
-# Could be done using fonttools but using a python script to avoid hassles of loop
-# and filename mangling in Makefile
-$(FONTSDIR)/%.woff2: ${FONTSDIR}/%.ttf
-	$(PY) python -m fontTools.ttLib.woff2 compress -o $@ ${FONTSDIR}/$*.ttf
+$(FONTSDIR)/webfonts:
+	@mkdir -p  $@
+	$(PY) python -m fontTools.ttLib.woff2 compress -o $(FONTSDIR)/$(FAMILY)-VF.woff2 $(FONTSDIR)/otf-variable/*.otf
 
 clean:
 	@find -iname "*.pyc" -delete
