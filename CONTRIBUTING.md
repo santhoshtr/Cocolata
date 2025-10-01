@@ -1,4 +1,4 @@
-# Contributing to the Kanchana Project
+# Contributing to the Cocolata Project
 
 ## Types of contributions
 

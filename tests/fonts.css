@@ -1,59 +1,59 @@
 /* If class is applied, update custom property and
    apply modern font-variant-* when supported */
-.Kanchana-aalt {
-	--Kanchana-aalt: "aalt" on;
+.Cocolata-aalt {
+	--Cocolata-aalt: "aalt" on;
 }
 
-.Kanchana-onum {
-	--Kanchana-onum: "onum";
+.Cocolata-onum {
+	--Cocolata-onum: "onum";
 }
 
-.Kanchana-opsz {
+.Cocolata-opsz {
 	font-optical-sizing: auto;
 }
 
-.Kanchana-no-opsz {
+.Cocolata-no-opsz {
 	font-optical-sizing: none !important;
 }
 
-.Kanchana-liga-off {
-	--Kanchana-liga: "liga" 0;
+.Cocolata-liga-off {
+	--Cocolata-liga: "liga" 0;
 }
 
-.Kanchana-salt {
-	--Kanchana-salt: "salt" 2;
+.Cocolata-salt {
+	--Cocolata-salt: "salt" 2;
 }
 
-.Kanchana-sups {
-	--Kanchana-sups: "sups" on;
+.Cocolata-sups {
+	--Cocolata-sups: "sups" on;
 }
 
 @supports (font-variant-position: super) {
-	.Kanchana-sups {
-		--Kanchana-sups: "____";
+	.Cocolata-sups {
+		--Cocolata-sups: "____";
 		font-variant-position: super;
 	}
 }
 
 /* Apply current state of all custom properties
    whenever a class is being applied */
-.Kanchana-aalt,
-.Kanchana-liga,
-.Kanchana-liga-off,
-.Kanchana-onum,
-.Kanchana-salt,
-.Kanchana-sups {
-	font-feature-settings: var(--Kanchana-aalt), var(--Kanchana-onum),
-		var(--Kanchana-salt), var(--Kanchana-sups), var(--Kanchana-liga);
+.Cocolata-aalt,
+.Cocolata-liga,
+.Cocolata-liga-off,
+.Cocolata-onum,
+.Cocolata-salt,
+.Cocolata-sups {
+	font-feature-settings: var(--Cocolata-aalt), var(--Cocolata-onum),
+		var(--Cocolata-salt), var(--Cocolata-sups), var(--Cocolata-liga);
 }
 
-.Kanchana {
-	font-family: "Kanchana", cursive;
+.Cocolata {
+	font-family: "Cocolata", cursive;
 }
 
 @font-face {
-    font-family: "Kanchana";
-    src: url(../fonts/ttf-variable/Kanchana-VF.ttf) format("truetype-variations");
+    font-family: "Cocolata";
+    src: url(../fonts/ttf-variable/Cocolata-VF.ttf) format("truetype-variations");
     font-weight: 100 900;
     unicode-range: U+0000, U+0020-007E, U+00A0-00A3, U+00A5-00AC,
         U+00AE-00B1, U+00B4-00B8, U+00BA-00BB, U+00BF-0113, U+0116-012B,
@@ -68,43 +68,43 @@
         U+FFFF;
 }
 /* Variable instances */
-.kanchana-thin {
+.cocolata-thin {
     font-variation-settings: "wght" 100;
 }
 
-.kanchana-extralight {
+.cocolata-extralight {
     font-variation-settings: "wght" 200;
 }
 
-.kanchana-light {
+.cocolata-light {
     font-variation-settings: "wght" 300;
 }
 
-.kanchana-regular {
+.cocolata-regular {
     font-variation-settings: "wght" 400;
 }
 
-.kanchana-medium {
+.cocolata-medium {
     font-variation-settings: "wght" 500;
 }
 
-.kanchana-semibold {
+.cocolata-semibold {
     font-variation-settings: "wght" 600;
 }
 
-.kanchana-bold {
+.cocolata-bold {
     font-variation-settings: "wght" 700;
 }
 
-.kanchana-extrabold {
+.cocolata-extrabold {
     font-variation-settings: "wght" 800;
 }
 
-.kanchana-black {
+.cocolata-black {
     font-variation-settings: "wght" 900;
 }
 
-.kanchana-black-oblique {
+.cocolata-black-oblique {
     font-variation-settings: "wght" 900;
 }
 

@@ -82,7 +82,7 @@ function init() {
   });
 
   const pane = new Pane({
-    title: "Kanchana",
+    title: "Cocolata",
     container: document.getElementById("controls"),
   });
   pane.registerPlugin(tweakpanepluginEssentials);
@@ -111,7 +111,7 @@ function init() {
       sups: true,
       salt: 1,
     },
-    "font-name": "Kanchana", //must be at last in array to override variation props
+    "font-name": "Cocolata", //must be at last in array to override variation props
   };
 
   const themeCtrl = pane.addBinding(config, "theme", {

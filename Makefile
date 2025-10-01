@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 SHELL:=/bin/bash
-FAMILY=Kanchana
+FAMILY=Cocolata
 PY=uv run
 STYLES=$(shell $(PY) tools/read_config.py styles)
 SOURCEDIR=sources
@@ -131,14 +131,14 @@ clean:
 
 proofs:
 	@mkdir -p ${PROOFDIR}
-	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/ligatures.txt \
 		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -146,14 +146,14 @@ proofs:
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
+	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/kerning.txt \
 		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/Kanchana-Regular.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -163,8 +163,8 @@ proofs:
 test: proofs
 	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when https://github.com/microsoft/Font-Validator/issues/62 fixed
 	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/Kanchana-VF.otf
-	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/Kanchana-VF.ttf
+	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/Cocolata-VF.otf
+	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/Cocolata-VF.ttf
 
 install: $(OTF)
 	@mkdir -p $(INSTALLDIR);
@@ -175,12 +175,12 @@ release:
 .PHONY: release
 
 interpolation-test: ufo
-	uv run fonttools varLib.interpolatable --pdf report.pdf Kanchana.designspace
+	uv run fonttools varLib.interpolatable --pdf report.pdf Cocolata.designspace
 
 release:
 	@$(eval VERSION=$(shell git describe --tags `git rev-list --tags --max-count=2`))
 	@echo "Creating release for version $(VERSION)"
-	# Tar files - Kanchana
+	# Tar files - Cocolata
 	tar czvf $(FONTSDIR)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
 	sha256sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.sha256
 	md5sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.md5

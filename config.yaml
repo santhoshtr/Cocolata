@@ -1,4 +1,4 @@
-name: Kanchana
+name: Cocolata
 styles: [
   "Regular",
   "Thin",
@@ -17,7 +17,7 @@ xheight: 500
 mheight: 500
 Xheight: 705
 descender: 250
-source: https://gitlab.com/smc/fonts/Kanchana
+source: https://gitlab.com/smc/fonts/Cocolata
 author:
   name: Santhosh Thottingal
   email: santhosh.thottingal@gmail.com
@@ -357,8 +357,8 @@ glyphs:
       - ['ട്ട',"ീ", 'narrow' ]
       - ['ഴ',"ീ", 'narrow' ]
 variablefonts:
-  Kanchana:
-    designspace: Kanchana.designspace
+  Cocolata:
+    designspace: Cocolata.designspace
     stat:
       axes:
         - tag: opsz

@@ -1,19 +1,19 @@
-# FONTLOG for Kanchana
+# FONTLOG for Cocolata
 
-This file provides detailed information on the Kanchana font software. This
-information should be distributed along with the Kanchana fonts and any derivative
+This file provides detailed information on the Cocolata font software. This
+information should be distributed along with the Cocolata fonts and any derivative
 works.
 
 ## Basic Font Information
 
-Kanchana is a Malayalam typeface with regular, bold, thin variants. Kanchana means anklet. This is the third font after Chilanka and Manjari fonts by Santhosh Thottingal.
+Cocolata is a Malayalam typeface with regular, bold, thin variants. Cocolata means anklet. This is the third font after Chilanka and Manjari fonts by Santhosh Thottingal.
 
 Designer: Santhosh Thottingal
 
-Kanchana development is currently hosted at:
-http://gitlab.com/smc/fonts/Kanchana
+Cocolata development is currently hosted at:
+http://gitlab.com/smc/fonts/Cocolata
 
-Released versions of this font is available at [smc.org.in/fonts](smc.org.in/fonts) for download. For old versions and detailed changelog, see https://gitlab.com/smc/fonts/Kanchana/-/releases. Feature requests, bug reports and patches should be directed to our issue
+Released versions of this font is available at [smc.org.in/fonts](smc.org.in/fonts) for download. For old versions and detailed changelog, see https://gitlab.com/smc/fonts/Cocolata/-/releases. Feature requests, bug reports and patches should be directed to our issue
 tracker.
 
 ## Design Inspiration

@@ -1,24 +1,24 @@
-# Kanchana Malayalam Typeface
+# Cocolata Malayalam Typeface
 
-A Malayalam variable typeface optimized for body text
+A Handwriting style variable typeface supporting English and Malayalam
 
 ![](./docs/sample-1-dark.jpg)
 
-Taking full advantage of variable font technology, Kanchana offers an unprecedented level of flexibility, all from a single font file. Kanchana has 4 variable axes: `Weight`, `Width`, `Slant` and `Optical Size`.
+Taking full advantage of variable font technology, Cocolata offers an unprecedented level of flexibility, all from a single font file. Cocolata has 4 variable axes: `Weight`, `Width`, `Slant` and `Optical Size`.
 
-As a variable font, Kanchana gives you fine-grained control over each one of its styles. However, it also comes with 16 predefined styles that are easy to access through your font menu. Called *named instances¹*, these work just like regular static fonts do.
+As a variable font, Cocolata gives you fine-grained control over each one of its styles. However, it also comes with 16 predefined styles that are easy to access through your font menu. Called *named instances¹*, these work just like regular static fonts do.
 
 ¹ *Named instance*: a predetermined location in the designspace of a variable font, similar to the "static instances" that are familiar in traditional digital fonts.
 
-The Variable font capability makes Kanchana stylistically flexible and warmly energetic.
+The Variable font capability makes Cocolata stylistically flexible and warmly energetic.
 
-Kanchana is also available as multiple fonts with different weights.
+Cocolata is also available as multiple fonts with different weights.
 
-![Kanchana weights](docs/varaxes.jpg "Kanchana weights")
+![Cocolata weights](docs/varaxes.jpg "Cocolata weights")
 
 ## Variation axes
 
-Kanchana has the following axes:
+Cocolata has the following axes:
 
 | Axis       | Tag    | Range        | Default | Description                                                     |
 | ---------- | ------ | ------------ | ------- | --------------------------------------------------------------- |
@@ -48,19 +48,19 @@ Kanchana has the following axes:
 
 ## Using the fonts
 
-* Download the latest fonts from the [Releases](https://gitlab.com/smc/fonts/Kanchana/-/releases/) (Look under the "Assets" of the latest release, download the zip, and then open that zip)
+* Download the latest fonts from the [Releases](https://gitlab.com/smc/fonts/Cocolata/-/releases/) (Look under the "Assets" of the latest release, download the zip, and then open that zip)
 * Install the fonts on your system. Depending on the Operating system, the installation steps vary. In general, Clicking on the font file give the option to install it.
 
 ### Using Variable font in web pages
 
-Varibale fonts save bandwith in web pages by having a single font to download, while providing all style variations. Using them on webpages is a big topic. Please use a [good tutorial like MDN](https://developer.mozilla.org/en-US/docs/images/Web/CSS/CSS_Fonts/Variable_Fonts_Guide)
+Variable fonts save bandwidth in web pages by having a single font to download, while providing all style variations. Using them on webpages is a big topic. Please use a [good tutorial like MDN](https://developer.mozilla.org/en-US/docs/images/Web/CSS/CSS_Fonts/Variable_Fonts_Guide)
 
 In general, you should link in the font with @font-face
 
 ```css
 @font-face {
- font-family: 'Kanchana';
- src: url('path/to/font/Kanchana-VF.woff2') format('woff2-variations');
+ font-family: 'Cocolata';
+ src: url('path/to/font/Cocolata-VF.woff2') format('woff2-variations');
  font-weight: 100 900;
  font-stretch: 75% 125%;
  font-style: oblique 0deg -12deg;
@@ -94,7 +94,7 @@ A directory named fonts will be generated.
 
 ## Language support
 
-All the Malayalam characters defined in Unicode version 15 are present in the font. Kanchana also has latin script support. Kanchana supports 294 languages convering approximately 2.8B speakers(Calculated using [hyperglot tool](https://hyperglot.rosettatype.com/))
+All the Malayalam characters defined in Unicode version 15 are present in the font. Cocolata also has latin script support. Cocolata supports 294 languages convering approximately 2.8B speakers(Calculated using [hyperglot tool](https://hyperglot.rosettatype.com/))
 
 <details>
   <summary><strong>Supported languages</strong></summary>

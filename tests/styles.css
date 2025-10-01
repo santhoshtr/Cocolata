@@ -4,7 +4,7 @@
   :root {
     --font-weight: 400;
     --font-width: 100;
-    --font-family-name: "Kanchana";
+    --font-family-name: "Cocolata";
     --font-size: 20;
     --font-letter-spacing: 0;
     --font-line-height: 1.5;
@@ -73,7 +73,7 @@
     overflow: auto;
   }
 
-  .Kanchana .content {
+  .Cocolata .content {
     font-variation-settings: "wght" var(--font-weight), "slnt" var(--font-slant),
     "wdth" var(--font-width);
   }

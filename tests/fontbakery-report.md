@@ -9,7 +9,7 @@ fontbakery version: 0.12.9
 These won't break the CI job for now, but will become effective after some time if nobody raises any concern.
 
 
-<details><summary>[1] Kanchana-VF.ttf</summary>
+<details><summary>[1] Cocolata-VF.ttf</summary>
 <div>
 <details>
     <summary>⚠️ <b>WARN</b> Validate size, and resolution of article images, and ensure article page has minimum length and includes visual assets. <a href="https://fontbakery.readthedocs.io/en/stable/fontbakery/checks/googlefonts.article.html#"></a></summary>
@@ -36,7 +36,7 @@ These won't break the CI job for now, but will become effective after some time 
 
 
 
-* ⚠️ **WARN** <p>Family metadata at fonts/Kanchana/ttf-variable does not have an article.</p>
+* ⚠️ **WARN** <p>Family metadata at fonts/Cocolata/ttf-variable does not have an article.</p>
  [code: lacks-article]
 
 
@@ -53,7 +53,7 @@ These won't break the CI job for now, but will become effective after some time 
 
 
 
-<details><summary>[18] Kanchana-VF.ttf</summary>
+<details><summary>[18] Cocolata-VF.ttf</summary>
 <div>
 <details>
     <summary>⚠️ <b>WARN</b> Check glyphs in mark glyph class are non-spacing. <a href="https://fontbakery.readthedocs.io/en/stable/fontbakery/checks/opentype.gdef.html#"></a></summary>
@@ -585,7 +585,7 @@ overridden by the configuration file.</p>
 
 
 
-* ⚠️ **WARN** <p>Expected &quot;Kanchana[opsz,slnt,wdth,wght].ttf. Got Kanchana-VF.ttf.</p>
+* ⚠️ **WARN** <p>Expected &quot;Cocolata[opsz,slnt,wdth,wght].ttf. Got Cocolata-VF.ttf.</p>
 <p><em>Overridden</em>: This check was originally a FAIL but was
 overridden by the configuration file.</p>
  [code: bad-filename]

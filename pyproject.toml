@@ -1,15 +1,15 @@
 [project]
-name = "Kanchana"
+name = "Cocolata"
 version = "0.1.0"
-description = "Kanchana Malayalam typeface by Santhosh Thottingal"
+description = "Cocolata Malayalam typeface by Santhosh Thottingal"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
   "brotli>=1.1.0",
   "fontfeatures",
-  "fontmake>=3.10.0",
+  "fontmake>=3.11.0",
   "munch>=4.0.0",
-  "pyyaml>=6.0.2",
+  "pyyaml>=6.0.3",
   "ufonormalizer>=0.6.2",
 ]
 classifiers = ["Private :: Do Not Upload"]

@@ -188,7 +188,7 @@ class MalayalamFont(Font):
         rule = Substitution(
             [[SVGGlyph.get_glyph_name(letter)] for letter in reph],
             replacement=[[SVGGlyph.get_glyph_name(reph)]],
-            # precontext=[glyph_names_with_reph], # See https://gitlab.com/smc/fonts/Kanchana/-/issues/4
+            # precontext=[glyph_names_with_reph], # See https://gitlab.com/smc/fonts/Cocolata/-/issues/4
         )
         routine = Routine(rules=[rule], name=name, languages=LANGUAGE_MALAYALAM)
         self.fontFeatures.addFeature(feature, [routine])
