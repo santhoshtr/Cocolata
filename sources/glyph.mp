@@ -291,7 +291,7 @@ def endglyph =
                     pen_stroke()(paths[i])(strokes[i]);
                 fi;
                 save soft_; boolean soft_;
-                % If the path is cycle, no need to soften. Infact, attempting to soften
+                % If the path is cycle, no need to soften. In fact, attempting to soften
                 % will create wrong outlines.
                 % We could use 'cycle p' of metapost here.
                 % But for some reason it is not returning true when it should.
