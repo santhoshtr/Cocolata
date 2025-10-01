@@ -14,7 +14,7 @@ clearxy;
 z0 = (xpart point 4 of paths[p-1], 0);
 z1 = (3/4(x0-x3), reph_sign_depth  );
 z2 = (0.5(x0-x3), y1);
-z3 = (xpart(point 0.5 of paths[p-1]) - mw/6, m);
+z3 = (xpart(point 0.5 of paths[p-2]) - mw/6, m);
 paths[p] =  z0{down}..z1 ..{dir 60}z3;
 dt := directiontime dir 90 of subpath(2, 3) of paths[p];
 paths[p] := insert_nodes(paths[p])(2+ dt);
