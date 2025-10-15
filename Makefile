@@ -52,6 +52,23 @@ $(UFODIR)/$(FAMILY)-%.ufo: %
 
 ufo: glyphs $(UFO)
 
+$(FONTSDIR)/$(FAMILY)-color.ufo:
+	@echo " BUILD UFO  $(@F)"
+	$(PY) tools/build_color_v0.py $(UFODIR)/$(FAMILY)-Regular.ufo $@
+	$(PY) ufonormalizer -q -m $@
+
+$(FONTSDIR)/$(FAMILY)-color.otf: $(FONTSDIR)/$(FAMILY)-color.ufo
+	@echo " BUILD Color v0 font OTF  $(@F)"
+	$(PY) fontmake $(FONTSDIR)/$(FAMILY)-color.ufo \
+    	--flatten-components  \
+		--output-dir $(FONTSDIR) \
+		--output otf \
+		--verbose WARNING
+
+$(FONTSDIR)/$(FAMILY)-colrv1.otf: $(FONTSDIR)/$(FAMILY)-color.otf
+	@echo " BUILD Color v1 font OTF  $(@F)"
+	$(PY) tools/build_color_v1.py $(FONTSDIR)/$(FAMILY)-color.otf $(FONTSDIR)/$(FAMILY)-colrv1.otf
+
 # Build targets for prepating the fonts from master UFO sources.
 $(FAMILY): $(FONTSDIR)/otf \
 	$(FONTSDIR)/ttf \

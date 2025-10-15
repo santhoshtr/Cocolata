@@ -11,6 +11,7 @@ dependencies = [
   "munch>=4.0.0",
   "pyyaml>=6.0.3",
   "ufonormalizer>=0.6.2",
+  "uharfbuzz",
 ]
 classifiers = ["Private :: Do Not Upload"]
 
