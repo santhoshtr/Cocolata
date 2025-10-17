@@ -12,6 +12,7 @@ dependencies = [
   "pyyaml>=6.0.3",
   "ufonormalizer>=0.6.2",
   "uharfbuzz",
+  "skia-pathops>=0.8.0"
 ]
 classifiers = ["Private :: Do Not Upload"]
 

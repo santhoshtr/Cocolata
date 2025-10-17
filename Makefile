@@ -60,8 +60,11 @@ $(FONTSDIR)/$(FAMILY)-color.ufo:
 $(FONTSDIR)/$(FAMILY)-color.otf: $(FONTSDIR)/$(FAMILY)-color.ufo
 	@echo " BUILD Color v0 font OTF  $(@F)"
 	$(PY) fontmake $(FONTSDIR)/$(FAMILY)-color.ufo \
-    	--flatten-components  \
 		--output-dir $(FONTSDIR) \
+		--filter DecomposeTransformedComponentsFilter  \
+		--flatten-components  \
+		--optimize-cff 2 \
+		--overlaps-backend pathops \
 		--output otf \
 		--verbose WARNING
 

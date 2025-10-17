@@ -45,30 +45,32 @@ for glyph_name, layer in colr0.ColorLayers.items():
     for glyph in layer:
         if cpal.numPaletteEntries == 2:
             # Refer https://ssp.impulsetrain.com/porterduff.html
-            v1_layers.append(
-                {
-                    "Format": ot.PaintFormat.PaintComposite,
-                    "SourcePaint": {
-                        "Format": ot.PaintFormat.PaintGlyph,
-                        "Glyph": glyph.name,
-                        "Paint": {
-                            "Format": ot.PaintFormat.PaintSolid,
-                            "PaletteIndex": glyph.colorID,
-                            "Alpha": 1,
+            for i in range(10):
+                v1_layers.append(
+                    {
+                        "Format": ot.PaintFormat.PaintComposite,
+                        "SourcePaint": {
+                            "Format": ot.PaintFormat.PaintGlyph,
+                            "Glyph": glyph.name,
+                            "Paint": {
+                                "Format": ot.PaintFormat.PaintSolid,
+                                "PaletteIndex": 1,
+                                "Alpha": 1,
+                            },
                         },
-                    },
-                    "CompositeMode": ot.CompositeMode.DEST_IN,
-                    "BackdropPaint": {
-                        "Format": ot.PaintFormat.PaintGlyph,
-                        "Glyph": "ink_mask",
-                        "Paint": {
-                            "Format": ot.PaintFormat.PaintSolid,
-                            "PaletteIndex": glyph.colorID,
-                            "Alpha": 1,
+                        "CompositeMode": ot.CompositeMode.DEST_IN,
+                        "BackdropPaint": {
+                            "Format": ot.PaintFormat.PaintGlyph,
+                            "Glyph": f"ink_mask_{i}",
+                            "Paint": {
+                                "Format": ot.PaintFormat.PaintSolid,
+                                "PaletteIndex": 0,
+                                "Alpha": 1 if i % 2 == 0 else 1 - i * 0.01,
+                            },
                         },
-                    },
-                }
-            )
+                    }
+                )
+
         else:
             print("Unexpected")
     if glyph_name not in clipBoxes:

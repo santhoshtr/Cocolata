@@ -1,59 +1,20 @@
-import copy
 import logging
+from math import pi
 import sys
 from operator import itemgetter
 from fontTools.ttLib import getTableModule
 import ufo2ft
-from fontTools.svgLib import SVGPath
-from ufoLib2.objects import Font, Layer
+from ufoLib2.objects import Font
 from ufoLib2.objects import Glyph
+from ufoLib2.objects import Component
+
+from svgglyph import SVGGlyph
 
 log = logging.getLogger(__name__)
 
 
 def hex_to_rgba(hex: str):
     return getTableModule("CPAL").Color.fromHex(hex)
-
-
-@staticmethod
-def svg2glif(
-    name,
-    width=0,
-    height=0,
-    unicodes=None,
-    transform=None,
-    version=3,
-    anchors=None,
-):
-    """Convert an SVG outline to a UFO glyph with given 'name', advance
-    'width' and 'height' (int), and 'unicodes' (list of int).
-    Return the resulting string in GLIF format (default: version 2).
-    If 'transform' is provided, apply a transformation matrix before the
-    conversion (must be tuple of 6 floats, or a FontTools Transform object).
-    """
-    glyph = Glyph(name=name)
-    glyph.width = width
-    glyph.height = height
-    glyph.unicodes = unicodes or []
-    glyph.anchors = anchors or []
-    #    svg = SVGPath(svg_file, transform)
-    svg_str = f"""<svg width="{width}" height="{height}" xmlns="http://www.w3.org/2000/svg">
-  <path d="M 0 0 L -1000 0 L 1000 -82 L 0 82 Z" />
-  <path d="M 0 -102 L 1000 -102 L 1000 -184 L 0 -184 Z" />
-  <path d="M 0 -204 L 1000 -204 L 1000 -286 L 0 -286 Z" />
-  <path d="M 0 -306 L 1000 -306 L 1000 -388 L 0 -388 Z" />
-  <path d="M 0 -408 L 1000 -408 L 1000 -490 L 0 -490 Z" />
-  <path d="M 0 -510 L 1000 -510 L 1000 -592 L 0 -592 Z" />
-  <path d="M 0 -612 L 1000 -612 L 1000 -694 L 0 -694 Z" />
-  <path d="M 0 -714 L 1000 -714 L 1000 -796 L 0 -796 Z" />
-  <path d="M 0 -816 L 1000 -816 L 1000 -898 L 0 -898 Z" />
-  <path d="M 0 -918 L 1000 -918 L 1000 -1000 L 0 -1000 Z" />
-</svg>
-    """
-    svg = SVGPath.fromstring(svg_str, transform)
-    pen = glyph.getPen()
-    svg.draw(pen)
-    return glyph
 
 
 layer_mapping = []
@@ -63,15 +24,29 @@ layer_mapping.append(["public.default", 0])
 font = Font().open(sys.argv[1])
 # layer: Layer = font.newLayer(name="ink")
 layer = font.layers.get("public.default")
-mask_glyph = svg2glif(
-    "ink_mask",
-    1000,
-    1400,
-    None,
-    (1, 0, 0, -1, 0, 0),
-)
-layer.insertGlyph(mask_glyph, "ink_mask")
+# mask_glyph = SVGGlyph("./tools/ink_mask.svg")
+mask_glyph_base = SVGGlyph("./sample-ellipse-1000x1000-d3.svg")
+mask_glyph_base.parse()
+layer.insertGlyph(mask_glyph_base.glif, "ink_mask_base")
 
+pieces = 10
+tile_size = 1000
+for i in range(pieces):
+    variant: Glyph = font.newGlyph(f"ink_mask_{i}")
+    variant.height = tile_size
+    variant.width = tile_size
+    component: Component = Component("ink_mask_base")
+    # transformation = (xScale, xyScale, yxScale, yScale, xOffset, yOffset)
+    component.transformation = (
+        1,
+        0,
+        0,
+        1,
+        i * 10,
+        i * 5,
+    )
+    variant.components.append(component)
+    layer.insertGlyph(variant, f"ink_mask_{i}")
 
 layer_mapping = sorted(layer_mapping, key=itemgetter(1))
 font.lib[ufo2ft.constants.COLOR_LAYER_MAPPING_KEY] = layer_mapping
