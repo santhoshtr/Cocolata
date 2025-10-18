@@ -25,28 +25,11 @@ font = Font().open(sys.argv[1])
 # layer: Layer = font.newLayer(name="ink")
 layer = font.layers.get("public.default")
 # mask_glyph = SVGGlyph("./tools/ink_mask.svg")
-mask_glyph_base = SVGGlyph("./sample-ellipse-1000x1000-d3.svg")
-mask_glyph_base.parse()
-layer.insertGlyph(mask_glyph_base.glif, "ink_mask_base")
-
-pieces = 10
-tile_size = 1000
-for i in range(pieces):
-    variant: Glyph = font.newGlyph(f"ink_mask_{i}")
-    variant.height = tile_size
-    variant.width = tile_size
-    component: Component = Component("ink_mask_base")
-    # transformation = (xScale, xyScale, yxScale, yScale, xOffset, yOffset)
-    component.transformation = (
-        1,
-        0,
-        0,
-        1,
-        i * 10,
-        i * 5,
-    )
-    variant.components.append(component)
-    layer.insertGlyph(variant, f"ink_mask_{i}")
+samples = 5
+for i in range(samples):
+    mask_glyph = SVGGlyph(f"./tools/ink_mask_{i}.svg")
+    mask_glyph.parse()
+    layer.insertGlyph(mask_glyph.glif, f"ink_mask_{i}")
 
 layer_mapping = sorted(layer_mapping, key=itemgetter(1))
 font.lib[ufo2ft.constants.COLOR_LAYER_MAPPING_KEY] = layer_mapping
@@ -58,7 +41,7 @@ palettes = [
     ["#F57F17", "#FFF59D"],  # Yellow
     ["#1B5E20", "#A5D6A7"],  # Green
     ["#01579B", "#81D4FA"],  # Light Blue
-    ["#0D47A1", "#90CAF9"],  # Blue
+    ["#0D47A1", "#4000FF"],  # Blue
     ["#B71C1C", "#EF9A9A"],  # Red
     ["#4A148C", "#CE93D8"],  # Purple
     ["#004D40", "#80CBC4"],  # Teal

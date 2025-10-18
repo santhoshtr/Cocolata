@@ -45,7 +45,7 @@ for glyph_name, layer in colr0.ColorLayers.items():
     for glyph in layer:
         if cpal.numPaletteEntries == 2:
             # Refer https://ssp.impulsetrain.com/porterduff.html
-            for i in range(10):
+            for i in range(5):
                 v1_layers.append(
                     {
                         "Format": ot.PaintFormat.PaintComposite,
@@ -61,11 +61,11 @@ for glyph_name, layer in colr0.ColorLayers.items():
                         "CompositeMode": ot.CompositeMode.DEST_IN,
                         "BackdropPaint": {
                             "Format": ot.PaintFormat.PaintGlyph,
-                            "Glyph": f"ink_mask_{i}",
+                            "Glyph": f"ink_mask_{i % 5}",
                             "Paint": {
                                 "Format": ot.PaintFormat.PaintSolid,
                                 "PaletteIndex": 0,
-                                "Alpha": 1 if i % 2 == 0 else 1 - i * 0.01,
+                                "Alpha": 1 if i == 0 else 1 - i * 0.02,
                             },
                         },
                     }

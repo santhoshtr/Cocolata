@@ -1,3 +1,6 @@
+import * as d3 from "d3";
+import { JSDOM } from "jsdom";
+
 // --- Configuration Parameters ---
 const SVG_WIDTH = 1000;
 const SVG_HEIGHT = 1000;
@@ -47,9 +50,9 @@ function getMatrixTransform(d) {
 }
 
 // --- Main Script ---
-
-const svg = d3
-  .select("#svg-container")
+const dom = new JSDOM(`<!DOCTYPE html><body></body>`);
+let body = d3.select(dom.window.document.querySelector("body"));
+const svg = body
   .append("svg")
   .attr("width", SVG_WIDTH)
   .attr("height", SVG_HEIGHT)
@@ -61,10 +64,11 @@ for (let i = 0; i < NUM_PATHS; i++) {
   pathsData.push({
     x: Math.random() * SVG_WIDTH,
     y: Math.random() * SVG_HEIGHT,
-    rx: 2 + Math.random() * 10,
-    ry: 0.5 + Math.random() * 2,
+    rx: 2 + Math.random() * 20,
+    ry: 2 + Math.random() * 20,
+    //ry: 0.5 + Math.random() * 2,
     angle: BASE_ANGLE + (Math.random() - 0.5) * ANGLE_VARIATION,
-    opacity: 0.6 + Math.random() * 0.4,
+    //opacity: 0.6 + Math.random() * 0.4,
   });
 }
 
@@ -79,3 +83,5 @@ svg
   .attr("opacity", (d) => d.opacity)
   // MODIFIED: Use the new function to set the transform attribute
   .attr("transform", (d) => getMatrixTransform(d));
+
+console.log(body.html());
