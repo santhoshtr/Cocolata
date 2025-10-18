@@ -109,6 +109,7 @@ $(FONTSDIR)/ttf-variable: ufo $(FAMILY).designspace
 	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
 		--filter DecomposeTransformedComponentsFilter \
 		--flatten-components \
+		--overlaps-backend pathops \
 		--verbose WARNING \
 		--output-dir $@ \
 		--output variable
@@ -120,6 +121,7 @@ $(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
 	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
 		--filter DecomposeTransformedComponentsFilter  \
 		--flatten-components \
+		--overlaps-backend pathops \
 		--output-dir $@ \
 		--verbose WARNING \
 		--optimize-cff 1 \
