@@ -75,7 +75,7 @@ glyphs:
       "ý","ŷ","ÿ", "ỳ",
       "ź","ž","ż",
     ]
-    LATIN_LIGATURES:  [ "ff", "ft" ] # [ "ffi", "th", ]
+    LATIN_LIGATURES:  [ "ff", "ft", "heart" ] # [ "ffi", "th", ]
     ML_CONSONANTS: കഖഗഘങചഛജഝഞടഠഡഢണതഥദധനപഫബഭമയരലവറശഷസഹളഴ
     ML_VOWEL_SIGNS: ['ാ', 'ി','ീ', "ു", "ൂ", "ൃ", "ൄ", "ൢ", "ൣ", "െ", "േ", "ൈ", "ൊ", "ോ","ൌ", "ൗ"]
     ML_VOWEL_SIGNS_CONJOINING: ["ു", "ൂ", "ൃ", "ൄ", "ൢ", "ൣ"]
@@ -356,6 +356,17 @@ glyphs:
       - ['ന്റ', "ീ", 'narrow' ]
       - ['ട്ട',"ീ", 'narrow' ]
       - ['ഴ',"ീ", 'narrow' ]
+    latin:
+      - ['T', 'A','alt1']
+      - ['H', 'A','alt1']
+      - ['I', 'A','alt1']
+      - ['L', 'A','alt2']
+      - ['r', 'a','alt1']
+      - ['a', 'a','alt2']
+      - ['o', 'a','alt2']
+      - ['l', 'a','alt1']
+      - ['n', 'a','alt2']
+      - ['c', 'a','alt1']
 variablefonts:
   Cocolata:
     designspace: Cocolata.designspace

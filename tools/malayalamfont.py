@@ -60,15 +60,23 @@ class MalayalamFont(Font):
         feature = "liga"
         name = "latin_ligatures"
         ligatures = self.get_glyphs_from_named_classes("LATIN_LIGATURES")
-
+        components_map: dict[str, [str]] = {"heart": ["<", "3"]}
         rules = []
         for ligature in ligatures:
+            if ligature in components_map:
+                components = [
+                    [SVGGlyph.get_glyph_name(letter)]
+                    for letter in components_map.get(ligature)
+                ]
+            else:
+                components = [[SVGGlyph.get_glyph_name(letter)] for letter in ligature]
+
             sub = Substitution(
-                [[SVGGlyph.get_glyph_name(letter)] for letter in ligature],
+                components,
                 replacement=[[SVGGlyph.get_glyph_name(ligature)]],
             )
             rules.append(sub)
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_LATIN)
+        routine = Routine(rules=rules, name=name, languages=LANGUAGE_ALL)
         self.fontFeatures.addFeature(feature, [routine])
 
     def build_chillus(self):
@@ -261,7 +269,7 @@ class MalayalamFont(Font):
         self.fontFeatures.addFeature(feature, [routine])
 
     def build_cons_ra_substitutions(self):
-        feature = "pres"
+        feature = "pres"  # codespell:ignore
         name = "pres_reph"
         reph = "്ര"
         rules = []
