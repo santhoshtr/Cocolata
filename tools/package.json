@@ -1,0 +1,27 @@
+{
+  "name": "cocolata",
+  "version": "1.0.0",
+  "description": "A Handwriting style variable typeface supporting English and Malayalam",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/santhoshtr/Cocolata.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/santhoshtr/Cocolata/issues"
+  },
+  "homepage": "https://github.com/santhoshtr/Cocolata#readme",
+  "dependencies": {
+    "d3": "^7.9.0",
+    "jsdom": "^27.0.0"
+  }
+}
