@@ -1,165 +1,166 @@
 #!/usr/bin/make -f
-SHELL:=/bin/bash
-FAMILY=Cocolata
-PY=uv run
-STYLES=$(shell $(PY) tools/read_config.py styles)
-SOURCEDIR=sources
-FONTSDIR=fonts
-PROOFDIR=proofs
-TESTSDIR=tests
-UFODIR=${SOURCEDIR}/ufo
-INSTALLDIR=~/.fonts/$(FAMILY)
 
-UFO=$(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
-TTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.ttf)
-OTF=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.otf)
-WEBFONTS=$(STYLES:%=$(FONTSDIR)/$(FAMILY)-%.woff2)
+# Safer shell and make defaults
+SHELL := /usr/bin/env bash
+.SHELLFLAGS := -eu -o pipefail -c
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 
-.PHONY: $(STYLES) ufo clean glyphs build proofs autobuild
+.DEFAULT_GOAL := build
 
+# Configurable variables (can be overridden by env/CLI)
+FAMILY ?= Cocolata
+PY ?= uv run
+SOURCEDIR ?= sources
+FONTSDIR ?= fonts
+PROOFDIR ?= proofs
+TESTSDIR ?= tests
+UFODIR ?= $(SOURCEDIR)/ufo
+INSTALLDIR ?= $(HOME)/.local/share/fonts/$(FAMILY)
 
-default: build
+# Read styles from config
+STYLES := $(shell $(PY) tools/read_config.py styles)
 
-help:
-	@echo "Build targets"
-	@echo
-	@echo " make build: Builds the fonts and places them in the fonts/ directory"
-	@echo " make test:  Tests the fonts with fontbakery"
-	@echo " make proof: Creates HTML proof documents in the proof/ directory"
-	@echo
+# Derived paths
+UFO := $(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
+TTF_INSTANCES := $(STYLES:%=$(FONTSDIR)/ttf/$(FAMILY)-%.ttf)
+OTF_INSTANCES := $(STYLES:%=$(FONTSDIR)/otf/$(FAMILY)-%.otf)
+WEBFONTS := $(FONTSDIR)/webfonts/$(FAMILY)-VF.woff2
 
-build: ufo $(FAMILY)
-# Recursively watch the file changes and make the (debug) svgs.
-# Useful in design workflow.
-# Package inotify-tools are available in linux distros
-dev:
+# Shared options
+FONTMAKE_WARN := --verbose WARNING
+DECOMP_FLATTEN := --filter DecomposeTransformedComponentsFilter --flatten-components
+PATHOPS := --overlaps-backend pathops
+CFF1 := --optimize-cff 1
+CFF2 := --optimize-cff 2
+
+.PHONY: help build dev glyphs ufo clean proofs test install release interpolation-test metrics-report $(STYLES)
+
+help: ## Show this help
+	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make [target]\n\nTargets:\n"} /^[a-zA-Z0-9][^:]*:.*##/ {printf "  %-28s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+build: ufo $(FAMILY) ## Build master UFOs and all font outputs
+
+# Recursively watch the file changes and build SVGs (design workflow)
+# Requires: inotify-tools (Linux)
+dev: ## Watch glyph sources and rebuild
 	while inotifywait -e MODIFY $(SOURCEDIR)/glyphs/; do $(MAKE) -C $(SOURCEDIR); done;
 
-# Targets for preparing the glyphs from metapost and preparing master UFOs.
-glyphs: $(STYLES)
+# Targets for preparing the glyphs from sources (per-style)
+glyphs: $(STYLES) ## Generate per-style SVGs
 
-$(STYLES):
+$(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-$(UFODIR)/$(FAMILY)-%.ufo: %
+# Build master UFOs from SVG sources
+$(UFODIR)/$(FAMILY)-%.ufo: % | $(UFODIR)
 	@echo " BUILD UFO  $(@F)"
-	@mkdir -p ${UFODIR}
+	mkdir -p $(@D)
 	$(PY) tools/builder.py --style $* --source $(SOURCEDIR)/svgs/$* --output $@
 	$(PY) ufonormalizer -q -m $@
-	@# remove dangling semicolons in features.fea which font editors cannot handle
-	@sed -i 's/ ;$\//g' $@/features.fea
 
-ufo: glyphs $(UFO)
+ufo: glyphs $(UFO) ## Build all master UFOs
 
-$(FONTSDIR)/$(FAMILY)-color.ufo:
+# Color pipeline (v0 -> v1)
+$(FONTSDIR)/$(FAMILY)-color.ufo: $(UFODIR)/$(FAMILY)-Regular.ufo | $(FONTSDIR)
 	@echo " BUILD UFO  $(@F)"
-	$(PY) tools/build_color_v0.py $(UFODIR)/$(FAMILY)-Regular.ufo $@
+	$(PY) tools/build_color_v0.py $< $@
 	$(PY) ufonormalizer -q -m $@
 
-$(FONTSDIR)/$(FAMILY)-color.otf: $(FONTSDIR)/$(FAMILY)-color.ufo
+$(FONTSDIR)/$(FAMILY)-color.otf: $(FONTSDIR)/$(FAMILY)-color.ufo | $(FONTSDIR)
 	@echo " BUILD Color v0 font OTF  $(@F)"
-	$(PY) fontmake $(FONTSDIR)/$(FAMILY)-color.ufo \
+	$(PY) fontmake $< \
 		--output-dir $(FONTSDIR) \
-		--filter DecomposeTransformedComponentsFilter  \
-		--flatten-components  \
-		--optimize-cff 2 \
-		--overlaps-backend pathops \
+		$(DECOMP_FLATTEN) \
+		$(CFF2) \
+		$(PATHOPS) \
 		--output otf \
-		--verbose WARNING
+		$(FONTMAKE_WARN)
 
-$(FONTSDIR)/$(FAMILY)-colrv1.otf: $(FONTSDIR)/$(FAMILY)-color.otf
+$(FONTSDIR)/$(FAMILY)-colrv1.otf: $(FONTSDIR)/$(FAMILY)-color.otf | $(FONTSDIR)
 	@echo " BUILD Color v1 font OTF  $(@F)"
-	$(PY) tools/build_color_v1.py $(FONTSDIR)/$(FAMILY)-color.otf $(FONTSDIR)/$(FAMILY)-colrv1.otf
+	$(PY) tools/build_color_v1.py $< $@
 
-# Build targets for prepating the fonts from master UFO sources.
+# Meta target building all deliverables
 $(FAMILY): $(FONTSDIR)/otf \
 	$(FONTSDIR)/ttf \
 	$(FONTSDIR)/ttf-variable \
 	$(FONTSDIR)/otf-variable \
 	$(FONTSDIR)/ufo \
-	$(FONTSDIR)/webfonts
+	$(WEBFONTS) ## Build all formats
 
-# Create ttf instances if a designspace exist
-$(FONTSDIR)/ttf: $(FAMILY).designspace
-	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
-		--filter DecomposeTransformedComponentsFilter  \
+# Create TTF instances (requires designspace)
+$(FONTSDIR)/ttf: $(FAMILY).designspace | $(FONTSDIR)
+	$(PY) fontmake --mm-designspace $< \
+		$(DECOMP_FLATTEN) \
 		--interpolate \
-		--flatten-components  \
-		--verbose WARNING \
-		--output-dir $@  \
-		--output ttf  \
+		$(FONTMAKE_WARN) \
+		--output-dir $@ \
+		--output ttf \
 		--optimize-cff 0
-	$(PY) tools/fix_font.py $(FONTSDIR)/$*/ttf/*.ttf
+	$(PY) tools/fix_font.py $@/*.ttf
 
-# Create otf instances if a designspace exist
-$(FONTSDIR)/otf : $(FAMILY).designspace
-	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
-		--verbose WARNING \
-		--filter DecomposeTransformedComponentsFilter  \
-		--flatten-components  \
-		--interpolate  \
-		--optimize-cff 1 \
+# Create OTF instances (requires designspace)
+$(FONTSDIR)/otf: $(FAMILY).designspace | $(FONTSDIR)
+	$(PY) fontmake --mm-designspace $< \
+		$(FONTMAKE_WARN) \
+		$(DECOMP_FLATTEN) \
+		--interpolate \
+		$(CFF1) \
 		--output-dir $@ \
 		--output otf
 	$(PY) tools/fix_font.py $@/*.otf
 
-# Create ttf variablefont from the given designspace
-$(FONTSDIR)/ttf-variable: ufo $(FAMILY).designspace
+# Create TTF variable font (requires designspace)
+$(FONTSDIR)/ttf-variable: ufo $(FAMILY).designspace | $(FONTSDIR)
 	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
-		--filter DecomposeTransformedComponentsFilter \
+		$(DECOMP_FLATTEN) \
 		--flatten-components \
-		--overlaps-backend pathops \
-		--verbose WARNING \
+		$(PATHOPS) \
+		$(FONTMAKE_WARN) \
 		--output-dir $@ \
 		--output variable
 	$(PY) tools/fix_font.py $@/*.ttf
 	$(PY) tools/stat.py $(FAMILY) $@/*.ttf
 
-# Create otf variablefont from the given designspace
-$(FONTSDIR)/otf-variable : ufo $(FAMILY).designspace
+# Create OTF variable font (requires designspace)
+$(FONTSDIR)/otf-variable: ufo $(FAMILY).designspace | $(FONTSDIR)
 	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
-		--filter DecomposeTransformedComponentsFilter  \
+		$(DECOMP_FLATTEN) \
 		--flatten-components \
-		--overlaps-backend pathops \
+		$(PATHOPS) \
 		--output-dir $@ \
-		--verbose WARNING \
-		--optimize-cff 1 \
+		$(FONTMAKE_WARN) \
+		$(CFF1) \
 		--output variable-cff2
-
 	$(PY) tools/fix_font.py $@/*.otf
 	$(PY) tools/stat.py $(FAMILY) $@/*.otf
 
-# Create UFO instances from the given designspace
-$(FONTSDIR)/ufo: $(FAMILY).designspace
-	$(PY) fontmake --mm-designspace $(FAMILY).designspace \
-		--interpolate \
-		--output ufo
+# Package the master UFOs into fonts directory (copy master sources)
+$(FONTSDIR)/ufo: $(UFODIR) | $(FONTSDIR)
+	mkdir -p $@
+	cp -r $(UFODIR)/ $@/
 
-# Package the ufo in fonts directory, directly from the source UFO.
-$(FONTSDIR)/ufo: ${UFODIR}
-	@cp -r $</ $@/
+# Create WOFF2 webfont from variable OTF (single VF file)
+$(WEBFONTS): $(FONTSDIR)/otf-variable/$(FAMILY)-VF.otf | $(FONTSDIR)/webfonts
+	$(PY) python -m fontTools.ttLib.woff2 compress -o $@ $<
 
-# Create woff2 formatted webfonts for all the otfs available
-$(FONTSDIR)/webfonts:
-	@mkdir -p  $@
-	$(PY) python -m fontTools.ttLib.woff2 compress -o $(FONTSDIR)/$(FAMILY)-VF.woff2 $(FONTSDIR)/otf-variable/*.otf
-
-clean:
-	@find -iname "*.pyc" -delete
+clean: ## Remove build artifacts
+	@find . -name '__pycache__' -type d -prune -exec rm -rf {} +
+	@find . -iname "*.pyc" -delete
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
-	rm -rf sources/svgs/*/*.svg
+	@rm -rf $(SOURCEDIR)/svgs/*/*.svg
 
-proofs:
-	@mkdir -p ${PROOFDIR}
-	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
+proofs: $(FONTSDIR)/otf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
+	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/ligatures.txt \
 		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
+	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -167,41 +168,45 @@ proofs:
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
+	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--text-file $(TESTSDIR)/kerning.txt \
 		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/Cocolata-Regular.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
 		--foreground=333333 \
 		--output-file $(PROOFDIR)/paragraphs.english.pdf ;
 
-test: proofs
-	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when https://github.com/microsoft/Font-Validator/issues/62 fixed
+# Test (depends on proofs to ensure outputs exist)
+test: proofs ## Run fontbakery checks
+	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when upstream is fixed
 	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/Cocolata-VF.otf
-	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/Cocolata-VF.ttf
+	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/$(FAMILY)-VF.otf
+	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/$(FAMILY)-VF.ttf
 
-install: $(OTF)
+install: $(FONTSDIR)/otf ## Install OTFs to user fonts dir
 	@mkdir -p $(INSTALLDIR);
 	@cp $(FONTSDIR)/otf/*.otf $(INSTALLDIR);
 	@fc-cache -fr
 
-release:
-.PHONY: release
+# Vertical Metrics Reporting
+metrics-report: ## Report vertical metrics
+	# May need `pip install font-line` to install font-line
+	$(PY) font-line report $(FONTSDIR)/otf-variable/*.otf
 
-interpolation-test: ufo
-	uv run fonttools varLib.interpolatable --pdf report.pdf Cocolata.designspace
+interpolation-test: ufo ## Check interpolation compatibility and output a PDF report
+	$(PY) fonttools varLib.interpolatable --pdf report.pdf $(FAMILY).designspace
 
-release:
-	@$(eval VERSION=$(shell git describe --tags `git rev-list --tags --max-count=2`))
+# Release packaging
+VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)
+release: build ## Create release archives
 	@echo "Creating release for version $(VERSION)"
-	# Tar files - Cocolata
+	# Tar files - $(FAMILY)
 	tar czvf $(FONTSDIR)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
 	sha256sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.sha256
 	md5sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.md5
@@ -210,7 +215,6 @@ release:
 	sha256sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.sha256
 	md5sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.md5
 
-# Vertical Metrics Reporting
-metrics-report:
-	# May need `pip install font-line` to install font-line
-	$(PY) font-line report $(FONTSDIR)/otf-variable/*.otf
+# Directory targets
+$(UFODIR) $(FONTSDIR) $(PROOFDIR) $(FONTSDIR)/webfonts:
+	mkdir -p $@
