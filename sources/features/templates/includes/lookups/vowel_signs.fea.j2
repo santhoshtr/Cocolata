@@ -1,9 +1,0 @@
-lookup psts_vowel_signs {
-    lookupflag IgnoreMarks;
-
-{% for rule in vowel_sign_rules %}
-    sub {{ rule.input | join(' ') }} by {{ rule.output }};
-{% endfor %}
-} psts_vowel_signs;
-
-

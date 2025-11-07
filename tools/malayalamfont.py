@@ -580,7 +580,7 @@ class MalayalamFont(Font):
 
         # Set up Jinja2 environment
         template_dir = os.path.join(
-            os.path.dirname(__file__), "..", "sources", "features", "templates"
+            os.path.dirname(__file__), "..", "sources", "features"
         )
         env = Environment(
             loader=FileSystemLoader(template_dir), trim_blocks=True, lstrip_blocks=True
