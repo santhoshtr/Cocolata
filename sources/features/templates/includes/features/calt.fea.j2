@@ -1,0 +1,10 @@
+{% if calt_rules %}
+{% for script, rules in calt_rules.items() %}
+feature calt {
+    script {{ 'DFLT' if script == 'latin' else 'latn' if script == 'latin' else 'mlm2' }};
+    language dflt;
+            lookup {{ script }}_calt_lookup;
+
+} calt;
+{% endfor %}
+{% endif %}

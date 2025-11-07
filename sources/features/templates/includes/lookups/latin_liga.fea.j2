@@ -1,0 +1,10 @@
+lookup latin_ligatures {
+    lookupflag 0;
+
+{% for lig in ligatures.latin %}
+    sub {{ lig.input | join(' ') }} by {{ lig.output }};
+{% endfor %}
+
+} latin_ligatures;
+
+

@@ -4,11 +4,11 @@ import re
 from datetime import datetime
 from typing import List
 
-from fontFeatures import Attachment, Chaining, FontFeatures, Routine, Substitution
 from fontTools import agl
 from svgglyph import SVGGlyph
 from ufoLib2.objects import Component, Font, Glyph, Guideline
 from ufoLib2.objects.info import GaspRangeRecord
+from jinja2 import Environment, FileSystemLoader
 
 log = logging.getLogger(__name__)
 
@@ -23,21 +23,575 @@ class MalayalamFont(Font):
         self.options = options
         self.style = style
         self.weight = weight
-        self.fontFeatures = FontFeatures()
+        # self.fontFeatures = FontFeatures()
         self.available_svgs = []
         self.salts = {}  # Stylistic Alternates
         self.onums = {}  # Old Numerals
         self.sups = {}  # Superscripts
         logging.basicConfig(level="WARN")
 
-    def build_glyph_classes(self):
+    def prepare_template_data(self):
+        """Prepare all data needed for Jinja2 templates"""
+        data = {
+            "glyph_classes": self._prepare_glyph_classes(),
+            "gdef": self._prepare_gdef_data(),
+            "mark_classes": self._prepare_mark_classes(),
+            "ligatures": self._prepare_ligature_data(),
+            "chillus": self._prepare_chillu_data(),
+            "conjuncts": self._prepare_conjunct_data(),
+            "cons_signs": self._prepare_cons_signs_data(),
+            "cons_signs_order_rules": self._prepare_cons_signs_order_rules(),
+            "reph": self._prepare_reph_data(),
+            "reph_conjuncts": self._prepare_reph_conjuncts_data(),
+            "vowel_sign_rules": self._prepare_vowel_sign_rules(),
+            "top_anchors": self._prepare_top_anchors(),
+            "bottom_anchors": self._prepare_bottom_anchors(),
+            "aam_rules": self._prepare_aam_rules(),
+            "calt_rules": self._prepare_calt_rules(),
+            "salts": self.salts,
+            "sups": self.sups,
+            "aalts": self._prepare_aalt_data(),
+        }
+        return data
+
+    def _prepare_glyph_classes(self):
+        """Prepare glyph classes for templates"""
+        classes = {}
         for gclass in self.options.glyphs.classes:
             glyph_names = [
                 SVGGlyph.get_glyph_name(g)
                 for g in self.get_glyphs_from_named_classes(gclass)
             ]
             glyph_names = [g for g in glyph_names if g in self]
-            self.fontFeatures.namedClasses[gclass] = glyph_names
+            classes[gclass] = glyph_names
+        return classes
+
+    def _prepare_gdef_data(self):
+        """Prepare GDEF table data"""
+        bases = []
+        ligatures = []
+        marks = [
+            "acutecmb",
+            "brevecmb",
+            "caroncmb",
+            "cedillacmb",
+            "circumflexcmb",
+            "commaaccent",
+            "commaturnedabovecmb",
+            "dieresiscmb",
+            "dotaccentcmb",
+            "gravecmb",
+            "hungarumlautcmb",
+            "macroncmb",
+            "ml_virama",
+            "ml_candrabindu",
+            "ml_circular_virama",
+            "ml_combining_anusvara_above",
+            "ml_vertical_bar_virama",
+            "ml_dot_reph",
+            "ogonekcmb",
+            "ringcmb",
+            "tildecmb",
+        ]
+
+        # Bases: consonants and Latin letters
+        base_classes = ["ML_CONSONANTS", "LC_ALL", "UC_ALL"]
+        for class_name in base_classes:
+            for glyph in self.get_glyphs_from_named_classes(class_name):
+                glyph_name = SVGGlyph.get_glyph_name(glyph)
+                if glyph_name in self:
+                    bases.append(glyph_name)
+
+        # Ligatures: conjuncts and Latin extras
+        lig_classes = [
+            "ML_REPH_CONJUNCTS",
+            "ML_CONS_CONJUNCTS",
+            "ML_LA_CONJUNCTS",
+            "LATIN_EXTRA",
+        ]
+        for class_name in lig_classes:
+            for glyph in self.get_glyphs_from_named_classes(class_name):
+                glyph_name = SVGGlyph.get_glyph_name(glyph)
+                if glyph_name in self:
+                    ligatures.append(glyph_name)
+
+        return {
+            "bases": bases,
+            "ligatures": ligatures,
+            "marks": [m for m in marks if m in self],
+        }
+
+    def _prepare_mark_classes(self):
+        """Prepare mark class definitions"""
+        return [
+            {
+                "glyph": "ml_combining_anusvara_above",
+                "x": 148,
+                "y": 0,
+                "class_name": "vc_vc",
+            },
+            {"glyph": "ml_dot_reph", "x": -54, "y": 0, "class_name": "vc_vc"},
+            {
+                "glyph": "ml_sign_vocalic_l",
+                "x": 50,
+                "y": 0,
+                "class_name": "bottom_bottom",
+            },
+            {
+                "glyph": "ml_sign_vocalic_ll",
+                "x": 166,
+                "y": 0,
+                "class_name": "bottom_bottom",
+            },
+        ]
+
+    def _prepare_ligature_data(self):
+        """Prepare ligature data"""
+        ligatures = self.get_glyphs_from_named_classes("LATIN_LIGATURES")
+        components_map = {"heart": ["less", "three"]}
+
+        latin_ligs = []
+        for ligature in ligatures:
+            if ligature in components_map:
+                components = [
+                    SVGGlyph.get_glyph_name(letter)
+                    for letter in components_map.get(ligature)
+                ]
+            else:
+                components = [SVGGlyph.get_glyph_name(letter) for letter in ligature]
+
+            latin_ligs.append(
+                {"input": components, "output": SVGGlyph.get_glyph_name(ligature)}
+            )
+
+        return {"latin": latin_ligs}
+
+    def _prepare_chillu_data(self):
+        """Prepare chillu data"""
+        chillus = [
+            "ന്\u200d",
+            "ര്\u200d",
+            "ല്\u200d",
+            "ള്\u200d",
+            "ണ്\u200d",
+            "ഴ്\u200d",
+            "ക്\u200d",
+        ]
+
+        chillu_data = []
+        for chillu in chillus:
+            chillu_data.append(
+                {
+                    "input": [SVGGlyph.get_glyph_name(letter) for letter in chillu],
+                    "output": SVGGlyph.get_glyph_name(chillu),
+                }
+            )
+        return chillu_data
+
+    def _prepare_conjunct_data(self):
+        """Prepare conjunct data"""
+        prevent_stack_contexts = {
+            "ഷ്ട": ["്ട"],
+            "ഷ്പ": ["്ര"],
+            "സ്പ": ["്ര"],
+            "യ്ത": ["്ത"],
+            "സ്ക": ["്ക", "്ര"],
+            "സ്ത": ["്ത"],
+            "പ്ത": ["്ത"],
+            "സ്ന": ["്ന"],
+            "ശ്ന": ["്ന"],
+            "ല്പ": ["്പ"],
+        }
+
+        basic_conjuncts = []
+        conditional_conjuncts = []
+        chaining_rules = []
+
+        for conjunct in self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS"):
+            conjunct_glyph_name = SVGGlyph.get_glyph_name(conjunct)
+            if conjunct_glyph_name not in self:
+                continue
+
+            conjunct_data = {
+                "input": [SVGGlyph.get_glyph_name(letter) for letter in conjunct],
+                "output": conjunct_glyph_name,
+            }
+
+            if conjunct in prevent_stack_contexts.keys():
+                conditional_conjuncts.append(conjunct_data)
+
+                # Create chaining rules
+                for post_stack_conj in prevent_stack_contexts.get(conjunct):
+                    ignore_pattern = " ".join(
+                        [SVGGlyph.get_glyph_name(letter) + "'" for letter in conjunct]
+                        + [
+                            SVGGlyph.get_glyph_name(letter)
+                            for letter in post_stack_conj
+                        ],
+                    )
+                    pattern = " ".join(
+                        [SVGGlyph.get_glyph_name(letter) + "'" for letter in conjunct]
+                    )
+                    chaining_rules.append(
+                        {"ignore_pattern": ignore_pattern, "pattern": pattern}
+                    )
+            else:
+                basic_conjuncts.append(conjunct_data)
+
+        # LA conjuncts
+        la_conjuncts = []
+        for conjunct in self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"):
+            conjunct_glyph_name = SVGGlyph.get_glyph_name(conjunct)
+            if conjunct_glyph_name in self:
+                la_conjuncts.append(
+                    {
+                        "input": [
+                            SVGGlyph.get_glyph_name(letter) for letter in conjunct
+                        ],
+                        "output": conjunct_glyph_name,
+                    }
+                )
+
+        # Fixup rules for vowel signs
+        fixup_rules = []
+        split_rules = []
+        vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
+
+        ligatures = sorted(
+            self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+        )
+
+        for ligature in ligatures:
+            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
+            if ligature_glyph_name not in self:
+                continue
+
+            missing_vowels = []
+            for vowel_sign in vowel_signs:
+                ligature_vowel = ligature + vowel_sign
+                replacement_ligature_glyphname = SVGGlyph.get_glyph_name(ligature_vowel)
+                if replacement_ligature_glyphname not in self:
+                    missing_vowels.append(SVGGlyph.get_glyph_name(vowel_sign))
+
+            if missing_vowels:
+                # Find largest sequence that has vowel support
+                parts = []
+                seq = ""
+                largest_seq = seq
+                for char in reversed(ligature):
+                    seq = char + seq
+                    if SVGGlyph.get_glyph_name(seq + vowel_signs[0]) in self:
+                        largest_seq = seq
+
+                # Create split rule
+                for letter in ligature[0 : len(ligature) - len(largest_seq)]:
+                    parts.append(letter)
+                if len(largest_seq):
+                    parts.append(largest_seq)
+
+                split_rules.append(
+                    {
+                        "input": ligature_glyph_name,
+                        "output": [SVGGlyph.get_glyph_name(letter) for letter in parts],
+                    }
+                )
+
+                fixup_rules.append(
+                    {
+                        "input": SVGGlyph.get_glyph_name(ligature),
+                        "context": "[" + " ".join(missing_vowels) + "]",
+                    }
+                )
+
+        return {
+            "basic": basic_conjuncts,
+            "conditional": conditional_conjuncts,
+            "chaining_rules": chaining_rules,
+            "la_conjuncts": la_conjuncts,
+            "fixup_rules": fixup_rules,
+            "split_rules": split_rules,
+        }
+
+    def _prepare_cons_signs_data(self):
+        """Prepare consonant signs data"""
+        cons_signs = ["്യ", "്വ"]
+        return [
+            {
+                "input": [SVGGlyph.get_glyph_name(letter) for letter in cons_sign],
+                "output": SVGGlyph.get_glyph_name(cons_sign),
+            }
+            for cons_sign in cons_signs
+        ]
+
+    def _prepare_cons_signs_order_rules(self):
+        """Prepare consonant signs order fix rules"""
+        return [
+            {"pattern": "ml_ya ml_virama_ra'"},
+            {"pattern": "ml_virama_ya ml_virama_ra'"},
+            {"pattern": "ml_virama_va ml_virama_ra'"},
+        ]
+
+    def _prepare_reph_data(self):
+        """Prepare reph data"""
+        return {
+            "input": [SVGGlyph.get_glyph_name(letter) for letter in "്ര"],
+            "output": SVGGlyph.get_glyph_name("്ര"),
+        }
+
+    def _prepare_reph_conjuncts_data(self):
+        """Prepare reph conjuncts data"""
+        reph = "്ര"
+        reph_conjuncts = []
+
+        for ligature in self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS"):
+            base_ligature = ligature.replace(reph, "")
+            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
+            if ligature_glyph_name not in self:
+                continue
+
+            reph_conjuncts.append(
+                {
+                    "input": [
+                        SVGGlyph.get_glyph_name(reph),
+                        SVGGlyph.get_glyph_name(base_ligature),
+                    ],
+                    "output": ligature_glyph_name,
+                }
+            )
+
+        return reph_conjuncts
+
+    def _prepare_vowel_sign_rules(self):
+        """Prepare vowel sign substitution rules"""
+        rules = []
+        vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
+
+        ligatures = sorted(
+            self.get_glyphs_from_named_classes("ML_CONSONANTS")
+            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
+            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+            + ["്യ"]
+        )
+
+        for ligature in ligatures:
+            for vowel_sign in vowel_signs:
+                replacement_ligature = SVGGlyph.get_glyph_name(
+                    ligature
+                ) + SVGGlyph.get_glyph_name(vowel_sign, prefix="_")
+                ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
+
+                if ligature_glyph_name not in self or replacement_ligature not in self:
+                    continue
+
+                rules.append(
+                    {
+                        "input": [
+                            ligature_glyph_name,
+                            SVGGlyph.get_glyph_name(vowel_sign),
+                        ],
+                        "output": replacement_ligature,
+                    }
+                )
+
+        return rules
+
+    def _prepare_aam_rules(self):
+        """Prepare aam sign rules"""
+        return [
+            {
+                "input": [
+                    SVGGlyph.get_glyph_name("◌"),
+                    SVGGlyph.get_glyph_name("ാ"),
+                    SVGGlyph.get_glyph_name("ം"),
+                ],
+                "output": SVGGlyph.get_glyph_name("ാം"),
+            }
+        ]
+
+    def _prepare_calt_rules(self):
+        """Prepare contextual alternates rules"""
+        if "calts" not in self.options.glyphs:
+            return {}
+
+        calt_rules = {}
+        for script in self.options.glyphs.calts:
+            rules = []
+            for calt_def in self.options.glyphs.calts[script]:
+                rules.append(
+                    {
+                        "precontext": SVGGlyph.get_glyph_name(calt_def[0]),
+                        "base": SVGGlyph.get_glyph_name(calt_def[1]),
+                        "replacement": SVGGlyph.get_glyph_name(calt_def[1])
+                        + "."
+                        + calt_def[2],
+                    }
+                )
+            calt_rules[script] = rules
+        return calt_rules
+
+    def _prepare_conjunct_data(self):
+        """Prepare conjunct data"""
+        prevent_stack_contexts = {
+            "ഷ്ട": ["്ട"],
+            "ഷ്പ": ["്ര"],
+            "സ്പ": ["്ര"],
+            "യ്ത": ["്ത"],
+            "സ്ക": ["്ക", "്ര"],
+            "സ്ത": ["്ത"],
+            "പ്ത": ["്ത"],
+            "സ്ന": ["്ന"],
+            "ശ്ന": ["്ന"],
+            "ല്പ": ["്പ"],
+        }
+
+        basic_conjuncts = []
+        conditional_conjuncts = []
+        chaining_rules = []
+
+        for conjunct in self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS"):
+            conjunct_glyph_name = SVGGlyph.get_glyph_name(conjunct)
+            if conjunct_glyph_name not in self:
+                continue
+
+            conjunct_data = {
+                "input": [SVGGlyph.get_glyph_name(letter) for letter in conjunct],
+                "output": conjunct_glyph_name,
+            }
+
+            if conjunct in prevent_stack_contexts.keys():
+                conditional_conjuncts.append(conjunct_data)
+
+                # Create chaining rules
+                for post_stack_conj in prevent_stack_contexts.get(conjunct):
+                    ignore_pattern = " ".join(
+                        [SVGGlyph.get_glyph_name(letter) + "'" for letter in conjunct]
+                        + [
+                            SVGGlyph.get_glyph_name(letter)
+                            for letter in post_stack_conj
+                        ]
+                    )
+                    pattern = " ".join(
+                        [SVGGlyph.get_glyph_name(letter) + "'" for letter in conjunct]
+                    )
+                    chaining_rules.append(
+                        {"ignore_pattern": ignore_pattern, "pattern": pattern}
+                    )
+            else:
+                basic_conjuncts.append(conjunct_data)
+
+        # LA conjuncts
+        la_conjuncts = []
+        for conjunct in self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"):
+            conjunct_glyph_name = SVGGlyph.get_glyph_name(conjunct)
+            if conjunct_glyph_name in self:
+                la_conjuncts.append(
+                    {
+                        "input": [
+                            SVGGlyph.get_glyph_name(letter) for letter in conjunct
+                        ],
+                        "output": conjunct_glyph_name,
+                    }
+                )
+
+        # Fixup rules for vowel signs
+        fixup_rules = []
+        split_rules = []
+        vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
+
+        ligatures = sorted(
+            self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+        )
+
+        for ligature in ligatures:
+            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
+            if ligature_glyph_name not in self:
+                continue
+
+            missing_vowels = []
+            for vowel_sign in vowel_signs:
+                ligature_vowel = ligature + vowel_sign
+                replacement_ligature_glyphname = SVGGlyph.get_glyph_name(ligature_vowel)
+                if replacement_ligature_glyphname not in self:
+                    missing_vowels.append(SVGGlyph.get_glyph_name(vowel_sign))
+
+            if missing_vowels:
+                # Find largest sequence that has vowel support
+                parts = []
+                seq = ""
+                largest_seq = seq
+                for char in reversed(ligature):
+                    seq = char + seq
+                    if SVGGlyph.get_glyph_name(seq + vowel_signs[0]) in self:
+                        largest_seq = seq
+
+                # Create split rule
+                for letter in ligature[0 : len(ligature) - len(largest_seq)]:
+                    parts.append(letter)
+                if len(largest_seq):
+                    parts.append(largest_seq)
+
+                split_rules.append(
+                    {
+                        "input": ligature_glyph_name,
+                        "output": [SVGGlyph.get_glyph_name(letter) for letter in parts],
+                    }
+                )
+
+                fixup_rules.append(
+                    {
+                        "input": SVGGlyph.get_glyph_name(ligature),
+                        "context": "[" + " ".join(missing_vowels) + "]",
+                    }
+                )
+
+        return {
+            "basic": basic_conjuncts,
+            "conditional": conditional_conjuncts,
+            "chaining_rules": chaining_rules,
+            "la_conjuncts": la_conjuncts,
+            "fixup_rules": fixup_rules,
+            "split_rules": split_rules,
+        }
+
+    def _prepare_aalt_data(self):
+        """Prepare access all alternates data"""
+        aalts = {"latin": [], "malayalam": []}
+
+        # Add Latin alternates (example data)
+        if "A" in self.salts:
+            aalts["latin"].append({"base": "A", "alts": ["A.alt1", "A.alt2"]})
+
+        # Add Malayalam alternates
+        for base, alts in self.salts.items():
+            if base.startswith("ml_"):
+                aalts["malayalam"].append(
+                    {"base": base, "alt": alts[0] if alts else base}
+                )
+
+        return aalts
+
+    def buildFeatures(self):
+        """Build OpenType features using Jinja2 templates"""
+        # Prepare data for templates
+        template_data = self.prepare_template_data()
+
+        # Set up Jinja2 environment
+        template_dir = os.path.join(
+            os.path.dirname(__file__), "..", "sources", "features", "templates"
+        )
+        env = Environment(
+            loader=FileSystemLoader(template_dir), trim_blocks=True, lstrip_blocks=True
+        )
+
+        # Render the main template
+        template = env.get_template("features.fea.j2")
+        features_code = template.render(**template_data)
+
+        # Set the features
+        self.features.text = features_code
 
     def get_glyphs_from_named_classes(self, *argv):
         all_glyphs = []
@@ -56,354 +610,8 @@ class MalayalamFont(Font):
         all_glyphs = self.get_glyphs_from_named_classes(class_name)
         return [SVGGlyph.get_glyph_name(letter) for letter in all_glyphs]
 
-    def build_latin_ligatures(self):
-        feature = "liga"
-        name = "latin_ligatures"
-        ligatures = self.get_glyphs_from_named_classes("LATIN_LIGATURES")
-        components_map: dict[str, [str]] = {"heart": ["<", "3"]}
-        rules = []
-        for ligature in ligatures:
-            if ligature in components_map:
-                components = [
-                    [SVGGlyph.get_glyph_name(letter)]
-                    for letter in components_map.get(ligature)
-                ]
-            else:
-                components = [[SVGGlyph.get_glyph_name(letter)] for letter in ligature]
-
-            sub = Substitution(
-                components,
-                replacement=[[SVGGlyph.get_glyph_name(ligature)]],
-            )
-            rules.append(sub)
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_ALL)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_chillus(self):
-        feature = "akhn"
-        name = "zwj_chillus"
-        chillus = [
-            "ന്\u200d",
-            "ര്\u200d",
-            "ല്\u200d",
-            "ള്\u200d",
-            "ണ്\u200d",
-            "ഴ്\u200d",
-            "ക്\u200d",
-        ]
-
-        rules = []
-        for chillu in chillus:
-            rules.append(
-                Substitution(
-                    [[SVGGlyph.get_glyph_name(letter)] for letter in chillu],
-                    replacement=[[SVGGlyph.get_glyph_name(chillu)]],
-                )
-            )
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_cons_la(self):
-        feature = "akhn"
-        name = "cons_la"
-
-        rules = []
-        for conjunct in self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"):
-            rules.append(
-                Substitution(
-                    [[SVGGlyph.get_glyph_name(letter)] for letter in conjunct],
-                    replacement=[[SVGGlyph.get_glyph_name(conjunct)]],
-                )
-            )
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_cons_signs(self):
-        feature = "pstf"
-        name = "cons_signs"
-        cons_signs = ["്യ", "്വ"]
-        rules = []
-        for cons_sign in cons_signs:
-            rules.append(
-                Substitution(
-                    [[SVGGlyph.get_glyph_name(letter)] for letter in cons_sign],
-                    replacement=[[SVGGlyph.get_glyph_name(cons_sign)]],
-                )
-            )
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_cons_signs_order_fix(self):
-        feature = "pstf"
-        name = "cons_signs_fix_order"
-        cons_signs = ["്യ", "്വ"]
-        reph = "്ര"
-        rules = []
-        for cons_sign in cons_signs:
-            rules.append(
-                Substitution(
-                    [[SVGGlyph.get_glyph_name(cons_sign)]],
-                    replacement=[
-                        [SVGGlyph.get_glyph_name(letter)] for letter in cons_sign
-                    ],
-                )
-            )
-        split_cons_signs = Routine(
-            rules=rules, name="split_cons_signs", languages=LANGUAGE_MALAYALAM
-        )
-
-        rules = [
-            # Avoid യ + ് + ര ligature
-            Chaining(
-                [[SVGGlyph.get_glyph_name(reph)]],
-                precontext=[[SVGGlyph.get_glyph_name("യ")]],
-                lookups=[[split_cons_signs]],
-            ),
-            # Split reph in  ്യ + ്ര combination
-            Chaining(
-                [[SVGGlyph.get_glyph_name(reph)]],
-                precontext=[[SVGGlyph.get_glyph_name(cons_signs[0])]],
-                lookups=[[split_cons_signs]],
-            ),
-            # Split reph in ്വ + ്ര combination
-            Chaining(
-                [[SVGGlyph.get_glyph_name(reph)]],
-                precontext=[[SVGGlyph.get_glyph_name(cons_signs[1])]],
-                lookups=[[split_cons_signs]],
-            ),
-        ]
-        split_cons_signs = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-
-        self.fontFeatures.addFeature(feature, [split_cons_signs])
-
-    def build_ra_sign(self):
-        feature = "pref"
-        name = "pref_reph"
-        reph = "്ര"
-        # The reph sign should form only when it is after the conjuncts with
-        # designed reph forms. For all other conjuncts, reph should be virama+ra
-        # Example -> ക + ് +ര -> ക + ്ര
-        # ഖ + ് + ര -> ഖ + ്  + ര
-        glyph_names_with_reph = []
-        for ligature in self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS"):
-            ligature = ligature.replace(reph, "")
-            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
-            if ligature_glyph_name in self:
-                glyph_names_with_reph.append(ligature_glyph_name)
-
-        # To allow independent reph sign rendering, use zwj + reph
-        glyph_names_with_reph.append("zwj")
-        rule = Substitution(
-            [[SVGGlyph.get_glyph_name(letter)] for letter in reph],
-            replacement=[[SVGGlyph.get_glyph_name(reph)]],
-            # precontext=[glyph_names_with_reph], # See https://gitlab.com/smc/fonts/Cocolata/-/issues/4
-        )
-        routine = Routine(rules=[rule], name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_conjuncts(self):
-        feature = "akhn"
-        name = "akhn_conjuncts"
-        rules = []
-        # Prevent stacking and prefer ligating with following letters
-        # Key is stack, value is letters after the stack that prevents stacking.
-        # Example, ഷ് + ട്ട -> Avoid stacked shta, prefer sh + virama + tta
-        prevent_stack_contexts = {
-            "ഷ്ട": ["്ട"],
-            "ഷ്പ": ["്ര"],
-            "സ്പ": ["്ര"],
-            "യ്ത": ["്ത"],
-            "സ്ക": ["്ക", "്ര"],
-            "സ്ത": ["്ത"],
-            "പ്ത": ["്ത"],
-            "സ്ന": ["്ന"],
-            "ശ്ന": ["്ന"],
-            "ല്പ": ["്പ"],
-        }
-        conditional_stack_lookup = None
-        # TODO Can this dictionary be moved to config?
-        for conjunct in self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS"):
-            conjunct_glyph_name = SVGGlyph.get_glyph_name(conjunct)
-            if conjunct_glyph_name not in self:
-                continue
-            sub = Substitution(
-                [[SVGGlyph.get_glyph_name(letter)] for letter in conjunct],
-                replacement=[[conjunct_glyph_name]],
-            )
-            if conjunct in prevent_stack_contexts.keys():
-                if conditional_stack_lookup:
-                    conditional_stack_lookup.addRule(sub)
-                else:
-                    conditional_stack_lookup = Routine(
-                        rules=[sub],
-                        name="conditional_stack_lookup",
-                        languages=LANGUAGE_MALAYALAM,
-                    )
-                ignore_sub_chainings = []
-                for post_stack_conj in prevent_stack_contexts.get(conjunct):
-                    postcontext = []
-                    for letter in post_stack_conj:
-                        postcontext.append([SVGGlyph.get_glyph_name(letter)])
-                    ignore_sub_chainings.append(
-                        Chaining(
-                            [[SVGGlyph.get_glyph_name(letter)] for letter in conjunct],
-                            postcontext=postcontext,
-                            lookups=[],
-                        )
-                    )
-
-                conditional_stack_lookup_chaining = Chaining(
-                    [[SVGGlyph.get_glyph_name(letter)] for letter in conjunct],
-                    lookups=[
-                        [self.fontFeatures.referenceRoutine(conditional_stack_lookup)],
-                        None,
-                        None,
-                    ],
-                )
-                rules.extend([*ignore_sub_chainings, conditional_stack_lookup_chaining])
-                # THANKS to https://github.com/simoncozens/fontFeatures/issues/58
-                # for the above method
-            else:
-                rules.append(sub)
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_cons_ra_substitutions(self):
-        feature = "pres"  # codespell:ignore
-        name = "pres_reph"
-        reph = "്ര"
-        rules = []
-        for ligature in self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS"):
-            ligature = ligature.replace(reph, "")
-            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature + reph)
-            if ligature_glyph_name not in self:
-                continue
-            sub = Substitution(
-                [[SVGGlyph.get_glyph_name(reph)], [SVGGlyph.get_glyph_name(ligature)]],
-                replacement=[[ligature_glyph_name]],
-            )
-            rules.append(sub)
-
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_aam_sign(self):
-        """
-        Remove dotted circle from aam sign 'ാം'
-        """
-        feature = "akhn"
-        name = "remove_dotted_circle"
-
-        ligature_glyph_name = SVGGlyph.get_glyph_name("ാം")
-        sub = Substitution(
-            [
-                [SVGGlyph.get_glyph_name("◌")],
-                [SVGGlyph.get_glyph_name("ാ")],
-                [SVGGlyph.get_glyph_name("ം")],
-            ],
-            replacement=[[ligature_glyph_name]],
-        )
-        rules = [sub]
-
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_cons_conj_vowel_signs(self):
-        feature = "psts"
-        name = "psts_vowel_signs"
-        rules = []
-        vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
-        ligatures = sorted(
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-            + ["്യ"]
-        )
-
-        for ligature in ligatures:
-            for vowel_sign in vowel_signs:
-                replacement_ligature = SVGGlyph.get_glyph_name(
-                    ligature
-                ) + SVGGlyph.get_glyph_name(vowel_sign, prefix="_")
-                ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
-                if ligature_glyph_name not in self:
-                    continue
-                if replacement_ligature not in self:
-                    # TODO: If ligature exists, but if replacement ligature does not exist,
-                    #   add conditional stacking rule
-                    continue
-                sub = Substitution(
-                    [[ligature_glyph_name], [SVGGlyph.get_glyph_name(vowel_sign)]],
-                    replacement=[[replacement_ligature]],
-                    flags=8,
-                )
-                rules.append(sub)
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_conjuncts_fixup(self):
-        feature = "akhn"
-        name = "akhn_conjuncts_fixup"
-        vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
-        ligatures = sorted(
-            self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-        )
-        rules = []
-        split_cons_conj = None
-        for ligature in ligatures:
-            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
-            if ligature_glyph_name not in self:
-                continue
-            missing_vowels = []
-            missing_vowels_glyph_names = []
-            for vowel_sign in vowel_signs:
-                ligature_vowel = ligature + vowel_sign
-                replacement_ligature_glyphname = SVGGlyph.get_glyph_name(ligature_vowel)
-                if replacement_ligature_glyphname in self:
-                    continue
-                missing_vowels.append(vowel_sign)
-                missing_vowels_glyph_names.append(SVGGlyph.get_glyph_name(vowel_sign))
-            parts = []
-            seq = ""
-            largest_seq = seq
-            for char in reversed(ligature):
-                seq = char + seq
-                # FIXME We are basing missing_vowels[0] here to find largest available ligature
-                # with that vowel.
-                # But this is not flexible to accommodate the nature of other vowel
-                # conjoining. If we are doing that for each missing vowel, we cannot group this splitting
-                # under split_cons_conj lookup. We will lookups for each vowelsign.
-                # But this is rare; Having a -uu glyph without _u glyph is rare.
-                if SVGGlyph.get_glyph_name(seq + missing_vowels[0]) in self:
-                    largest_seq = seq
-            # Split everything from the starting part of ligature_vowel.
-            for letter in ligature[0 : len(ligature) - len(largest_seq)]:
-                parts.append(letter)
-            if len(largest_seq):
-                parts.append(largest_seq)
-            sub = Substitution(
-                [[ligature_glyph_name]],
-                replacement=[[SVGGlyph.get_glyph_name(letter)] for letter in parts],
-            )
-            if split_cons_conj:
-                split_cons_conj.addRule(sub)
-            else:
-                split_cons_conj = Routine(
-                    rules=[sub], name="split_cons_conj", languages=LANGUAGE_MALAYALAM
-                )
-            rules.append(
-                Chaining(
-                    [[SVGGlyph.get_glyph_name(ligature)]],
-                    postcontext=[missing_vowels_glyph_names],
-                    lookups=[[split_cons_conj]],
-                ),
-            )
-        routine = Routine(rules=rules, name=name, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_abvm(self):
+    def _prepare_top_anchors(self):
+        """Prepare top anchor positioning data"""
         feature = "abvm"
         name = "abvm_topmarks"
         top_mark_glyphs = [
@@ -429,25 +637,18 @@ class MalayalamFont(Font):
             glyph = self[glyph_name]
             for anchor in glyph.anchors:
                 if visual_center_anchor_name == anchor.name:
-                    anchors[glyph.name] = {anchor.name: (anchor.x, anchor.y)}
+                    anchors[glyph.name] = {
+                        visual_center_anchor_name: (int(anchor.x), int(anchor.y))
+                    }
 
             if glyph.name not in anchors:
-                anchors[glyph.name] = {visual_center_anchor_name: (glyph.width / 2, 0)}
+                anchors[glyph.name] = {
+                    visual_center_anchor_name: (int(glyph.width / 2), 0)
+                }
 
-            for vowel_sign in vowel_signs:
-                letterWithVowel = SVGGlyph.get_glyph_name(
-                    letter
-                ) + SVGGlyph.get_glyph_name(vowel_sign, prefix="_")
-                if letterWithVowel not in self:
-                    continue
-                glyphWithVowel = self[letterWithVowel]
-                if glyphWithVowel.name not in anchors:
-                    anchors[glyphWithVowel.name] = anchors[glyph.name]
-
-        self.fontFeatures.anchors = anchors
         top_bases = {}
         top_marks = {}
-        for glyphname, anchors in self.fontFeatures.anchors.items():
+        for glyphname, anchors in anchors.items():
             for anchorname, position in anchors.items():
                 if anchorname == visual_center_anchor_name:
                     if glyphname in top_mark_glyphs:
@@ -455,19 +656,39 @@ class MalayalamFont(Font):
                     else:
                         top_bases[glyphname] = position
 
-        tops = Attachment(
-            visual_center_anchor_name, visual_center_anchor_name, top_bases, top_marks
-        )
-        routine = Routine(name=name, rules=[tops], languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
+        def get_base_set(letter):
+            base_set = [letter]
+            for vowel_sign in vowel_signs:
+                letterWithVowel = SVGGlyph.get_glyph_name(
+                    letter
+                ) + SVGGlyph.get_glyph_name(vowel_sign, prefix="_")
+                if letterWithVowel not in self:
+                    continue
+                glyphWithVowel = self[letterWithVowel]
+                base_set.append(glyphWithVowel.name)
+            return base_set
 
-    def build_blwm(self):
-        feature = "blwm"
-        name = "blwm_bottommarks"
-        bottom_mark_glyphs = [
-            SVGGlyph.get_glyph_name(c)
-            for c in self.get_glyphs_from_named_classes("ML_BOTTOM_MARKS")
-        ]
+        template_data = []
+        for letter in lettersWithMarks:
+            glyph_name = SVGGlyph.get_glyph_name(letter)
+            if glyph_name not in self:
+                continue
+            if glyph_name not in top_bases:
+                continue
+
+            anchor = top_bases.get(glyph_name)
+            template_data.append(
+                {
+                    "bases": get_base_set(glyph_name),
+                    "x": anchor[0],
+                    "y": anchor[1],
+                    "class_name": "vc_vc",
+                },
+            )
+
+        return template_data
+
+    def _prepare_bottom_anchors(self):
         anchors = {}
         bbvm_anchor_name = "bottom"
         lettersWithMarks = sorted(
@@ -481,172 +702,30 @@ class MalayalamFont(Font):
             glyph = self[glyph_name]
             for anchor in glyph.anchors:
                 if bbvm_anchor_name == anchor.name:
-                    anchors[glyph.name] = {anchor.name: (anchor.x, anchor.y)}
+                    anchors[glyph.name] = {
+                        bbvm_anchor_name: (int(anchor.x), int(anchor.y))
+                    }
 
             if glyph.name not in anchors:
-                anchors[glyph.name] = {bbvm_anchor_name: (glyph.width, 0)}
+                anchors[glyph.name] = {bbvm_anchor_name: (int(glyph.width), 0)}
 
-        self.fontFeatures.anchors = anchors
-        bottom_bases = {}
-        bottom_marks = {}
-        for glyphname, anchors in self.fontFeatures.anchors.items():
-            for anchorname, position in anchors.items():
-                if anchorname == bbvm_anchor_name:
-                    if glyphname in bottom_mark_glyphs:
-                        bottom_marks[glyphname] = position
-                    else:
-                        bottom_bases[glyphname] = position
+        template_data = []
+        for letter in lettersWithMarks:
+            glyph_name = SVGGlyph.get_glyph_name(letter)
+            if glyph_name not in self:
+                continue
 
-        bottoms = Attachment(
-            bbvm_anchor_name, bbvm_anchor_name, bottom_bases, bottom_marks
-        )
-        routine = Routine(name=name, rules=[bottoms], languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
+            anchor = anchors.get(glyph_name).get(bbvm_anchor_name)
+            template_data.append(
+                {
+                    "bases": [glyph_name],
+                    "x": anchor[0],
+                    "y": anchor[1],
+                    "class_name": "bottom_bottom",
+                },
+            )
 
-    def build_gpos(self):
-        self.build_abvm()
-        self.build_blwm()
-
-    def build_gdef(self):
-        ligatures = sorted(
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("LATIN_EXTRA")
-        )
-        for ligature in ligatures:
-            ligature_glyph_name = SVGGlyph.get_glyph_name(ligature)
-            if ligature_glyph_name in self:
-                self.fontFeatures.glyphclasses[ligature_glyph_name] = "ligature"
-
-        for c in self.get_glyphs_from_named_classes(
-            "LC_ALL"
-        ) + self.get_glyphs_from_named_classes("UC_ALL"):
-            c_glyph_name = SVGGlyph.get_glyph_name(c)
-            if c_glyph_name in self:
-                self.fontFeatures.glyphclasses[c_glyph_name] = "base"
-
-        for cons in self.get_glyphs_from_named_classes("ML_CONSONANTS"):
-            cons_glyph_name = SVGGlyph.get_glyph_name(cons)
-            if cons_glyph_name in self:
-                self.fontFeatures.glyphclasses[cons_glyph_name] = "base"
-        # Mark characters should be in the GDEF mark glyph class.
-        # FIXME: Use unicode instead of glyph names so that glyph names are always
-        # calculated
-        marks = [
-            "acutecmb",  # U+0301
-            "brevecmb",  # U+0306
-            "caroncmb",  # U+030C
-            "cedillacmb",  # U+0327
-            "circumflexcmb",  # U+0302
-            "commaaccent",  # U+0326
-            "commaturnedabovecmb",  # U+0312
-            "dieresiscmb",  # U+0308
-            "dotaccentcmb",  # U+0307
-            "gravecmb",  # U+0300
-            "hungarumlautcmb",  # U+030B
-            "macroncmb",  # U+0304
-            "ml_virama",  # U+0D4D
-            "ml_candrabindu",  # U+0D01
-            "ml_circular_virama",  # U+0D3C
-            "ml_combining_anusvara_above",  # U+0D00
-            # 'ml_sign_u', # U+0D41
-            # 'ml_sign_uu', # U+0D42
-            # 'ml_sign_vocalic_l', # U+0D62
-            # 'ml_sign_vocalic_ll', # U+0D63
-            # 'ml_sign_vocalic_r', # U+0D43
-            # 'ml_sign_vocalic_rr', # U+0D44
-            "ml_vertical_bar_virama",  # U+0D3B
-            "ml_dot_reph",  # U+0D4E
-            "ogonekcmb",  # U+0328
-            "ringcmb",  # U+030A
-            "tildecmb",  # U+0303
-        ]
-        for mark in marks:
-            self.fontFeatures.glyphclasses[mark] = "mark"
-
-    def build_calt(self):
-        feature = "calt"
-        if "calts" not in self.options.glyphs:
-            return
-        for script in self.options.glyphs.calts:
-            name = f"{script}_calt_lookup"
-            languages = eval(f"LANGUAGE_{script.upper()}")
-            rules = []
-            for calt_def in self.options.glyphs.calts[script]:
-                precontext = SVGGlyph.get_glyph_name(calt_def[0])
-                base = SVGGlyph.get_glyph_name(calt_def[1])
-                replacement = base + "." + calt_def[2]
-                rules.append(
-                    Substitution([[base]], [[replacement]], precontext=[[precontext]])
-                )
-            routine = Routine(name=name, rules=rules, languages=languages)
-            self.fontFeatures.addFeature(feature, [routine])
-
-    def build_salt(self):
-        feature = "salt"
-        name = "salts_lookup"
-        rules = []
-        for base, alts in self.salts.items():
-            rules.append(Substitution([[base]], [[base] + alts]))
-        routine = Routine(name=name, rules=rules, languages=LANGUAGE_MALAYALAM)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_sups(self):
-        feature = "sups"
-        name = "sups_lookup"
-        rules = []
-        for base, alts in self.sups.items():
-            rules.append(Substitution([[base]], [alts]))
-        routine = Routine(name=name, rules=rules, languages=LANGUAGE_ALL)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_onum(self):
-        feature = "onum"
-        name = "onum_lookup"
-        rules = []
-        for base, alts in self.onums.items():
-            rules.append(Substitution([[base]], [alts]))
-        routine = Routine(name=name, rules=rules, languages=LANGUAGE_ALL)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def build_aalt(self):
-        feature = "aalt"
-        name = "aalts_lookup"
-        rules = []
-        for base, alts in self.salts.items():
-            rules.append(Substitution([[base]], [alts]))
-        routine = Routine(name=name, rules=rules)
-        self.fontFeatures.addFeature(feature, [routine])
-
-    def getFeatures(self):
-        return self.fontFeatures.asFea()
-
-    def buildFeatures(self):
-        self.build_glyph_classes()
-        # Latin GSUB
-        self.build_latin_ligatures()
-        # Malayalam GSUB
-        self.build_chillus()
-        self.build_conjuncts()
-        self.build_cons_la()
-        self.build_cons_signs()
-        self.build_cons_signs_order_fix()
-        self.build_ra_sign()
-        self.build_cons_ra_substitutions()
-        self.build_cons_conj_vowel_signs()
-        self.build_aam_sign()
-        self.build_kern()
-        self.build_gpos()
-        self.build_gdef()
-        self.build_conjuncts_fixup()
-        self.build_calt()
-        self.build_aalt()
-        self.build_salt()
-        # self.build_onum()
-        self.build_sups()
-        self.features.text = self.getFeatures()
+        return template_data
 
     def build(self, design_dir):
         empty_glyphs = {
@@ -731,7 +810,7 @@ class MalayalamFont(Font):
             # 'ൈ': ['െ', 'െ'],
             # 'ൌ': ['െ', 'ൗ'],
             # '"':['\'', '\''],
-            #'“':['‘', '‘'],
+            # '“':['‘', '‘'],
             # '”':['’', '’'],
         }
         for c, parts in appendables.items():
@@ -802,7 +881,9 @@ class MalayalamFont(Font):
                 items = [base_name, diacritc_name]
                 assert base_name in self
                 log.debug(
-                    f"Compose {chr(composite_unicode)} - {composite_glyph_name} : {'+'.join(items)} : {composite_unicode}"
+                    f"Compose {chr(composite_unicode)} - {composite_glyph_name} : {
+                        '+'.join(items)
+                    } : {composite_unicode}"
                 )
                 self.buildComposite(composite_glyph_name, composite_unicode, items)
 

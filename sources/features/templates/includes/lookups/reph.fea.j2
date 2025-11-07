@@ -1,0 +1,39 @@
+lookup cons_signs {
+    lookupflag 0;
+
+{% for sign in cons_signs %}
+    sub {{ sign.input | join(' ') }} by {{ sign.output }};
+{% endfor %}
+} cons_signs;
+
+lookup split_cons_signs {
+    lookupflag 0;
+
+{% for sign in cons_signs %}
+    sub {{ sign.output }} by {{ sign.input | join(' ') }};
+{% endfor %}
+} split_cons_signs;
+
+lookup cons_signs_fix_order {
+    lookupflag 0;
+
+{% for rule in cons_signs_order_rules %}
+    sub {{ rule.pattern }} lookup split_cons_signs;
+{% endfor %}
+} cons_signs_fix_order;
+
+lookup pref_reph {
+    lookupflag 0;
+
+    sub {{ reph.input | join(' ') }} by {{ reph.output }};
+} pref_reph;
+
+lookup pres_reph {
+    lookupflag 0;
+
+{% for reph_rule in reph_conjuncts %}
+    sub {{ reph_rule.input | join(' ') }} by {{ reph_rule.output }};
+{% endfor %}
+} pres_reph;
+
+
