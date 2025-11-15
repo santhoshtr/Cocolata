@@ -19,10 +19,7 @@ paths[p] =  z0{down}..z1 ..{dir 60}z3;
 dt := directiontime dir 90 of subpath(2, 3) of paths[p];
 paths[p] := insert_nodes(paths[p])(2+ dt);
 pen_stroke(
-    nib(middle_down_nib rotated -10)(0)
-    nib(thick_horizontal_nib)(1,2)
-    nib(end_nib)(3)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib)(0,1,2)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 3 of paths[0]);
