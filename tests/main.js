@@ -118,7 +118,7 @@ function init() {
   pane.addBinding(config, "font-name", {
     label: "Font name",
     options: {
-      Colalata: "Cocolata",
+      Cocolata: "Cocolata",
       "Cocolata Color": "Cocolata Color",
     },
   });
