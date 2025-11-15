@@ -3,7 +3,7 @@
 # Safer shell and make defaults
 SHELL := /usr/bin/env bash
 .SHELLFLAGS := -eu -o pipefail -c
-MAKEFLAGS += --warn-undefined-variables
+#MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
 .DEFAULT_GOAL := build
