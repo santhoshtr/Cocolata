@@ -23,7 +23,6 @@ class MalayalamFont(Font):
         self.options = options
         self.style = style
         self.weight = weight
-        # self.fontFeatures = FontFeatures()
         self.available_svgs = []
         self.salts = {}  # Stylistic Alternates
         self.onums = {}  # Old Numerals

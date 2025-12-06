@@ -4,7 +4,7 @@ import os
 import sys
 
 import yaml
-from malayalamfont import MalayalamFont
+from malayalamvariablefont import MalayalamVariableFont
 from munch import DefaultMunch
 
 log = logging.getLogger(__name__)
@@ -18,7 +18,9 @@ def dir_path(path):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build a UFO formatted font", add_help=True)
+    parser = argparse.ArgumentParser(
+        description="Build a UFO formatted font", add_help=True
+    )
     parser.add_argument(
         "-c",
         "--config",
@@ -28,9 +30,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("-s", "--source", help="SVG sources", type=dir_path)
     parser.add_argument("-o", "--output", help="Output UFO File")
-    parser.add_argument("-t", "--style", default="Regular", required=False, help="Set style")
-    parser.add_argument("-w", "--weight", default=400, required=False, help="Set weight")
-    parser.add_argument("-l", "--log-level", default="INFO", required=False, help="Set log level")
+    parser.add_argument(
+        "-l", "--log-level", default="INFO", required=False, help="Set log level"
+    )
 
     options = parser.parse_args()
     try:
@@ -39,27 +41,17 @@ if __name__ == "__main__":
         logging.error("Invalid log level: {}".format(options.log_level))
         sys.exit(1)
 
-    # Calculate the weight value based on the font style
-    weight_map = {
-        "Thin": 100,
-        "ExtraLight": 200,
-        "Light": 300,
-        "Regular": 400,
-        "Medium": 500,
-        "SemiBold": 600,
-        "Bold": 700,
-        "ExtraBold": 800,
-        "Black": 900,
+    design_dirs = {
+        100: "sources/svgs/Thin",
+        200: "sources/svgs/ExtraLight",
+        300: "sources/svgs/Light",
+        400: "sources/svgs/Regular",
+        500: "sources/svgs/Medium",
+        600: "sources/svgs/SemiBold",
+        700: "sources/svgs/Bold",
+        800: "sources/svgs/ExtraBold",
+        900: "sources/svgs/Black",
     }
-    weight = weight_map.get(options.style, 400)  # Default to 400 if style is not in the map
-
     config = DefaultMunch.fromDict(yaml.load(options.config, Loader=yaml.FullLoader))
-
-    font: MalayalamFont = MalayalamFont(config, style=options.style, weight=weight)
-    font.build(options.source)
-    font.buildFeatures()
-    font.setFontInfo()
-    font.updateFontVersion()
-    font.setGlyphList()
-    font.build_glyph_groups()
-    font.save(options.output, overwrite=True)
+    font = MalayalamVariableFont(config, weights=design_dirs.keys())
+    font.build_masters(design_dirs=design_dirs, output_dir="sources/ufo/")

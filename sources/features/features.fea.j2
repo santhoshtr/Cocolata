@@ -156,8 +156,13 @@ lookup abvm_topmarks {
     lookupflag 0;
 
 {% for anchor in top_anchors %}
+    {% if anchor.anchor %}
         pos base [{{ anchor.bases | join(' ') }}]
-            <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+        {{ anchor.anchor }} mark @{{ anchor.class_name }};
+    {% else %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% endif %}
 {% endfor %}
 
 } abvm_topmarks;
@@ -166,8 +171,13 @@ lookup blwm_bottommarks {
     lookupflag 0;
 
 {% for anchor in bottom_anchors %}
-        pos base {{ anchor.bases | join(' ') }}
-            <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% if anchor.anchor %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        {{ anchor.anchor }} mark @{{ anchor.class_name }};
+    {% else %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% endif %}
 {% endfor %}
 
 } blwm_bottommarks;
