@@ -4,6 +4,7 @@ from typing import Dict, List
 
 from jinja2 import Environment, FileSystemLoader
 from malayalamfont import MalayalamFont
+from malayalamfeatures import MalayalamFeatures
 
 log = logging.getLogger(__name__)
 
@@ -86,7 +87,8 @@ class MalayalamVariableFont:
         log.info("Collecting feature data from all masters...")
 
         for weight, font in self.master_fonts.items():
-            self.feature_data_by_weight[weight] = font.prepare_template_data()
+            ml_features = MalayalamFeatures(font, self.options)
+            self.feature_data_by_weight[weight] = ml_features.prepare_template_data()
 
     def _merge_top_anchors(
         self, anchors_by_weight: Dict[int, List[dict]]
