@@ -1,61 +1,13 @@
 import os
 import traceback
-import unicodedata
 import xml.etree.ElementTree as etree
 
-from fontTools import agl
 from fontTools.svgLib import SVGPath
 from fontTools.ufoLib import UFOLibError
 from fontTools.misc.roundTools import otRound
 from ufoLib2.objects import Glyph
 
-AGL2UV_EXTRA = {
-    "onesuperior": 0x00B9,
-    "twosuperior": 0x00B2,
-    "threesuperior": 0x00B3,
-    "foursuperior": 0x2074,
-    "quotedblbasereversed": 0x2E42,
-    "Acaron": 0x01CD,
-    "acaron": 0x01CE,
-    "Lcedilla": 0x013B,
-    "lcedilla": 0x013C,
-    "Kcedilla": 0x0136,
-    "kcedilla": 0x0137,
-    "Ncedilla": 0x0145,
-    "Gcedilla": 0x0122,
-    "gcedilla": 0x0123,
-    "ncedilla": 0x0146,
-    "Rcedilla": 0x0156,
-    "rcedilla": 0x0157,
-    "ringcmb": 0x030A,
-    "tildecmb": 0x0303,
-    "hungarumlautcmb": 0x030B,
-    "cedillacmb": 0x0327,
-    "acutecmb": 0x0301,
-    "ogonekcmb": 0x0328,
-    "dieresiscmb": 0x0308,
-    "dotaccentcmb": 0x0307,
-    "circumflexcmb": 0x0302,
-    "commaturnedabovecmb": 0x0312,
-    "caroncmb": 0x030C,
-    "brevecmb": 0x0306,
-    "macroncmb": 0x0304,
-    "gravecmb": 0x0300,
-    "commaturnedmod": 0x02BB,
-    "commaaccent": 0x0326,
-    "scommaaccent": 0x0219,
-    "Scommaaccent": 0x0218,
-    "Tcommaaccent": 0x021A,
-    "tcommaaccent": 0x021B,
-    "dotlessj": 0x0237,
-    "jcaron": 0x01F0,
-    "notdef": 0,
-    "uni25CC": 0x25CC,
-}
-UV2AGL_EXTRA = {
-    0x0326: "commaaccent",
-    0x0328: "ogonekcmb",
-}
+from glyphnames import get_glyph_name, parse_glyph_filename, get_unicode_for_name
 
 
 class SVGGlyph:
@@ -73,9 +25,6 @@ class SVGGlyph:
         self.glyph_height = 1000
         self.glif = None
         self.transform = "1 0 0 -1 0 0"
-        # Fill missing AGL2UV, UV2AGL values in agl
-        agl.AGL2UV.update(AGL2UV_EXTRA)
-        agl.UV2AGL.update(UV2AGL_EXTRA)
 
     @staticmethod
     def svg2glif(
@@ -140,28 +89,19 @@ class SVGGlyph:
         self.svg_height = float(svgObj.get("height", "1000").replace("px", " "))
         # Filename without extension
         filename = os.path.splitext(os.path.basename(self.svg_file_path))[0]
-        self.name = filename.split(".")[0]
-        self.alt = None
-        self.onum = None
-        if len(filename.split(".")) > 1:
-            variant = filename.split(".")[1]
-            alt_suffixes = ["alt", "wide", "narrow", "alt1", "alt2", "alt3"]
-            if variant in alt_suffixes:
-                self.alt = variant
-            elif variant == "oldnum":
-                self.onum = variant
-            elif variant == "sups":
-                self.sups = variant
-        self.unicode = None
-        if len(self.name) == 1:
-            self.unicode = [ord(self.name)]
-        elif self.name in agl.AGL2UV:
-            self.unicode = [agl.AGL2UV.get(self.name)]
 
-        if self.alt or self.onum or self.sups:
-            # Alternate glyphs does not require unicode.
-            self.unicode = None
-        self.glyph_name = SVGGlyph.get_glyph_name(self.name)
+        # Parse filename for glyph metadata
+        parsed = parse_glyph_filename(filename)
+        self.name = parsed["name"]
+        self.alt = parsed["alt"]
+        self.onum = parsed["onum"]
+        self.sups = parsed["sups"]
+
+        # Determine Unicode value
+        has_variant = self.alt or self.onum or self.sups
+        self.unicode = get_unicode_for_name(self.name, has_variant=has_variant)
+
+        self.glyph_name = get_glyph_name(self.name)
         if not self.glyph_name:
             raise UFOLibError(f"Could not calculate glyph name for {self.name}")
 
@@ -281,55 +221,3 @@ class SVGGlyph:
             traceback.print_exc()
 
         self.round_glif_points()
-
-    @staticmethod
-    def name_from_uc(char):
-        return (
-            unicodedata.name(char)
-            .replace("MALAYALAM SIGN", "")
-            .replace("MALAYALAM", "")
-            .replace("LETTER", "")
-            .replace("VOWEL", "")
-            .lower()
-            .strip()
-            .replace(" ", "_", -1)
-            .replace("-", "_")
-        )
-
-    @staticmethod
-    def get_glyph_name(name: str, prefix="ml_") -> str:
-        name_parts = name.split("_")
-        name = name_parts[0]
-        if len(name_parts) > 1:
-            ext = "_" + "_".join(name_parts[1:])
-        else:
-            ext = ""
-        codepoint = ord(name[0])
-        if codepoint == 8205:
-            return "zwj"
-        if name == "notdef":
-            return ".notdef"
-        if codepoint >= 3328 and codepoint <= 3455:
-            if len(name) > 1:
-                chillu_normalize_map = {
-                    "ന്\u200d": "ൻ",
-                    "ര്\u200d": "ർ",
-                    "ല്\u200d": "ൽ",
-                    "ള്\u200d": "ൾ",
-                    "ണ്\u200d": "ൺ",
-                    "ഴ്\u200d": "ൖ",
-                    "ക്\u200d": "ൿ",
-                }
-                name = chillu_normalize_map.get(name, name)
-                return prefix + "_".join(SVGGlyph.name_from_uc(c) for c in name) + ext
-            else:
-                return prefix + SVGGlyph.name_from_uc(name) + ext
-
-        if len(name) == 1:
-            return (
-                agl.UV2AGL.get(
-                    ord(name), f"uni{hex(codepoint).replace('0x', '').upper()}"
-                )
-                + ext
-            )
-        return agl.UV2AGL.get(name, name) + ext
