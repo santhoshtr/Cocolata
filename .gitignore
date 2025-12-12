@@ -6,3 +6,6 @@ proofs
 __pycache__
 *.log
 *.aux
+
+/build
+/target
