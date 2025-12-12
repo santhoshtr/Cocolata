@@ -215,7 +215,10 @@ class MalayalamFont(Font):
         reph = "്ര"
         reph_conjuncts = []
 
-        for ligature in self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS"):
+        reph_conjuncts_glyphs = self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
+        reph_glyph_name = get_glyph_name(reph)
+
+        for ligature in reph_conjuncts_glyphs:
             base_ligature = ligature.replace(reph, "")
             ligature_glyph_name = get_glyph_name(ligature)
             if ligature_glyph_name not in self:
@@ -224,7 +227,7 @@ class MalayalamFont(Font):
             reph_conjuncts.append(
                 {
                     "input": [
-                        get_glyph_name(reph),
+                        reph_glyph_name,
                         get_glyph_name(base_ligature),
                     ],
                     "output": ligature_glyph_name,
@@ -238,22 +241,26 @@ class MalayalamFont(Font):
         rules = []
         vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
 
+        # Cache class lookups
+        consonants = self.get_glyphs_from_named_classes("ML_CONSONANTS")
+        reph_conjuncts = self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
+        cons_conjuncts = self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+        la_conjuncts = self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+
         ligatures = sorted(
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-            + ["്യ"]
+            consonants + reph_conjuncts + cons_conjuncts + la_conjuncts + ["്യ"]
         )
 
         for ligature in ligatures:
-            for vowel_sign in vowel_signs:
-                replacement_ligature = get_glyph_name(ligature) + get_glyph_name(
-                    vowel_sign, prefix="_"
-                )
-                ligature_glyph_name = get_glyph_name(ligature)
+            ligature_glyph_name = get_glyph_name(ligature)
+            if ligature_glyph_name not in self:
+                continue
 
-                if ligature_glyph_name not in self or replacement_ligature not in self:
+            for vowel_sign in vowel_signs:
+                vowel_sign_name = get_glyph_name(vowel_sign, prefix="_")
+                replacement_ligature = ligature_glyph_name + vowel_sign_name
+
+                if replacement_ligature not in self:
                     continue
 
                 rules.append(
@@ -319,7 +326,10 @@ class MalayalamFont(Font):
         conditional_conjuncts = []
         chaining_rules = []
 
-        for conjunct in self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS"):
+        # Cache class lookup
+        cons_conjuncts = self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+
+        for conjunct in cons_conjuncts:
             conjunct_glyph_name = get_glyph_name(conjunct)
             if conjunct_glyph_name not in self:
                 continue
@@ -349,7 +359,9 @@ class MalayalamFont(Font):
 
         # LA conjuncts
         la_conjuncts = []
-        for conjunct in self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"):
+        la_conjuncts_glyphs = self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+
+        for conjunct in la_conjuncts_glyphs:
             conjunct_glyph_name = get_glyph_name(conjunct)
             if conjunct_glyph_name in self:
                 la_conjuncts.append(
@@ -364,10 +376,14 @@ class MalayalamFont(Font):
         split_rules = []
         vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
 
-        ligatures = sorted(
-            self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-        )
+        # Cache class lookups
+        all_conjuncts = self.get_glyphs_from_named_classes(
+            "ML_CONS_CONJUNCTS"
+        ) + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+        ligatures = sorted(all_conjuncts)
+
+        # Pre-cache vowel sign names
+        vowel_sign_names = [get_glyph_name(vs) for vs in vowel_signs]
 
         for ligature in ligatures:
             ligature_glyph_name = get_glyph_name(ligature)
@@ -375,20 +391,21 @@ class MalayalamFont(Font):
                 continue
 
             missing_vowels = []
-            for vowel_sign in vowel_signs:
+            for i, vowel_sign in enumerate(vowel_signs):
                 ligature_vowel = ligature + vowel_sign
                 replacement_ligature_glyphname = get_glyph_name(ligature_vowel)
                 if replacement_ligature_glyphname not in self:
-                    missing_vowels.append(get_glyph_name(vowel_sign))
+                    missing_vowels.append(vowel_sign_names[i])
 
             if missing_vowels:
                 # Find largest sequence that has vowel support
                 parts = []
                 seq = ""
                 largest_seq = seq
+                first_vowel_sign = vowel_signs[0]
                 for char in reversed(ligature):
                     seq = char + seq
-                    if get_glyph_name(seq + vowel_signs[0]) in self:
+                    if get_glyph_name(seq + first_vowel_sign) in self:
                         largest_seq = seq
 
                 # Create split rule
@@ -478,21 +495,29 @@ class MalayalamFont(Font):
         """Prepare top anchor positioning data"""
         feature = "abvm"
         name = "abvm_topmarks"
-        top_mark_glyphs = [
-            get_glyph_name(c)
-            for c in self.get_glyphs_from_named_classes("ML_TOP_MARKS")
-        ]
-        anchors = {}
-        visual_center_anchor_name = "vc"
+
+        # Cache class lookups
+        top_marks = self.get_glyphs_from_named_classes("ML_TOP_MARKS")
+        top_mark_glyphs = [get_glyph_name(c) for c in top_marks]
+
+        consonants = self.get_glyphs_from_named_classes("ML_CONSONANTS")
+        reph_conjuncts = self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
+        cons_conjuncts = self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+        la_conjuncts = self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+
         lettersWithMarks = sorted(
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_TOP_MARKS")
+            consonants
+            + reph_conjuncts
+            + cons_conjuncts
+            + la_conjuncts
+            + top_marks
             + ["\u25cc"]  # Dotted circle.
         )
+
+        anchors = {}
+        visual_center_anchor_name = "vc"
         vowel_signs = self.options.glyphs.classes["ML_VOWEL_SIGNS_CONJOINING"]
+
         # FIXME, should do this for alt glyphs too
         for letter in lettersWithMarks:
             glyph_name = get_glyph_name(letter)
@@ -512,8 +537,8 @@ class MalayalamFont(Font):
 
         top_bases = {}
         top_marks = {}
-        for glyphname, anchors in anchors.items():
-            for anchorname, position in anchors.items():
+        for glyphname, anchors_dict in anchors.items():
+            for anchorname, position in anchors_dict.items():
                 if anchorname == visual_center_anchor_name:
                     if glyphname in top_mark_glyphs:
                         top_marks[glyphname] = position
@@ -553,12 +578,15 @@ class MalayalamFont(Font):
         return template_data
 
     def _prepare_bottom_anchors(self):
+        """Prepare bottom anchor positioning data"""
         anchors = {}
         bbvm_anchor_name = "bottom"
-        lettersWithMarks = sorted(
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_BOTTOM_MARKS")
-        )
+
+        # Cache class lookups
+        consonants = self.get_glyphs_from_named_classes("ML_CONSONANTS")
+        bottom_marks = self.get_glyphs_from_named_classes("ML_BOTTOM_MARKS")
+        lettersWithMarks = sorted(consonants + bottom_marks)
+
         for letter in lettersWithMarks:
             glyph_name = get_glyph_name(letter)
             if glyph_name not in self:
@@ -579,7 +607,14 @@ class MalayalamFont(Font):
             if glyph_name not in self:
                 continue
 
-            anchor = anchors.get(glyph_name).get(bbvm_anchor_name)
+            anchor_dict = anchors.get(glyph_name)
+            if anchor_dict is None:
+                continue
+
+            anchor = anchor_dict.get(bbvm_anchor_name)
+            if anchor is None:
+                continue
+
             template_data.append(
                 {
                     "bases": [glyph_name],
@@ -674,8 +709,8 @@ class MalayalamFont(Font):
             # 'ൈ': ['െ', 'െ'],
             # 'ൌ': ['െ', 'ൗ'],
             # '"':['\'', '\''],
-            # '“':['‘', '‘'],
-            # '”':['’', '’'],
+            # '"':[''', '''],
+            # '"':[''', '''],
         }
         for c, parts in appendables.items():
             compositename = get_glyph_name(c)
@@ -711,38 +746,41 @@ class MalayalamFont(Font):
             "\u02dd",  # 02dd Double acute accent
             "\u0326",  # 0326 COMBINING COMMA BELOW
         ]
+
+        # Cache class lookups
+        lc_all = self.get_glyphs_from_named_classes("LC_ALL")
+        uc_all = self.get_glyphs_from_named_classes("UC_ALL")
+        latin_extra_set = set(self.get_glyphs_from_named_classes("LATIN_EXTRA"))
+
         for diacritic in diacritics:
-            for base in self.get_glyphs_from_named_classes(
-                "LC_ALL"
-            ) + self.get_glyphs_from_named_classes("UC_ALL"):
+            diacritic_name = get_glyph_name(diacritic)
+
+            for base in lc_all + uc_all:
                 base_name = get_glyph_name(base)
-                diacritc_name = get_glyph_name(diacritic)
-                items = [base_name, diacritc_name]
+                items = [base_name, diacritic_name]
                 composite_glyph_name = "".join(items)
                 if composite_glyph_name in agl.AGL2UV:
                     composite_unicode = agl.AGL2UV[composite_glyph_name]
                 else:
                     continue
-                if chr(composite_unicode) not in self.get_glyphs_from_named_classes(
-                    "LATIN_EXTRA"
-                ):
+                if chr(composite_unicode) not in latin_extra_set:
                     continue
-                assert diacritc_name in self
+                assert diacritic_name in self
                 if base_name in ["i", "j"]:
                     base_name = "dotless" + base_name
-                if base_name == "t" and diacritc_name == "caron":
-                    diacritc_name = "caroncmbalt"
-                if base_name == "L" and diacritc_name == "cedilla":
-                    diacritc_name = "commaaccent"
-                if base_name == "L" and diacritc_name == "caron":
-                    diacritc_name = "caroncmbalt"
-                if base_name == "l" and diacritc_name == "caron":
-                    diacritc_name = "caroncmbalt"
-                if base_name == "n" and diacritc_name == "cedilla":
-                    diacritc_name = "commaaccent"
-                if base_name == "g" and diacritc_name == "cedilla":
-                    diacritc_name = "commaturnedmod"
-                items = [base_name, diacritc_name]
+                if base_name == "t" and diacritic_name == "caron":
+                    diacritic_name = "caroncmbalt"
+                if base_name == "L" and diacritic_name == "cedilla":
+                    diacritic_name = "commaaccent"
+                if base_name == "L" and diacritic_name == "caron":
+                    diacritic_name = "caroncmbalt"
+                if base_name == "l" and diacritic_name == "caron":
+                    diacritic_name = "caroncmbalt"
+                if base_name == "n" and diacritic_name == "cedilla":
+                    diacritic_name = "commaaccent"
+                if base_name == "g" and diacritic_name == "cedilla":
+                    diacritic_name = "commaturnedmod"
+                items = [base_name, diacritic_name]
                 assert base_name in self
                 log.debug(
                     f"Compose {chr(composite_unicode)} - {composite_glyph_name} : {
@@ -751,11 +789,15 @@ class MalayalamFont(Font):
                 )
                 self.buildComposite(composite_glyph_name, composite_unicode, items)
 
-        for base in self.get_glyphs_from_named_classes("ML_CONSONANTS"):
+        # Cache class lookup
+        consonants = self.get_glyphs_from_named_classes("ML_CONSONANTS")
+        la_conjuncts_set = set(self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"))
+
+        for base in consonants:
             base_glyph_name = get_glyph_name(base)
             if base_glyph_name not in self:
                 continue
-            if base + "്ല" not in self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS"):
+            if base + "്ല" not in la_conjuncts_set:
                 continue
             la_glyph_name = get_glyph_name(base + "്ല")
             la_sign_glyph_name = get_glyph_name("്ല")
@@ -766,12 +808,16 @@ class MalayalamFont(Font):
                 la_glyph_name, None, [base_glyph_name, la_sign_glyph_name]
             )
 
+        # Cache class lookups
+        reph_conjuncts = self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
+        cons_conjuncts = self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
+        la_conjuncts_list = self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
+        prevent_conjuncts_set = set(
+            self.get_glyph_names_from_named_classes("ML_PREVENT_CONJUNCTS")
+        )
+
         base_for_u = (
-            self.get_glyphs_from_named_classes("ML_CONSONANTS")
-            + self.get_glyphs_from_named_classes("ML_CONS_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_LA_CONJUNCTS")
-            + self.get_glyphs_from_named_classes("ML_REPH_CONJUNCTS")
-            + ["്യ"]
+            consonants + cons_conjuncts + la_conjuncts_list + reph_conjuncts + ["്യ"]
         )
 
         for base in base_for_u:
@@ -781,11 +827,7 @@ class MalayalamFont(Font):
             u_glyph_name = get_glyph_name(base + "ു")
             uu_glyph_name = get_glyph_name(base + "ൂ")
 
-            if (
-                u_glyph_name not in self
-                and u_glyph_name
-                not in self.get_glyph_names_from_named_classes("ML_PREVENT_CONJUNCTS")
-            ):
+            if u_glyph_name not in self and u_glyph_name not in prevent_conjuncts_set:
                 log.debug(f"Compose {u_glyph_name} : {base_glyph_name}+u_drop_sign")
                 self.buildComposite(
                     u_glyph_name, None, [base_glyph_name, "u_drop_sign"]
@@ -800,12 +842,8 @@ class MalayalamFont(Font):
                         [self.salts[base_glyph_name][0], "u_drop_sign"],
                     )
                     self.salts[u_glyph_name] = [u_glyph_name_alt]
-            if (
-                uu_glyph_name not in self
-                and uu_glyph_name
-                not in self.get_glyph_names_from_named_classes("ML_PREVENT_CONJUNCTS")
-            ):
-                log.debug(f"Compose {u_glyph_name} : {base_glyph_name}+uu_drop_sign")
+            if uu_glyph_name not in self and uu_glyph_name not in prevent_conjuncts_set:
+                log.debug(f"Compose {uu_glyph_name} : {base_glyph_name}+uu_drop_sign")
                 self.buildComposite(
                     uu_glyph_name, None, [base_glyph_name, "uu_drop_sign"]
                 )
@@ -999,9 +1037,9 @@ class MalayalamFont(Font):
         # are preferred to define Windows line spacing over legacy WinAscent/WinDescent:
         # https://docs.microsoft.com/en-us/typography/opentype/spec/os2#fsselection
         # The description of bit 7 in the OpenType standard reads
-        # “if set, it is strongly recommended to use
+        # "if set, it is strongly recommended to use
         # OS/2.sTypoAscender - OS/2.sTypoDescender + OS/2.sTypoLineGap
-        # as a value for default line spacing for this font.”
+        # as a value for default line spacing for this font."
         self.info.openTypeOS2Selection = [7]
         # A list of bit numbers indicating the embedding type.
         self.info.openTypeOS2Type = []
