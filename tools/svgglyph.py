@@ -1,15 +1,12 @@
 import os
 import re
-import traceback
 import xml.etree.ElementTree as etree
 
+from fontTools.misc.roundTools import otRound
 from fontTools.svgLib import SVGPath
 from fontTools.ufoLib import UFOLibError
-from fontTools.misc.roundTools import otRound
+from glyphnames import get_glyph_name, get_unicode_for_name, parse_glyph_filename
 from ufoLib2.objects import Glyph
-
-from glyphnames import get_glyph_name, parse_glyph_filename, get_unicode_for_name
-
 
 # Compiled regex patterns for performance
 TRANSLATE_PATTERN = re.compile(r"translate\(([^)]+)\)")

@@ -3,8 +3,8 @@ import os
 from typing import Dict, List
 
 from jinja2 import Environment, FileSystemLoader
-from malayalamfont import MalayalamFont
 from malayalamfeatures import MalayalamFeatures
+from malayalamfont import MalayalamFont
 
 log = logging.getLogger(__name__)
 

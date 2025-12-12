@@ -5,17 +5,12 @@ from datetime import datetime
 from typing import List
 
 from fontTools import agl
-from svgglyph import SVGGlyph
 from glyphnames import get_glyph_name
+from svgglyph import SVGGlyph
 from ufoLib2.objects import Component, Font, Glyph, Guideline
 from ufoLib2.objects.info import GaspRangeRecord
-from jinja2 import Environment, FileSystemLoader
 
 log = logging.getLogger(__name__)
-
-LANGUAGE_ALL = [("DFLT", "dflt"), ("latn", "dflt"), ("mlm2", "dflt")]
-LANGUAGE_MALAYALAM = [("mlm2", "dflt")]
-LANGUAGE_LATIN = [("DFLT", "dflt"), ("latn", "dflt")]
 
 
 class MalayalamFont(Font):

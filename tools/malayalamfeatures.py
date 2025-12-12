@@ -1,11 +1,9 @@
 import logging
-from typing import List
-
-from fontTools import agl
-from glyphnames import get_glyph_name
-from ufoLib2.objects import Font
-from jinja2 import Environment, FileSystemLoader
 import os
+
+from glyphnames import get_glyph_name
+from jinja2 import Environment, FileSystemLoader
+from ufoLib2.objects import Font
 
 log = logging.getLogger(__name__)
 
