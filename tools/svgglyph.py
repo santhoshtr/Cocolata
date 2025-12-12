@@ -1,4 +1,5 @@
 import os
+import re
 import traceback
 import xml.etree.ElementTree as etree
 
@@ -8,6 +9,18 @@ from fontTools.misc.roundTools import otRound
 from ufoLib2.objects import Glyph
 
 from glyphnames import get_glyph_name, parse_glyph_filename, get_unicode_for_name
+
+
+# Compiled regex patterns for performance
+TRANSLATE_PATTERN = re.compile(r"translate\(([^)]+)\)")
+MATRIX_PATTERN = re.compile(r"matrix\(([^)]+)\)")
+
+# Namespace mappings at module level
+PREFIX_MAP = {
+    "sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
+    "inkscape": "http://www.inkscape.org/namespaces/inkscape",
+    "svg": "http://www.w3.org/2000/svg",
+}
 
 
 class SVGGlyph:
@@ -82,15 +95,71 @@ class SVGGlyph:
                 point.x = otRound(point.x)
                 point.y = otRound(point.y)
 
+    @staticmethod
+    def parse_transform(transform_str):
+        """Parse SVG transform attribute and extract x, y coordinates.
+
+        Args:
+            transform_str: SVG transform attribute string
+
+        Returns:
+            tuple: (x, y) coordinates as floats
+        """
+        x, y = 0.0, 0.0
+
+        # Try translate pattern
+        translate_match = TRANSLATE_PATTERN.search(transform_str)
+        if translate_match:
+            coords = translate_match.group(1).split()
+            x = float(coords[0])
+            y = float(coords[1]) if len(coords) > 1 else 0.0
+            return x, y
+
+        # Try matrix pattern
+        matrix_match = MATRIX_PATTERN.search(transform_str)
+        if matrix_match:
+            values = matrix_match.group(1).replace(",", " ").split()
+            if len(values) >= 6:
+                x = float(values[4])
+                y = float(values[5])
+                return x, y
+
+        return x, y
+
+    @staticmethod
+    def get_anchor_label(anchor_el):
+        """Extract anchor label from element.
+
+        Args:
+            anchor_el: XML element
+
+        Returns:
+            str: Label text or None
+        """
+        inkscape_label = anchor_el.get(
+            "{http://www.inkscape.org/namespaces/inkscape}label"
+        )
+        if inkscape_label:
+            return inkscape_label
+        return anchor_el.text
+
     def parse(self):
-        svgObj = etree.parse(self.svg_file_path).getroot()
-        parent_map = {c: p for p in svgObj.iter() for c in p}
-        self.svg_width = float(svgObj.get("width", "1000").replace("px", " "))
-        self.svg_height = float(svgObj.get("height", "1000").replace("px", " "))
-        # Filename without extension
-        filename = os.path.splitext(os.path.basename(self.svg_file_path))[0]
+        """Parse SVG file and extract glyph information.
+
+        This method performs a single-pass extraction of all needed data from the SVG.
+        """
+        try:
+            tree = etree.parse(self.svg_file_path)
+            svgObj = tree.getroot()
+        except etree.ParseError as e:
+            raise UFOLibError(f"Failed to parse SVG file {self.svg_file_path}: {e}")
+
+        # Extract basic SVG dimensions
+        self.svg_width = float(svgObj.get("width", "1000").replace("px", ""))
+        self.svg_height = float(svgObj.get("height", "1000").replace("px", ""))
 
         # Parse filename for glyph metadata
+        filename = os.path.splitext(os.path.basename(self.svg_file_path))[0]
         parsed = parse_glyph_filename(filename)
         self.name = parsed["name"]
         self.alt = parsed["alt"]
@@ -105,107 +174,102 @@ class SVGGlyph:
         if not self.glyph_name:
             raise UFOLibError(f"Could not calculate glyph name for {self.name}")
 
-        prefix_map = {
-            "sodipodi": "http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd",
-            "inkscape": "http://www.inkscape.org/namespaces/inkscape",
-        }
-        widthGuide = svgObj.find(
-            ".//sodipodi:guide/[@inkscape:label='width']", prefix_map
+        # Extract guides and anchors in a single pass
+        width_guide = svgObj.find(
+            ".//sodipodi:guide[@inkscape:label='width']", PREFIX_MAP
         )
+        base_guide = svgObj.find(
+            ".//sodipodi:guide[@inkscape:label='base']", PREFIX_MAP
+        )
+        vc_guide = svgObj.find(".//sodipodi:guide[@inkscape:label='vc']", PREFIX_MAP)
 
+        # Calculate width
         width = self.svg_width
-        if widthGuide is not None:
-            width = int(float(widthGuide.get("position").split(",")[0]))
+        if width_guide is not None:
+            position = width_guide.get("position", "")
+            if position:
+                width = int(float(position.split(",")[0]))
 
-        # + int(svg_config['left']) + int(svg_config['right'])
         self.glyph_width = width
         if self.glyph_width < 0:
-            raise UFOLibError("Glyph %s has negative width." % self.name)
+            raise UFOLibError(f"Glyph {self.name} has negative width.")
 
-        # Calculate the transformation to do
-        transform = SVGGlyph.transform_list(self.transform)
-
-        baseGuide = svgObj.find(
-            ".//sodipodi:guide/[@inkscape:label='base']", prefix_map
-        )
+        # Calculate base offset
         base = -250
-        if baseGuide is not None:
-            base = int(float(baseGuide.get("position").split(",")[1])) * -1
+        if base_guide is not None:
+            position = base_guide.get("position", "")
+            if position:
+                base = int(float(position.split(",")[1])) * -1
+
+        # Calculate transformation
+        transform = SVGGlyph.transform_list(self.transform)
         transform[5] += self.svg_height + base  # Y offset
-        anchorEls = svgObj.findall(".//{http://www.w3.org/2000/svg}text", prefix_map)
+
+        # Process anchors
         anchors = []
 
-        vc_guide = svgObj.find(".//sodipodi:guide/[@inkscape:label='vc']", prefix_map)
+        # Add vc guide anchor if present
         if vc_guide is not None:
-            anchors.append(
-                {
-                    "x": float(vc_guide.get("position").split(",")[0]),
-                    "y": 0,
-                    "name": "vc",
-                }
-            )
+            position = vc_guide.get("position", "")
+            if position:
+                x = float(position.split(",")[0])
+                anchors.append({"x": x, "y": 0, "name": "vc"})
 
-        anchor_names = []
-        try:
-            for anchorEl in anchorEls:
-                x = 0
-                y = 0
-                name = ""
-                parentEl = parent_map.get(anchorEl)
-                if parentEl and "transform" in parentEl.attrib:
-                    transformstr = parentEl.get("transform")
-                    if "translate" in transformstr:
-                        [x, y] = (
-                            transformstr.strip()
-                            .replace("translate(", "")
-                            .replace(")", "")
-                            .split(" ")
-                        )
-                    if "matrix" in transformstr:
-                        [lhs, y] = (
-                            transformstr.strip()
-                            .replace("matrix(", "")
-                            .replace(")", "")
-                            .split(" ")
-                        )
-                        x = lhs.split(",")[-1]
-                    x = float(x)
-                    y = float(y)
-                if "x" in anchorEl.attrib:
-                    x = float(anchorEl.get("x"))
-                if "y" in anchorEl.attrib:
-                    y = float(anchorEl.get("y"))
-                if (
-                    "{http://www.inkscape.org/namespaces/inkscape}label"
-                    in anchorEl.attrib
-                ):
-                    name = anchorEl.attrib[
-                        "{http://www.inkscape.org/namespaces/inkscape}label"
-                    ]
-                else:
-                    name = anchorEl.text
+        # Build parent map for anchor processing
+        parent_map = {c: p for p in svgObj.iter() for c in p}
 
-                anchor = {"x": x, "y": self.svg_height + base - y, "name": name}
-                # print(anchor)
-                anchor_names.append(name)
+        # Find all text elements (used as anchors)
+        anchor_elements = svgObj.findall(".//{http://www.w3.org/2000/svg}text")
 
+        anchor_names = set()
+        for anchor_el in anchor_elements:
+            try:
+                x = float(anchor_el.get("x", 0))
+                y = float(anchor_el.get("y", 0))
+
+                # Check parent for transform
+                parent_el = parent_map.get(anchor_el)
+                if parent_el is not None:
+                    transform_str = parent_el.get("transform", "")
+                    if transform_str:
+                        parent_x, parent_y = SVGGlyph.parse_transform(transform_str)
+                        x += parent_x
+                        y += parent_y
+
+                # Get anchor name/label
+                name = SVGGlyph.get_anchor_label(anchor_el)
+                if not name:
+                    continue
+
+                # Calculate final position
+                anchor_y = self.svg_height + base - y
                 if name == "vc":
-                    anchor["y"] = 0
+                    anchor_y = 0
+
+                anchor = {"x": x, "y": anchor_y, "name": name}
                 anchors.append(anchor)
-        except Exception:
-            print(f"Error while processing {self.__dict__}")
-            traceback.print_exc()
-            pass
+                anchor_names.add(name)
+
+            except (ValueError, AttributeError, KeyError) as e:
+                # Log but continue processing other anchors
+                print(f"Warning: Failed to process anchor in {self.svg_file_path}: {e}")
+                continue
+
+        # Add default "right" anchor if not present
         if "right" not in anchor_names:
             anchors.append({"x": self.glyph_width, "y": 0, "name": "right"})
+
+        # Build glyph name with variant suffix
+        glif_name = self.glyph_name
+        if self.alt:
+            glif_name = self.glyph_name + "." + self.alt
+        elif self.onum:
+            glif_name = self.glyph_name + "." + self.onum
+        elif self.sups:
+            glif_name = self.glyph_name + "." + self.sups
+
+        # Create GLIF
         try:
-            glif_name = self.glyph_name
-            if self.alt:
-                glif_name = self.glyph_name + "." + self.alt
-            if self.onum:
-                glif_name = self.glyph_name + "." + self.onum
-            if self.sups:
-                glif_name = self.glyph_name + "." + self.sups
             self.glif = SVGGlyph.svg2glif(
                 self.svg_file_path,
                 name=glif_name,
@@ -216,8 +280,9 @@ class SVGGlyph:
                 anchors=anchors,
                 version=3,
             )
-        except Exception:
-            print(f"Error while processing {self.__dict__}")
-            traceback.print_exc()
+        except Exception as e:
+            raise UFOLibError(
+                f"Failed to convert SVG to GLIF for {self.svg_file_path}: {e}"
+            )
 
         self.round_glif_points()
