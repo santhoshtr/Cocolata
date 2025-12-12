@@ -1,4 +1,5 @@
 import unicodedata
+from functools import lru_cache
 from fontTools import agl
 
 # Extra Adobe Glyph List mappings not in fontTools
@@ -51,6 +52,17 @@ UV2AGL_EXTRA = {
     0x0328: "ogonekcmb",
 }
 
+# Chillu normalization map at module level
+CHILLU_NORMALIZE_MAP = {
+    "ന്\u200d": "ൻ",
+    "ര്\u200d": "ർ",
+    "ല്\u200d": "ൽ",
+    "ള്\u200d": "ൾ",
+    "ണ്\u200d": "ൺ",
+    "ഴ്\u200d": "ൖ",
+    "ക്\u200d": "ൿ",
+}
+
 
 def initialize_agl_mappings():
     """Initialize Adobe Glyph List mappings with extra values"""
@@ -62,6 +74,7 @@ def initialize_agl_mappings():
 initialize_agl_mappings()
 
 
+@lru_cache(maxsize=1024)
 def name_from_uc(char: str) -> str:
     """
     Convert a Malayalam Unicode character to a descriptive name.
@@ -85,6 +98,7 @@ def name_from_uc(char: str) -> str:
     )
 
 
+@lru_cache(maxsize=2048)
 def get_glyph_name(name: str, prefix: str = "ml_") -> str:
     """
     Generate a glyph name from a character or string.
@@ -105,47 +119,39 @@ def get_glyph_name(name: str, prefix: str = "ml_") -> str:
         'ml_ka_virama_ka'
     """
     name_parts = name.split("_")
-    name = name_parts[0]
-    if len(name_parts) > 1:
-        ext = "_" + "_".join(name_parts[1:])
-    else:
-        ext = ""
+    base_name = name_parts[0]
+    ext = "_" + "_".join(name_parts[1:]) if len(name_parts) > 1 else ""
 
-    codepoint = ord(name[0])
+    if not base_name:
+        return name
 
+    codepoint = ord(base_name[0])
+
+    # Special cases
     if codepoint == 8205:
         return "zwj"
 
-    if name == "notdef":
+    if base_name == "notdef":
         return ".notdef"
 
     # Malayalam Unicode range (U+0D00 to U+0D7F)
-    if codepoint >= 3328 and codepoint <= 3455:
-        if len(name) > 1:
+    if 3328 <= codepoint <= 3455:
+        if len(base_name) > 1:
             # Normalize chillu characters
-            chillu_normalize_map = {
-                "ന്\u200d": "ൻ",
-                "ര്\u200d": "ർ",
-                "ല്\u200d": "ൽ",
-                "ള്\u200d": "ൾ",
-                "ണ്\u200d": "ൺ",
-                "ഴ്\u200d": "ൖ",
-                "ക്\u200d": "ൿ",
-            }
-            name = chillu_normalize_map.get(name, name)
-            return prefix + "_".join(name_from_uc(c) for c in name) + ext
+            normalized_name = CHILLU_NORMALIZE_MAP.get(base_name, base_name)
+            return prefix + "_".join(name_from_uc(c) for c in normalized_name) + ext
         else:
-            return prefix + name_from_uc(name) + ext
+            return prefix + name_from_uc(base_name) + ext
 
     # Single character - use Adobe Glyph List or uni name
-    if len(name) == 1:
-        return (
-            agl.UV2AGL.get(ord(name), f"uni{hex(codepoint).replace('0x', '').upper()}")
-            + ext
-        )
+    if len(base_name) == 1:
+        glyph_name = agl.UV2AGL.get(codepoint)
+        if glyph_name is None:
+            glyph_name = f"uni{hex(codepoint).replace('0x', '').upper()}"
+        return glyph_name + ext
 
     # Multi-character or already a glyph name
-    return agl.UV2AGL.get(name, name) + ext
+    return agl.UV2AGL.get(base_name, base_name) + ext
 
 
 def parse_glyph_filename(filename: str) -> dict:
