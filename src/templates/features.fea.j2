@@ -15,7 +15,7 @@ table GDEF {
 {% endif %}
 
 {# Glyph Classes #}
-{% for class_name, glyphs in glyph_classes.items() %}
+{% for class_name, glyphs in glyph_classes|items() %}
 @{{ class_name }} = [{{ glyphs | join(' ') }}];
 {% endfor %}
 
@@ -156,8 +156,13 @@ lookup abvm_topmarks {
     lookupflag 0;
 
 {% for anchor in top_anchors %}
+    {% if anchor.anchor %}
         pos base [{{ anchor.bases | join(' ') }}]
-            <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+        {{ anchor.anchor }} mark @{{ anchor.class_name }};
+    {% else %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% endif %}
 {% endfor %}
 
 } abvm_topmarks;
@@ -166,15 +171,20 @@ lookup blwm_bottommarks {
     lookupflag 0;
 
 {% for anchor in bottom_anchors %}
-        pos base {{ anchor.bases | join(' ') }}
-            <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% if anchor.anchor %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        {{ anchor.anchor }} mark @{{ anchor.class_name }};
+    {% else %}
+        pos base [{{ anchor.bases | join(' ') }}]
+        <anchor {{ anchor.x }} {{ anchor.y }}> mark @{{ anchor.class_name }};
+    {% endif %}
 {% endfor %}
 
 } blwm_bottommarks;
 
 {# Alternate Lookups #}
 {% if calt_rules %}
-{% for script, rules in calt_rules.items() %}
+{% for script, rules in calt_rules|items() %}
 lookup {{ script }}_calt_lookup {
     lookupflag 0;
 
@@ -189,7 +199,7 @@ lookup {{ script }}_calt_lookup {
 lookup salts_lookup {
     lookupflag 0;
 
-{% for base, alts in salts.items() %}
+{% for base, alts in salts|items() %}
     sub {{ base }} from [{{ ([base] + alts) | join(' ') }}];
 {% endfor %}
 } salts_lookup;
@@ -199,7 +209,7 @@ lookup salts_lookup {
 lookup sups_lookup {
     lookupflag 0;
 
-{% for base, alt in sups.items() %}
+{% for base, alt in sups|items() %}
     sub {{ base }} by {{ alt | join(' ') }};
 {% endfor %}
 } sups_lookup;
@@ -351,7 +361,7 @@ feature blwm {
 
 {# Calt Feature #}
 {% if calt_rules %}
-{% for script, rules in calt_rules.items() %}
+{% for script, rules in calt_rules|items() %}
 feature calt {
     script {{ 'DFLT' if script == 'latin' else 'latn' if script == 'latin' else 'mlm2' }};
     language dflt;

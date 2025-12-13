@@ -1,0 +1,20 @@
+[package]
+name = "Cocolata"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+norad = "0.17.0"
+svg2glif = "0.3.1"
+fontdrasil = "0.4.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+clap = { version = "4.4", features = ["derive"] }
+thiserror = "2.0"
+log = "0.4"
+env_logger = "0.11"
+lazy_static = "1.4"
+plist = "1.6"
+chrono = "0.4"
+unicode-normalization = "0.1"
+minijinja = "2.0"

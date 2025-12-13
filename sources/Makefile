@@ -12,13 +12,11 @@ all: $(SVGS)
 svgs/$(VARIANT)/%.svg: $(SRCDIR)/%.mp   pens.mp config/$(VARIANT).mp
 	@echo " BUILD GLYPH   $@"
 ifeq ($(VARIANT), debug)
-	@mpost  -s 'outputtemplate="$@"' -s 'jobname="config/$(VARIANT).mp"' --interaction=nonstopmode $< end
+	@mpost -restricted  -s 'outputtemplate="$@"' -s 'jobname="config/$(VARIANT).mp"' --interaction=errorstopmode $< end
 else
-	@mpost  -s 'outputtemplate="$@"' -s 'jobname="config/$(VARIANT).mp"' --interaction=nonstopmode $< end > /dev/null
+	@mpost -restricted  -s 'outputtemplate="$@"' -s 'jobname="config/$(VARIANT).mp"' --interaction=errorstopmode $< end > /dev/null
 endif
-	@# remove svg comments which fonttools svglib does not like
-	@sed -i 's/<!--.*$\//g' $@
-	@rm -rf ./*.log ./*.mpo ./*.mpt
+	@rm -rf *.log *.mpo *.mpt
 
 clean:
 	@rm -rf *.tmp *.dvi *.svg *.log svgs/$(VARIANT)/*.svg *.mpt
