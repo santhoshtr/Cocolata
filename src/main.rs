@@ -3,12 +3,14 @@ use std::path::PathBuf;
 
 mod composite;
 mod config;
+mod features;
 mod fontinfo;
 mod glyphnames;
 mod groups;
 mod kerning;
 mod malayalam_font;
 
+use features::MalayalamFeatures;
 use malayalam_font::MalayalamFont;
 
 #[derive(Parser)]
@@ -68,6 +70,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         font.build_kern()?;
         font.set_glyph_order()?;
         font.font.save(&output)?;
+
+        // Generate and write features
+        let features = MalayalamFeatures::new(&font);
+        let features_path = output.join("features.fea");
+        features.write_features(Some(&features_path))?;
 
         println!("✓ Font {:?} built successfully!", output);
         println!("  Design directory: {:?}", design_dir);
