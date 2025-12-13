@@ -112,23 +112,13 @@ function init() {
       salt: 1,
     },
     "font-name": "Cocolata",
-    "font-palette": 0,
   };
 
   pane.addBinding(config, "font-name", {
     label: "Font name",
     options: {
       Cocolata: "Cocolata",
-      "Cocolata Color": "Cocolata Color",
     },
-  });
-
-  const paletteCtrl = pane.addBinding(config, "font-palette", {
-    hidden: true,
-    label: "Color Palette",
-    min: 0,
-    step: 1,
-    max: 18,
   });
 
   pane.addBinding(config, "font-size", {
@@ -305,22 +295,6 @@ function init() {
       if (key == "font-name") {
         const selectedFont = config[key];
         root.style.setProperty(`--font-family-name`, selectedFont);
-        if (selectedFont == "Cocolata") {
-          paletteCtrl.hidden = true;
-        }
-        if (selectedFont == "Cocolata Color") {
-          paletteCtrl.hidden = false;
-        }
-        continue;
-      }
-      if (key == "font-palette") {
-        document
-          .querySelector(".content")
-          .style.setProperty(
-            `font-palette`,
-            `--cocolata-palette-${config[key]}`,
-          );
-        continue;
       }
 
       root.style.setProperty(`--${key}`, config[key]);
