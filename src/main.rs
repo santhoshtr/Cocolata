@@ -1,6 +1,8 @@
 use clap::Parser;
+use norad::designspace::DesignSpaceDocument;
 use std::path::PathBuf;
 
+use log::info;
 mod composite;
 mod config;
 mod features;
@@ -21,6 +23,9 @@ struct Cli {
     config: PathBuf,
 
     #[arg(short, long)]
+    designspace: PathBuf,
+
+    #[arg(short, long)]
     style: Option<String>,
 }
 
@@ -33,26 +38,41 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config_str = std::fs::read_to_string(&args.config)?;
     let config: config::FontConfig = serde_yaml::from_str(&config_str)?;
 
-    let styles_to_build = if let Some(style) = args.style {
-        vec![style]
+    // Load designspace
+    println!("Loading designspace from {:?}...", args.designspace);
+    let designspace = DesignSpaceDocument::load(&args.designspace)?;
+
+    // Filter sources based on style argument
+    let sources_to_build: Vec<_> = if let Some(ref style) = args.style {
+        designspace
+            .sources
+            .iter()
+            .filter(|source| source.stylename.as_deref() == Some(style.as_str()))
+            .collect()
     } else {
-        config.styles.clone()
+        designspace.sources.iter().collect()
     };
 
-    for style in styles_to_build {
-        let weight = match style.as_str() {
-            "Thin" => 100,
-            "ExtraLight" => 200,
-            "Light" => 300,
-            "Regular" => 400,
-            "Medium" => 500,
-            "SemiBold" => 600,
-            "Bold" => 700,
-            "ExtraBold" => 800,
-            "Black" => 900,
-            _ => 400,
-        };
+    if sources_to_build.is_empty() {
+        if let Some(ref style) = args.style {
+            eprintln!("Error: No source found for style '{}'", style);
+        } else {
+            eprintln!("Error: No sources found in designspace");
+        }
+        return Ok(());
+    }
 
+    for source in sources_to_build {
+        let style = source.stylename.as_deref().unwrap_or("Regular").to_string();
+
+        // Get weight from the axis location
+        // Look for dimension with name "weight" and use its xvalue
+        let weight = source
+            .location
+            .iter()
+            .find(|dim| dim.name.to_lowercase() == "weight")
+            .and_then(|dim| dim.xvalue)
+            .unwrap_or(400.0) as u32;
         let design_dir = PathBuf::from(format!("sources/svgs/{}", style));
         let output = PathBuf::from(format!("sources/ufo/{}-{}.ufo", config.name, style));
 
@@ -60,7 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             std::fs::create_dir_all(parent)?;
         }
 
-        println!("\nBuilding {} {} (weight: {})", config.name, style, weight);
+        println!("Building {} {} (weight: {})", config.name, style, weight);
 
         let mut font = MalayalamFont::new(config.clone(), style.clone(), weight);
         font.build(&design_dir)?;
@@ -76,12 +96,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let features_path = output.join("features.fea");
         features.write_features(Some(&features_path))?;
 
-        println!("✓ Font {:?} built successfully!", output);
-        println!("  Design directory: {:?}", design_dir);
-        println!("  Total glyphs: {}", font.font.default_layer().len());
-        println!("  Groups: {}", font.font.groups.len());
-        println!("  Kerning pairs: {}", font.font.kerning.len());
-        println!("  Stylistic alternates: {}", font.salts.len());
+        info!("✓ Font {:?} built successfully!", output);
+        info!("  Design directory: {:?}", design_dir);
+        info!("  Total glyphs: {}", font.font.default_layer().len());
+        info!("  Groups: {}", font.font.groups.len());
+        info!("  Kerning pairs: {}", font.font.kerning.len());
+        info!("  Stylistic alternates: {}", font.salts.len());
     }
 
     Ok(())
