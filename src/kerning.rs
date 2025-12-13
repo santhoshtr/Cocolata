@@ -17,7 +17,6 @@ impl MalayalamFont {
                 debug!("Failed to add Latin kern rule: {}", e);
             }
         }
-
         for rule in &malayalam_rules {
             if let Err(e) = self.add_kern_rule(rule) {
                 debug!("Failed to add Malayalam kern rule: {}", e);
@@ -39,12 +38,18 @@ impl MalayalamFont {
         let rhs_items = self.expand_kern_side(rhs_def)?;
 
         for lhs in &lhs_items {
+            let lhs_name = Name::new(lhs.as_str())?;
+            let mut val = self
+                .font
+                .kerning
+                .get(&lhs_name)
+                .cloned()
+                .unwrap_or_default();
             for rhs in &rhs_items {
-                let mut val = BTreeMap::new();
-                val.insert(Name::new(rhs.as_str())?, *value as f64);
-
-                self.font.kerning.insert(Name::new(lhs.as_str())?, val);
+                let rhs_name = Name::new(rhs.as_str())?;
+                val.insert(rhs_name, *value as f64);
             }
+            self.font.kerning.insert(lhs_name, val);
         }
 
         Ok(())
