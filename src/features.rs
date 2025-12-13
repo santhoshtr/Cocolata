@@ -1,6 +1,5 @@
 use crate::glyphnames::get_glyph_name;
 use crate::malayalam_font::MalayalamFont;
-use log::{debug, warn};
 use minijinja::{Environment, context};
 use std::collections::HashMap;
 use std::path::Path;
@@ -17,83 +16,27 @@ impl<'a> MalayalamFeatures<'a> {
     }
 
     /// Prepare all data needed for Jinja2 templates
-    pub fn prepare_template_data(&self) -> HashMap<String, minijinja::Value> {
-        let mut data = HashMap::new();
-
-        data.insert(
-            "glyph_classes".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_glyph_classes()),
-        );
-        data.insert(
-            "gdef".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_gdef_data()),
-        );
-        data.insert(
-            "mark_classes".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_mark_classes()),
-        );
-        data.insert(
-            "ligatures".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_ligature_data()),
-        );
-        data.insert(
-            "chillus".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_chillu_data()),
-        );
-        data.insert(
-            "conjuncts".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_conjunct_data()),
-        );
-        data.insert(
-            "cons_signs".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_cons_signs_data()),
-        );
-        data.insert(
-            "cons_signs_order_rules".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_cons_signs_order_rules()),
-        );
-        data.insert(
-            "reph".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_reph_data()),
-        );
-        data.insert(
-            "reph_conjuncts".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_reph_conjuncts_data()),
-        );
-        data.insert(
-            "vowel_sign_rules".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_vowel_sign_rules()),
-        );
-        data.insert(
-            "top_anchors".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_top_anchors()),
-        );
-        data.insert(
-            "bottom_anchors".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_bottom_anchors()),
-        );
-        data.insert(
-            "aam_rules".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_aam_rules()),
-        );
-        data.insert(
-            "calt_rules".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_calt_rules()),
-        );
-        data.insert(
-            "salts".to_string(),
-            minijinja::Value::from_serialize(&self.font.salts),
-        );
-        data.insert(
-            "sups".to_string(),
-            minijinja::Value::from_serialize(&self.font.sups),
-        );
-        data.insert(
-            "aalts".to_string(),
-            minijinja::Value::from_serialize(&self.prepare_aalt_data()),
-        );
-
-        data
+    pub fn prepare_template_data(&self) -> FeaturesData {
+        FeaturesData {
+            glyph_classes: self.prepare_glyph_classes(),
+            gdef: self.prepare_gdef_data(),
+            mark_classes: self.prepare_mark_classes(),
+            ligatures: self.prepare_ligature_data(),
+            chillus: self.prepare_chillu_data(),
+            conjuncts: self.prepare_conjunct_data(),
+            cons_signs: self.prepare_cons_signs_data(),
+            cons_signs_order_rules: self.prepare_cons_signs_order_rules(),
+            reph: self.prepare_reph_data(),
+            reph_conjuncts: self.prepare_reph_conjuncts_data(),
+            vowel_sign_rules: self.prepare_vowel_sign_rules(),
+            top_anchors: self.prepare_top_anchors(),
+            bottom_anchors: self.prepare_bottom_anchors(),
+            aam_rules: self.prepare_aam_rules(),
+            calt_rules: self.prepare_calt_rules(),
+            salts: self.font.salts.clone(),
+            sups: self.font.sups.clone(),
+            aalts: self.prepare_aalt_data(),
+        }
     }
 
     /// Prepare glyph classes for templates
@@ -861,7 +804,26 @@ impl<'a> MalayalamFeatures<'a> {
         let template = env.get_template("features.fea.j2")?;
 
         // Render the template
-        let features_code = template.render(context! { ..template_data })?;
+        let features_code = template.render(context! {
+            glyph_classes => template_data.glyph_classes,
+            gdef => template_data.gdef,
+            mark_classes => template_data.mark_classes,
+            ligatures => template_data.ligatures,
+            chillus => template_data.chillus,
+            conjuncts => template_data.conjuncts,
+            cons_signs => template_data.cons_signs,
+            cons_signs_order_rules => template_data.cons_signs_order_rules,
+            reph => template_data.reph,
+            reph_conjuncts => template_data.reph_conjuncts,
+            vowel_sign_rules => template_data.vowel_sign_rules,
+            top_anchors => template_data.top_anchors,
+            bottom_anchors => template_data.bottom_anchors,
+            aam_rules => template_data.aam_rules,
+            calt_rules => template_data.calt_rules,
+            salts => template_data.salts,
+            sups => template_data.sups,
+            aalts => template_data.aalts,
+        })?;
 
         if let Some(path) = output_path {
             std::fs::write(path, &features_code)
@@ -872,103 +834,126 @@ impl<'a> MalayalamFeatures<'a> {
     }
 }
 
+// Main data structure for template rendering
+#[derive(Debug, serde::Serialize)]
+pub struct FeaturesData {
+    pub glyph_classes: HashMap<String, Vec<String>>,
+    pub gdef: GdefData,
+    pub mark_classes: Vec<MarkClass>,
+    pub ligatures: LigatureData,
+    pub chillus: Vec<SubstitutionRule>,
+    pub conjuncts: ConjunctData,
+    pub cons_signs: Vec<SubstitutionRule>,
+    pub cons_signs_order_rules: Vec<OrderRule>,
+    pub reph: SubstitutionRule,
+    pub reph_conjuncts: Vec<SubstitutionRule>,
+    pub vowel_sign_rules: Vec<SubstitutionRule>,
+    pub top_anchors: Vec<AnchorData>,
+    pub bottom_anchors: Vec<AnchorData>,
+    pub aam_rules: Vec<SubstitutionRule>,
+    pub calt_rules: HashMap<String, Vec<CaltRule>>,
+    pub salts: HashMap<String, Vec<String>>,
+    pub sups: HashMap<String, Vec<String>>,
+    pub aalts: AaltData,
+}
+
 // Data structures for template rendering
 #[derive(Debug, serde::Serialize)]
-struct GdefData {
-    bases: Vec<String>,
-    ligatures: Vec<String>,
-    marks: Vec<String>,
+pub struct GdefData {
+    pub bases: Vec<String>,
+    pub ligatures: Vec<String>,
+    pub marks: Vec<String>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct MarkClass {
-    glyph: String,
-    x: i32,
-    y: i32,
-    class_name: String,
+pub struct MarkClass {
+    pub glyph: String,
+    pub x: i32,
+    pub y: i32,
+    pub class_name: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct LigatureData {
-    latin: Vec<LigatureRule>,
+pub struct LigatureData {
+    pub latin: Vec<LigatureRule>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct LigatureRule {
-    input: Vec<String>,
-    output: String,
+pub struct LigatureRule {
+    pub input: Vec<String>,
+    pub output: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct SubstitutionRule {
-    input: Vec<String>,
-    output: String,
+pub struct SubstitutionRule {
+    pub input: Vec<String>,
+    pub output: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct OrderRule {
-    pattern: String,
+pub struct OrderRule {
+    pub pattern: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct ChainingRule {
-    ignore_pattern: String,
-    pattern: String,
+pub struct ChainingRule {
+    pub ignore_pattern: String,
+    pub pattern: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct FixupRule {
-    input: String,
-    context: String,
+pub struct FixupRule {
+    pub input: String,
+    pub context: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct SplitRule {
-    input: String,
-    output: Vec<String>,
+pub struct SplitRule {
+    pub input: String,
+    pub output: Vec<String>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct ConjunctData {
-    basic: Vec<SubstitutionRule>,
-    conditional: Vec<SubstitutionRule>,
-    chaining_rules: Vec<ChainingRule>,
-    la_conjuncts: Vec<SubstitutionRule>,
-    fixup_rules: Vec<FixupRule>,
-    split_rules: Vec<SplitRule>,
+pub struct ConjunctData {
+    pub basic: Vec<SubstitutionRule>,
+    pub conditional: Vec<SubstitutionRule>,
+    pub chaining_rules: Vec<ChainingRule>,
+    pub la_conjuncts: Vec<SubstitutionRule>,
+    pub fixup_rules: Vec<FixupRule>,
+    pub split_rules: Vec<SplitRule>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct CaltRule {
-    precontext: String,
-    base: String,
-    replacement: String,
+pub struct CaltRule {
+    pub precontext: String,
+    pub base: String,
+    pub replacement: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct AaltData {
-    latin: Vec<AaltRule>,
-    malayalam: Vec<MalayalamAaltRule>,
+pub struct AaltData {
+    pub latin: Vec<AaltRule>,
+    pub malayalam: Vec<MalayalamAaltRule>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct AaltRule {
-    base: String,
-    alts: Vec<String>,
+pub struct AaltRule {
+    pub base: String,
+    pub alts: Vec<String>,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct MalayalamAaltRule {
-    base: String,
-    alt: String,
+pub struct MalayalamAaltRule {
+    pub base: String,
+    pub alt: String,
 }
 
 #[derive(Debug, serde::Serialize)]
-struct AnchorData {
-    bases: Vec<String>,
-    x: i32,
-    y: i32,
-    class_name: String,
+pub struct AnchorData {
+    pub bases: Vec<String>,
+    pub x: i32,
+    pub y: i32,
+    pub class_name: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    anchor: Option<String>,
+    pub anchor: Option<String>,
 }
