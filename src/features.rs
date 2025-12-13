@@ -835,7 +835,7 @@ impl<'a> MalayalamFeatures<'a> {
 }
 
 // Main data structure for template rendering
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct FeaturesData {
     pub glyph_classes: HashMap<String, Vec<String>>,
     pub gdef: GdefData,
@@ -858,14 +858,14 @@ pub struct FeaturesData {
 }
 
 // Data structures for template rendering
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct GdefData {
     pub bases: Vec<String>,
     pub ligatures: Vec<String>,
     pub marks: Vec<String>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct MarkClass {
     pub glyph: String,
     pub x: i32,
@@ -873,47 +873,47 @@ pub struct MarkClass {
     pub class_name: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct LigatureData {
     pub latin: Vec<LigatureRule>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct LigatureRule {
     pub input: Vec<String>,
     pub output: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct SubstitutionRule {
     pub input: Vec<String>,
     pub output: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct OrderRule {
     pub pattern: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct ChainingRule {
     pub ignore_pattern: String,
     pub pattern: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct FixupRule {
     pub input: String,
     pub context: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct SplitRule {
     pub input: String,
     pub output: Vec<String>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct ConjunctData {
     pub basic: Vec<SubstitutionRule>,
     pub conditional: Vec<SubstitutionRule>,
@@ -923,32 +923,32 @@ pub struct ConjunctData {
     pub split_rules: Vec<SplitRule>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct CaltRule {
     pub precontext: String,
     pub base: String,
     pub replacement: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct AaltData {
     pub latin: Vec<AaltRule>,
     pub malayalam: Vec<MalayalamAaltRule>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct AaltRule {
     pub base: String,
     pub alts: Vec<String>,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct MalayalamAaltRule {
     pub base: String,
     pub alt: String,
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, Clone, serde::Serialize)]
 pub struct AnchorData {
     pub bases: Vec<String>,
     pub x: i32,
