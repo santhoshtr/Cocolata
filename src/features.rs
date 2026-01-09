@@ -43,7 +43,7 @@ impl<'a> MalayalamFeatures<'a> {
     fn prepare_glyph_classes(&self) -> HashMap<String, Vec<String>> {
         let mut classes = HashMap::new();
 
-        for (gclass, _) in &self.font.config.glyphs.classes {
+        for gclass in self.font.config.glyphs.classes.keys() {
             let glyph_names: Vec<String> = self
                 .font
                 .get_glyphs_from_class(gclass)
@@ -115,7 +115,7 @@ impl<'a> MalayalamFeatures<'a> {
 
         let marks: Vec<String> = marks
             .iter()
-            .filter(|m| self.font.font.default_layer().contains_glyph(*m))
+            .filter(|m| self.font.font.default_layer().contains_glyph(m))
             .map(|s| s.to_string())
             .collect();
 
@@ -593,14 +593,13 @@ impl<'a> MalayalamFeatures<'a> {
 
         // Add Malayalam alternates
         for (base, alts) in &self.font.salts {
-            if base.starts_with("ml_") {
-                if let Some(first_alt) = alts.first() {
+            if base.starts_with("ml_")
+                && let Some(first_alt) = alts.first() {
                     aalts.malayalam.push(MalayalamAaltRule {
                         base: base.clone(),
                         alt: first_alt.clone(),
                     });
                 }
-            }
         }
 
         aalts

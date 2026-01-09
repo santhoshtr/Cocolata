@@ -44,13 +44,13 @@ $(STYLES): ## Generate SVGs for a style variant
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
 ufo: glyphs $(UFO) ## Build all master UFOs
+	cargo run --release --  --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
 
 # Create TTF variable font (requires designspace)
 $(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR)
-	cargo run --  --designspace $(FAMILY).designspace
 	fontc -o $@ $(FAMILY).designspace
 	$(PY) tools/fix_font.py $@
 	$(PY) tools/stat.py $(FAMILY) $@

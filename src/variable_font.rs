@@ -74,10 +74,13 @@ impl MalayalamVariableFont {
             font.build_glyph_groups()?;
             font.build_kern()?;
             font.set_glyph_order()?;
-
             // Save the master UFO
             let output_path = output_dir.join(format!("{}-{}.ufo", self.config.name, style));
-            font.font.save(&output_path)?;
+
+            if let Err(e) = font.write_glyphs(&output_path.join("glyphs")) {
+                info!("write_glyphs failed: {}, falling back to font.save()", e);
+                font.font.save(&output_path)?;
+            }
 
             info!("✓ Master {} built successfully!", style);
 
@@ -117,7 +120,7 @@ impl MalayalamVariableFont {
                 bases_key.sort();
                 let key = (bases_key.clone(), anchor.class_name.clone());
 
-                let positions = anchor_groups.entry(key).or_insert_with(HashMap::new);
+                let positions = anchor_groups.entry(key).or_default();
                 positions.insert(*weight, (anchor.x, anchor.y));
             }
         }
@@ -171,7 +174,7 @@ impl MalayalamVariableFont {
                 bases_key.sort();
                 let key = (bases_key.clone(), anchor.class_name.clone());
 
-                let positions = anchor_groups.entry(key).or_insert_with(HashMap::new);
+                let positions = anchor_groups.entry(key).or_default();
                 positions.insert(*weight, (anchor.x, anchor.y));
             }
         }

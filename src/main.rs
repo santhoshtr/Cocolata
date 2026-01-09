@@ -144,7 +144,11 @@ fn build_static_fonts(
         font.build_glyph_groups()?;
         font.build_kern()?;
         font.set_glyph_order()?;
-        font.font.save(&output)?;
+
+        if let Err(e) = font.write_glyphs(&output.join("glyphs")) {
+            info!("write_glyphs failed: {}, falling back to font.save()", e);
+            font.font.save(&output)?;
+        }
 
         // Generate and write features for static font
         let features = MalayalamFeatures::new(&font);

@@ -1,4 +1,3 @@
-use std::collections::BTreeMap;
 
 use crate::config::KernSide;
 use crate::glyphnames::get_glyph_name;
