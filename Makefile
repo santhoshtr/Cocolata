@@ -34,7 +34,7 @@ build: ufo $(FAMILY) ## Build master UFOs and all font outputs
 # Recursively watch the file changes and build SVGs (design workflow)
 # Requires: inotify-tools (Linux)
 dev: ## Watch glyph sources and rebuild
-	while inotifywait -e MODIFY $(SOURCEDIR)/glyphs/; do $(MAKE) -C $(SOURCEDIR); done;
+	while inotifywait -e MODIFY $(SOURCEDIR)/glyphs/; do $(MAKE) -j ufo; done;
 
 # Targets for preparing the glyphs from sources (per-style)
 glyphs: $(STYLES) ## Generate per-style SVGs
