@@ -1,22 +1,20 @@
-
 clearxy;
 save dt;
-z0 = (mw/3 + mw/3.5, m);
-z1 = (2/3mw, undershoot);
-z2 = (x1 + mw/3.5, (y1+  y3)/2);
-z3 = (x2+mw/3.5, m-overshoot);
-z4 = (x3+mw/3, 0.6m);
-z5 = (x4, 0);
-paths[p] = z0{dir 215}..z1{right}..z2{dir 95}..z3{right}.. z4--z5;
-dt = directiontime dir 270 of subpath( 0, 1) of paths[p];
-paths[p] := insert_nodes(paths[p])(dt);
+z0 = (x1 + thick/2 , 0.9m);
+z1 = (0, (y0+y2)/2);
+z2 = (x1 + mw/3, undershoot);
+z3 = (x2 + mw/4, (y2 + y4)/2);
+z4 = (x3 + mw/4, 0.9m);
+z5 = (x4 + mw/3, 0.4m);
+paths[p] = z0{dir -110}..z1..z2{dir 30}..z3.. z4{dir 10}..{dir -100}z5;
 
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(end_nib rotated terminalangle 0 of paths[p])(0)
-   nib(middle_up_nib scaled 1.2 rotated 30)(1)
-   nib(down_nib rotated -20)(2)
-   nib(middle_down_nib)(3)
-   nib(top_nib)(4)
-   nib(thick_vertical_nib)(5)
-   nib(thick_vertical_nib)(6)
+   nib(thicknib)(0)
+    nib(thicknib)(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
 )(paths[p])(strokes[p]);
+

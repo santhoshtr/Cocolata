@@ -9,7 +9,7 @@ z6 = (x5 + mw/3, (y5+y7)/2);
 z7 = (x6 - mw/3, (y6+y8)/2);
 z8 = (x6 + thick/4, (y7+y9)/2);
 z9 = (x7, thin/2);
-paths[p] := paths[p]{right}.. z6{down}..{left}z7{right}..z8{down}..{dir 160}z9;
+paths[p] := paths[p].. z6{down}..{left}z7{right}..z8{down}..{dir 160}z9;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
    nib(end_nib rotated terminalangle 0 of paths[p])(0)
