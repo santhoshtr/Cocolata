@@ -164,11 +164,6 @@ impl MalayalamFont {
         vec![]
     }
 
-    pub fn is_in_class(&self, item: &str, class_name: &str) -> bool {
-        let items = self.get_glyphs_from_class(class_name);
-        items.iter().any(|i| i == item)
-    }
-
     pub fn get_all_malayalam_bases(&self) -> Vec<String> {
         let mut bases = Vec::new();
 

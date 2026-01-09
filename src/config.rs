@@ -4,14 +4,14 @@ use std::collections::HashMap;
 #[derive(Debug, Deserialize, Clone)]
 pub struct FontConfig {
     pub name: String,
-    pub styles: Vec<String>,
+    //pub styles: Vec<String>,
     pub version: String,
     #[serde(rename = "unitsPerEm")]
     pub units_per_em: u32,
     pub ascender: f64,
     pub descender: f64,
     pub xheight: f64,
-    pub mheight: i32,
+    //pub mheight: i32,
     #[serde(rename = "Xheight")]
     pub cap_height: f64,
     pub source: String,
@@ -19,14 +19,14 @@ pub struct FontConfig {
     pub license: LicenseInfo,
     pub manufacturer: ManufacturerInfo,
     pub glyphs: GlyphConfig,
-    #[serde(default)]
-    pub sources: Option<String>,
-    #[serde(default)]
-    pub build: Option<String>,
-    #[serde(default)]
-    pub proofs: Option<String>,
-    #[serde(default)]
-    pub tests: Option<String>,
+    // #[serde(default)]
+    // pub sources: Option<String>,
+    // #[serde(default)]
+    // pub build: Option<String>,
+    // #[serde(default)]
+    // pub proofs: Option<String>,
+    // #[serde(default)]
+    // pub tests: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Clone)]

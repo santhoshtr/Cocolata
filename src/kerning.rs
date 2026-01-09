@@ -1,4 +1,3 @@
-
 use crate::config::KernSide;
 use crate::glyphnames::get_glyph_name;
 use crate::malayalam_font::MalayalamFont;
@@ -68,7 +67,7 @@ impl MalayalamFont {
                 let prefix = if (0x0D00..=0x0D7F).contains(&codepoint) {
                     "ml_"
                 } else {
-                    "ml_"
+                    ""
                 };
 
                 let glyph_name = get_glyph_name(&item, prefix);
