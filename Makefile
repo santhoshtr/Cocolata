@@ -43,7 +43,7 @@ $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-ufo: glyphs $(UFO) ## Build all master UFOs
+ufo: glyphs ## Build all master UFOs
 	cargo run --release --  --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
