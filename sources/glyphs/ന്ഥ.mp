@@ -12,7 +12,7 @@ clearxy;
 z0=(0, 0);
 z1=(mw, y0);
 z2=(x1+mw/4, m/2);
-z3=((x2+x4)/2, m-overshoot);
+z3=((x2+x4)/2, 0.9m);
 z4=(x1- mw*0.4, y2);
 z5=(x4, ypart(point infinity of paths[p-1]));
 paths[p]= z0..{dir 10}z1..z2..z3..z4..{down}z5 ;

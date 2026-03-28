@@ -1,20 +1,30 @@
 input glyph;
 beginglyph;
+clearxy;
+z0=(mw/2, 0.65m);
+z1=((x0 + x2)/2.25, m-overshoot);
+z2=(x0 + 0.6mw, (y1 + y3)/2);
+z3=(x1, undershoot);
+z4=(x0, m/3);
+z5=(x4-mw/4, y3);
+z6=(x5-mw/4, 0.3m);
+z7=(x2, y2);
+z8=(x7+mw/4, y6);
+z9=(x2 , -descent*0.8);
+z10 = (x9 - mw/3, (y9+y11)/2);
+z11= (x9, y10+m/6);
+z12= (x9 + mw/4, y10);
 
-input ./glyphs/include/ക;
-paths[p] := subpath(0, 3) of paths[p]
-   -- point 4 of paths[p] - (mw/4, 0);
+paths[p] := z0 ..{right}z1..{down}z2..z3{left}..{up}z4{down}..z5{left}..{dir 60}z6.. z7..{dir 180}z9..z10{up}..z11..z12;
+paths[p]:=harmonize(paths[p]);
+
 pen_stroke(
-    nib(middle_up_nib)(0)
-    nib(down_nib)(1)
-    nib(middle_down_nib scaled 0.9)(2, 5)
-    nib(thin_vertical_nib rotated 90)(3, 4)
+   nib(thicknib)(0, 1, 2, 3,4,5,6,7,8,9,10,11,12)
 )(paths[p])(strokes[p]);
-
 
 p:=p+1;
 clearxy;
-z0=point 3 of paths[p-1];
+z0=point 6.5 of paths[p-1];
 z1=(0, (y0+y2)/2);
 z2=((x1+x3)/2, m-overshoot);
 z3=point 0 of paths[p-1];
@@ -25,25 +35,6 @@ pen_stroke(
    nib(middle_down_nib scaled 0.9)(1)
    nib(top_nib)(2)
    nib(middle_up_nib)(3)
-)(paths[p])(strokes[p]);
-
-p:=p+1;
-clearxy;
-% ഋ sign
-z0 = point 4 of paths[p-2];
-z1 = (x0 + mw/2, (y0+y2)/2);
-z2 = (x1 - 0.75mw, -descent);
-z3 = (x2 - mw/3, (y2+y4)/2);
-z4 = (x2, y3+m/6);
-z5 = (x2 + mw/3, y3);
-paths[p] = z0{dir 0}.. z1{down} .. {left}z2..z3..z4..z5;
-paths[p] := harmonize(paths[p]);
-pen_stroke(
-    nib(thin_vertical_nib rotated 90)(0)
-    nib(down_nib)(2)
-    nib(middle_down_nib)(1, 3)
-    nib(top_nib)(4)
-    nib(end_nib rotated 30)(5)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", z2);

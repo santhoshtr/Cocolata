@@ -71,8 +71,8 @@ enddef;
 vardef vocalic_r_sign =
     clearxy;
     z0 = (0, thick/4);
-    z1 = ((x0 + x2)/2, -0.8descent);
-    z2 = (x0 -0.67mw, y1 + m/4);
+    z1 = ((x0 + x2)/2, -0.9descent);
+    z2 = (x0 -0.67mw, y1 + m/6);
     z3 = ((x0 + x1)/3, y2);
     z0{down}.. {dir 190}z1..z2.. {dir -45}z3
 enddef;

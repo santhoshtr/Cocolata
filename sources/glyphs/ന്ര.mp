@@ -7,35 +7,21 @@ strokes[p] := strokes[p] shifted (mw/3,0);
 
 
 p:=p+1;
-input ./glyphs/include/right_arch;
-
-paths[p] := subpath(0,1.75) of paths[p];
-
-pen_stroke(
-    cut(thicknib, -45)(0)
-    nib(thicknib)(1)
-    nib(thicknib)(2)
-    nib(thicknib)(3)
-)(paths[p])(strokes[p]);
-
-
-
-p:=p+1;
 clearxy;
 z0 = point infinity of paths[p-1];
-z1 = (xpart(point 0 of paths[p-1]), reph_sign_depth);
-z2 = (xpart(point 2 of paths[p-2]), y1);
-z3 = (xpart(point 1 of paths[p-2]) - mw/3, ypart(point 1 of paths[p-2]));
-z4 = (x3 + mw/6, m-overshoot);
-paths[p] =  z0{dir (angle(direction infinity of paths[p-1]))}..z1{dir -180}..z3..z4;
+z1 = ( x0+mw/3 , 0.9m);
+z2 = ( x1+mw/3 , (y1+y3)/2.5);
+z3 = ( x0,  reph_sign_depth);
+z4 = ( 0,  m/2);
+z5 = ( xpart point 1 of paths[p-1],  m);
 
+paths[p]= z0{up}..z1{dir 20}..z2..z3..z4..z5;
+paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib)(0)
-    nib(thicknib)(1,2)
-    nib(thicknib)(3)
-    nib(thicknib )(4)
+    nib(thicknib)(0,1,2, 3,4,5)
 )(paths[p])(strokes[p]);
 
-anchor( "right", point .8 of paths[p]);
+
+anchor( "right", point 2.6 of paths[p]);
 
 endglyph;

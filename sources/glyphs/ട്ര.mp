@@ -20,6 +20,6 @@ pen_stroke(
     nib(thicknib)(4,5,6)
 )(paths[p])(strokes[p]);
 anchor( "vc", point 1 of paths[p]);
-anchor( "right", point 4.5 of paths[p]);
+anchor( "right", point 3.5 of paths[p]);
 
 endglyph;
