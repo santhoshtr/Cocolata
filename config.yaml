@@ -372,25 +372,6 @@ variablefonts:
     designspace: Cocolata.designspace
     stat:
       axes:
-        - tag: opsz
-          name: Optical Size
-          values:
-            - value: 10
-              name: "10pt"
-            - value: 12
-              name: "12pt"
-              flags: 2
-            - value: 48
-              name: "48pt"
-        - tag: slnt
-          name: Slant
-          values:
-            - value: 0
-              name: Upright
-              flags: 2
-              linkedValue: -12
-            - value: -12
-              name: Italic
         - tag: wght
           name: Weight
           values:
@@ -414,18 +395,4 @@ variablefonts:
               name: ExtraBold
             - value: 900
               name: Black
-        - tag: wdth
-          name: Width
-          values:
-            - value: 75
-              name: Condensed
-            - value: 87.5
-              name: SemiCondensed
-            - value: 100
-              name: Normal
-              flags: 2
-            - value: 112.5
-              name: SemiExpanded
-            - value: 125
-              name: Expanded
 
