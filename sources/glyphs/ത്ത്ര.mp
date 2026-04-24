@@ -10,5 +10,5 @@ clearxy;
 input ./glyphs/include/_ത്ര;
 
 anchor( "vc", (xpart(point infinity of paths[0]),0));
-anchor( "right", point 13.5 of paths[p]);
+anchor( "right", point 6.5 of paths[p]);
 endglyph;

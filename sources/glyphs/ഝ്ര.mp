@@ -10,15 +10,15 @@ z10=(x9, m-thin/2);
 paths[p] := paths[p]{down}..{right}z8{right}..z9---z10;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(2,6)
-    nib(middle_down_nib)(3, 7)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(1,5)
-    nib(middledownnib)(7)
+    nib(thicknib)(0)
+    nib(thicknib)(2,6)
+    nib(thicknib)(3, 7)
+    nib(thicknib)(4)
+    nib(thicknib)(1,5)
+    nib(thicknib)(7)
     nib(downnib)(8)
-    nib(thin_vertical_nib)(9)
-    cut(thin_vertical_nib, -45)(10)
+    nib(thicknib)(9)
+    nib(thicknib)(10)
 )(paths[p])(strokes[p]);
 
 
@@ -26,23 +26,21 @@ clearxy;
 p:=p+1;
 input ./glyphs/include/right_arch_dha;
 
-
-
 p:=p+1;
 clearxy;
 z0 = point 3.25 of paths[p-1];
-z1 = (xpart(point 1.8 of paths[p-1]), reph_sign_depth );
+z1 = (xpart(point 0.8 of paths[p-1]), reph_sign_depth );
 z2 = (xpart(point 2 of paths[p-2]), y1);
 z3 = (xpart(point 1 of paths[p-2]) - mw/3, ypart(point 1 of paths[p-2]));
-z4 = (x3 + mw/6, m);
+z4 = (x3 + mw/6, m-overshoot);
 
-paths[p] =  z0{dir (angle(direction 3.25 of paths[p-1]))*-1}..z1---z2..z3..z4;
+paths[p] =  z0{dir (angle(direction 3.25 of paths[p-1]))*-1}..{dir 200}z1...z2..z3..z4;
 
 pen_stroke(
-    nib(middle_up_nib)(0)
-    nib(downnib)(1,2)
-    nib(endnib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+    nib(thicknib)(0)
+    nib(thicknib)(1,2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
 )(paths[p])(strokes[p]);
 
 

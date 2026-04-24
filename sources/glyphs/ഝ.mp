@@ -10,15 +10,15 @@ z10=(x9, m-thin/2);
 paths[p] := paths[p]{down}..{right}z8{right}..z9---z10;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(2,6)
-    nib(middle_down_nib)(3, 7)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(1,5)
-    nib(middledownnib)(7)
-    nib(downnib)(8)
-    nib(thin_vertical_nib)(9)
-    nib(thin_vertical_nib)(10)
+    nib(thicknib rotated terminalangle 0 of paths[p])(0)
+    nib(thicknib)(2,6)
+    nib(thicknib)(3, 7)
+    nib(thicknib)(4)
+    nib(thicknib)(1,5)
+    nib(thicknib)(7)
+    nib(thicknib)(8)
+    nib(thicknib)(9)
+    nib(thicknib)(10)
 )(paths[p])(strokes[p]);
 
 
@@ -28,5 +28,5 @@ input ./glyphs/include/right_arch_dha;
 
 
 anchor( "vc", (xpart( point infinity of paths[0]),0));
-anchor( "right", point 2.2 of paths[p]);
+anchor( "right", point 1.2 of paths[p]);
 endglyph;

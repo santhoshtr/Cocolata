@@ -25,5 +25,5 @@ p:=p+1;
 input ./glyphs/include/right_arch_dha;
 
 anchor( "vc", (xpart(point 1 of paths[2]),0));
-anchor( "right", point 2.25 of paths[3]);
+anchor( "right", point 1.25 of paths[3]);
 endglyph;
