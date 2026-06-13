@@ -75,7 +75,8 @@ clean: ## Remove build artifacts
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
 	@rm -rf $(SOURCEDIR)/svgs/*/*.svg
 
-proofs: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
+proofs: $(FONTSDIR)/$(FAMILY)-variable.ttf ## Generate PDF proofs with HarfBuzz
+	@mkdir -p $(PROOFDIR)
 	hb-view $(FONTSDIR)/$(FAMILY)-variable.ttf \
 		--font-ptem 10 \
 		--margin 100 \
@@ -124,5 +125,5 @@ release: build ## Create release archives
 	md5sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.md5
 
 # Directory targets
-$(UFODIR) $(FONTSDIR) $(PROOFDIR) $(FONTSDIR)/webfonts:
+$(UFODIR) $(FONTSDIR) $(FONTSDIR)/webfonts:
 	mkdir -p $@
