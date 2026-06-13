@@ -10,7 +10,6 @@ MAKEFLAGS += --no-builtin-rules
 
 # Configurable variables (can be overridden by env/CLI)
 FAMILY ?= Cocolata
-PY ?= uv run
 SOURCEDIR ?= sources
 FONTSDIR ?= fonts
 PROOFDIR ?= proofs
@@ -19,7 +18,7 @@ UFODIR ?= $(SOURCEDIR)/ufo
 INSTALLDIR ?= $(HOME)/.local/share/fonts/$(FAMILY)
 
 # Read styles from config
-STYLES := $(shell $(PY) tools/read_config.py styles)
+STYLES := $(shell cargo run --release --quiet -- styles)
 
 # Derived paths
 UFO := $(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
@@ -44,7 +43,7 @@ $(STYLES): ## Generate SVGs for a style variant
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
 ufo: glyphs ## Build all master UFOs
-	cargo run --release --  --designspace $(FAMILY).designspace
+	cargo run --release -- build --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
@@ -52,17 +51,16 @@ $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variabl
 # Create TTF variable font (requires designspace)
 $(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR)
 	fontc -o $@ $(FAMILY).designspace
-	$(PY) tools/fix_font.py $@
-	$(PY) tools/stat.py $(FAMILY) $@
+	cargo run --release -- postprocess $@
 
 # Package the master UFOs into fonts directory (copy master sources)
 $(FONTSDIR)/ufo: $(UFODIR) | $(FONTSDIR)
 	mkdir -p $@
 	cp -r $(UFODIR)/ $@/
 
-# Create WOFF2 webfont from variable OTF (single VF file)
-$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FAMILY).designspace | $(FONTSDIR)
-	$(PY) python -m fontTools.ttLib.woff2 compress -o $@ $(FONTSDIR)/$(FAMILY)-variable.ttf
+# Create WOFF2 webfont from variable TTF (single VF file)
+$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(FONTSDIR)
+	cargo run --release -- woff2 $(FONTSDIR)/$(FAMILY)-variable.ttf $@
 
 clean: ## Remove build artifacts
 	@find . -name '__pycache__' -type d -prune -exec rm -rf {} +
@@ -103,8 +101,7 @@ install: $(FAMILY)
 
 # Vertical Metrics Reporting
 metrics-report: ## Report vertical metrics
-	# May need `pip install font-line` to install font-line
-	$(PY) font-line report $(FONTSDIR)/ttf-variable/*.ttf
+	cargo run --release -- report $(FONTSDIR)/$(FAMILY)-variable.ttf
 
 # Release packaging
 VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)

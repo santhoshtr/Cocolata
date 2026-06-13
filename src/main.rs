@@ -13,6 +13,7 @@ mod groups;
 mod kerning;
 mod malayalam_font;
 mod postprocess;
+mod report;
 mod variable_font;
 
 use features::MalayalamFeatures;
@@ -67,6 +68,13 @@ enum Command {
         /// Output .woff2
         output: PathBuf,
     },
+
+    /// Print a vertical-metrics report (a la font-line) for one or more fonts
+    Report {
+        /// Font files to report on
+        #[arg(required = true)]
+        fonts: Vec<PathBuf>,
+    },
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -111,6 +119,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let ttf = std::fs::read(&input)?;
             let woff2 = ttf2woff2::encode(&ttf, ttf2woff2::BrotliQuality::from(11u8))?;
             std::fs::write(&output, woff2)?;
+        }
+
+        Command::Report { fonts } => {
+            report::report(&fonts)?;
         }
     }
 
