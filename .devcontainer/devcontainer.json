@@ -1,0 +1,17 @@
+{
+  "name": "Cocolata",
+  "image": "mcr.microsoft.com/devcontainers/rust:1-trixie",
+
+  // System packages needed by the Makefile pipeline:
+  //   texlive-metapost   -> mpost (glyph SVGs in sources/Makefile)
+  //   libharfbuzz-bin    -> hb-view (make proofs)
+  //   opentype-sanitizer -> ots-sanitize (make test)
+  //   fontconfig         -> fc-cache (make install)
+  //   inotify-tools      -> inotifywait (make dev)
+  "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends texlive-metapost libharfbuzz-bin opentype-sanitizer fontconfig inotify-tools && sudo rm -rf /var/lib/apt/lists/*",
+
+  // The base image pins an older default toolchain; the project's Cargo.toml
+  // requires rustc >= 1.96 (rust-version), so switch the default to stable.
+  // Then cargo-binstall fetches/builds the fontc and fontspector binaries.
+  "postCreateCommand": "rustup default stable && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo-binstall -y fontc fontspector"
+}
