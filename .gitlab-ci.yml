@@ -17,11 +17,11 @@ stages:
 
 variables:
   PACKAGE_VERSION: $CI_COMMIT_TAG
-  Kanchana_VAR_OTF: "Kanchana-VF.otf"
-  Kanchana_VAR_TTF: "Kanchana-VF.ttf"
-  Kanchana_VAR_WOFF2: "Kanchana-VF.woff2"
-  Kanchana_ZIP: "Kanchana-${PACKAGE_VERSION}.zip"
-  Kanchana_TAR_BALL: "Kanchana-${PACKAGE_VERSION}.tar.gz"
+  Cocolata_VAR_OTF: "Cocolata-VF.otf"
+  Cocolata_VAR_TTF: "Cocolata-VF.ttf"
+  Cocolata_VAR_WOFF2: "Cocolata-VF.woff2"
+  Cocolata_ZIP: "Cocolata-${PACKAGE_VERSION}.zip"
+  Cocolata_TAR_BALL: "Cocolata-${PACKAGE_VERSION}.tar.gz"
   PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/fontrelease/${PACKAGE_VERSION}"
 
 
@@ -68,15 +68,15 @@ upload:
     - echo "Pass. Just overriding"
   script:
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Kanchana/otf-variable/${Kanchana_VAR_OTF} ${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_OTF}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Cocolata/otf-variable/${Cocolata_VAR_OTF} ${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_OTF}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Kanchana/ttf-variable/${Kanchana_VAR_TTF} ${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_TTF}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Cocolata/ttf-variable/${Cocolata_VAR_TTF} ${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_TTF}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Kanchana/webfonts/${Kanchana_VAR_WOFF2} ${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_WOFF2}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/Cocolata/webfonts/${Cocolata_VAR_WOFF2} ${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_WOFF2}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${Kanchana_ZIP} ${PACKAGE_REGISTRY_URL}/${Kanchana_ZIP}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${Cocolata_ZIP} ${PACKAGE_REGISTRY_URL}/${Cocolata_ZIP}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${Kanchana_TAR_BALL} ${PACKAGE_REGISTRY_URL}/${Kanchana_TAR_BALL}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${Cocolata_TAR_BALL} ${PACKAGE_REGISTRY_URL}/${Cocolata_TAR_BALL}
 
 release:
   stage: release
@@ -96,16 +96,16 @@ release:
     ref: $CI_COMMIT_TAG
     assets:
       links:
-        - name: 'Kanchana Variable font TTF version - Recommended for desktop installations'
-          url: '${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_TTF}'
-        - name: 'Kanchana Variable font OTF version - Recommended for desktop installations with latest operating systems'
-          url: '${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_OTF}'
-        - name: 'Kanchana Variable font webfont - For font embedding in webpages.'
-          url: '${PACKAGE_REGISTRY_URL}/${Kanchana_VAR_WOFF2}'
-        - name: 'Kanchana all font variants as tar.gz'
-          url: '${PACKAGE_REGISTRY_URL}/${Kanchana_TAR_BALL}'
-        - name: 'Kanchana all font variants as zip file'
-          url: '${PACKAGE_REGISTRY_URL}/${Kanchana_ZIP}'
+        - name: 'Cocolata Variable font TTF version - Recommended for desktop installations'
+          url: '${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_TTF}'
+        - name: 'Cocolata Variable font OTF version - Recommended for desktop installations with latest operating systems'
+          url: '${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_OTF}'
+        - name: 'Cocolata Variable font webfont - For font embedding in webpages.'
+          url: '${PACKAGE_REGISTRY_URL}/${Cocolata_VAR_WOFF2}'
+        - name: 'Cocolata all font variants as tar.gz'
+          url: '${PACKAGE_REGISTRY_URL}/${Cocolata_TAR_BALL}'
+        - name: 'Cocolata all font variants as zip file'
+          url: '${PACKAGE_REGISTRY_URL}/${Cocolata_ZIP}'
 
 trigger_job:
   stage: release
