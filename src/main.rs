@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use norad::designspace::DesignSpaceDocument;
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -12,6 +12,7 @@ mod glyphnames;
 mod groups;
 mod kerning;
 mod malayalam_font;
+mod postprocess;
 mod variable_font;
 
 use features::MalayalamFeatures;
@@ -22,39 +23,95 @@ use variable_font::MalayalamVariableFont;
 #[command(name = "font-builder")]
 #[command(about = "Build Malayalam fonts from SVG sources", long_about = None)]
 struct Cli {
-    #[arg(short, long, default_value = "config.yaml")]
-    config: PathBuf,
+    #[command(subcommand)]
+    command: Command,
+}
 
-    #[arg(short, long)]
-    designspace: PathBuf,
+#[derive(Subcommand)]
+enum Command {
+    /// Build master UFOs from SVG sources
+    Build {
+        #[arg(short, long, default_value = "config.yaml")]
+        config: PathBuf,
 
-    #[arg(short, long)]
-    style: Option<String>,
+        #[arg(short, long)]
+        designspace: PathBuf,
 
-    /// Build as variable font (processes all sources and merges features)
-    #[arg(long, default_value_t = true)]
-    variable: bool,
+        #[arg(short, long)]
+        style: Option<String>,
+
+        /// Build as variable font (processes all sources and merges features)
+        #[arg(long, default_value_t = true)]
+        variable: bool,
+    },
+
+    /// Print the styles list (space-separated) from config.yaml
+    Styles {
+        #[arg(short, long, default_value = "config.yaml")]
+        config: PathBuf,
+    },
+
+    /// Post-process a compiled variable TTF: add prep, strip AAT tables, build STAT
+    Postprocess {
+        #[arg(short, long, default_value = "config.yaml")]
+        config: PathBuf,
+
+        /// Path to the compiled variable .ttf (modified in place)
+        font: PathBuf,
+    },
+
+    /// Compress a TTF into a WOFF2 webfont
+    Woff2 {
+        /// Input .ttf
+        input: PathBuf,
+        /// Output .woff2
+        output: PathBuf,
+    },
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
-    let args = Cli::parse();
+    let cli = Cli::parse();
 
-    println!("Loading config from {:?}...", args.config);
+    match cli.command {
+        Command::Build {
+            config,
+            designspace,
+            style,
+            variable,
+        } => {
+            println!("Loading config from {:?}...", config);
+            let config_str = std::fs::read_to_string(&config)?;
+            let config: config::FontConfig = serde_yaml::from_str(&config_str)?;
 
-    let config_str = std::fs::read_to_string(&args.config)?;
-    let config: config::FontConfig = serde_yaml::from_str(&config_str)?;
+            println!("Loading designspace from {:?}...", designspace);
+            let designspace = DesignSpaceDocument::load(&designspace)?;
 
-    // Load designspace
-    println!("Loading designspace from {:?}...", args.designspace);
-    let designspace = DesignSpaceDocument::load(&args.designspace)?;
+            if variable {
+                build_variable_font(config, &designspace)?;
+            } else {
+                build_static_fonts(config, &designspace, style.as_deref())?;
+            }
+        }
 
-    if args.variable {
-        // Build as variable font - process all sources with unified features
-        build_variable_font(config, &designspace)?;
-    } else {
-        // Build as static font(s) - process individual sources
-        build_static_fonts(config, &designspace, args.style.as_deref())?;
+        Command::Styles { config } => {
+            let config_str = std::fs::read_to_string(&config)?;
+            let config: config::FontConfig = serde_yaml::from_str(&config_str)?;
+            println!("{}", config.styles.join(" "));
+        }
+
+        Command::Postprocess { config, font } => {
+            let config_str = std::fs::read_to_string(&config)?;
+            let config: config::FontConfig = serde_yaml::from_str(&config_str)?;
+            let family = config.name.clone();
+            postprocess::postprocess(&font, &family, &config)?;
+        }
+
+        Command::Woff2 { input, output } => {
+            let ttf = std::fs::read(&input)?;
+            let woff2 = ttf2woff2::encode(&ttf, ttf2woff2::BrotliQuality::from(11u8))?;
+            std::fs::write(&output, woff2)?;
+        }
     }
 
     Ok(())
