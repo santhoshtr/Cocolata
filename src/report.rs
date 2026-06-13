@@ -74,11 +74,12 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
 
     let hhea_btb = hhea_total_height + hhea_lg;
     let typo_btb = typo_total_height + typo_lg;
-    let win_external_leading =
-        (hhea_lg - ((win_asc + win_desc) - (hhea_asc - hhea_desc))).max(0);
+    let win_external_leading = (hhea_lg - ((win_asc + win_desc) - (hhea_asc - hhea_desc))).max(0);
     let win_btb = win_asc + win_desc + win_external_leading;
 
-    let use_typo_metrics = os2.fs_selection().contains(SelectionFlags::USE_TYPO_METRICS);
+    let use_typo_metrics = os2
+        .fs_selection()
+        .contains(SelectionFlags::USE_TYPO_METRICS);
 
     let rule = ":".repeat(50);
     let mut r: Vec<String> = Vec::new();
@@ -109,11 +110,15 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     r.push(rule.clone());
     r.push("  Ascent to Descent Calculations".to_string());
     r.push(rule.clone());
-    r.push(format!("[hhea] Ascent to Descent:              {hhea_total_height}"));
+    r.push(format!(
+        "[hhea] Ascent to Descent:              {hhea_total_height}"
+    ));
     r.push(format!(
         "[OS/2] TypoAscender to TypoDescender:  {typo_total_height}"
     ));
-    r.push(format!("[OS/2] WinAscent to WinDescent:        {win_total_height}"));
+    r.push(format!(
+        "[OS/2] WinAscent to WinDescent:        {win_total_height}"
+    ));
     r.push(String::new());
 
     r.push(rule.clone());
@@ -154,34 +159,17 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     r.push("  Ratios".to_string());
     r.push(rule.clone());
     r.push(format!(
-        "hhea metrics / UPM:  {}",
-        format_g3(hhea_btb as f64 / upm as f64)
+        "hhea metrics / UPM:  {:.2}",
+        hhea_btb as f64 / upm as f64
     ));
     r.push(format!(
-        "typo metrics / UPM:  {}",
-        format_g3(typo_btb as f64 / upm as f64)
+        "typo metrics / UPM:  {:.2}",
+        typo_btb as f64 / upm as f64
     ));
     r.push(format!(
-        "win metrics  / UPM:  {}",
-        format_g3(win_btb as f64 / upm as f64)
+        "win metrics  / UPM:  {:.2}",
+        win_btb as f64 / upm as f64
     ));
 
     Ok(r.join("\n"))
-}
-
-/// Format a float like Python's `{:.3g}` (3 significant figures, trailing zeros
-/// stripped). The metric ratios are always near 1, so the scientific branch of
-/// `%g` is not needed here.
-fn format_g3(x: f64) -> String {
-    if x == 0.0 {
-        return "0".to_string();
-    }
-    let exp = x.abs().log10().floor() as i32;
-    let decimals = (2 - exp).max(0) as usize;
-    let s = format!("{x:.decimals$}");
-    if s.contains('.') {
-        s.trim_end_matches('0').trim_end_matches('.').to_string()
-    } else {
-        s
-    }
 }
