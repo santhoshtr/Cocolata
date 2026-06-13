@@ -1,7 +1,6 @@
 //! Post-process a compiled variable font: add a `prep` program for better
 //! Windows rendering, strip unwanted AAT tables, and build the STAT table.
 //!
-//! This is a Rust port of the former `tools/fix_font.py` and `tools/stat.py`.
 //! All three mutations are applied in a single read/write cycle.
 
 use std::collections::HashMap;
@@ -9,9 +8,9 @@ use std::path::Path;
 
 use fontations::read::{FontRef, TableProvider};
 use fontations::types::{Fixed, NameId, Tag};
+use fontations::write::FontBuilder;
 use fontations::write::tables::name::{Name, NameRecord};
 use fontations::write::tables::stat::{AxisRecord, AxisValue, AxisValueTableFlags, Stat};
-use fontations::write::FontBuilder;
 
 use crate::config::FontConfig;
 
