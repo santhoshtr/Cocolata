@@ -17,16 +17,24 @@ TESTSDIR ?= tests
 UFODIR ?= $(SOURCEDIR)/ufo
 INSTALLDIR ?= $(HOME)/.local/share/fonts/$(FAMILY)
 
-# Read styles from config
-STYLES := $(shell cargo run --release --quiet -- styles)
+# The compiled Rust font tool, built by the `init` target
+BIN := target/release/$(FAMILY)
+
+# Read styles from config (build the tool first if it is missing)
+STYLES := $(shell test -x $(BIN) || cargo build --release --quiet; $(BIN) styles)
 
 # Derived paths
 UFO := $(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
 
-.PHONY: help build dev glyphs ufo clean proofs test install release metrics-report $(STYLES)
+.PHONY: help init build dev glyphs ufo clean proofs test install release metrics-report $(STYLES)
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make [target]\n\nTargets:\n"} /^[a-zA-Z0-9][^:]*:.*##/ {printf "  %-28s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+init: $(BIN) ## Build the Rust font tool
+
+$(BIN): $(wildcard src/*.rs) Cargo.toml Cargo.lock
+	cargo build --release
 
 build: ufo $(FAMILY) ## Build master UFOs and all font outputs
 
@@ -42,16 +50,16 @@ $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-ufo: glyphs ## Build all master UFOs
-	cargo run --release -- build --designspace $(FAMILY).designspace
+ufo: glyphs $(BIN) ## Build all master UFOs
+	$(BIN) build --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
 
 # Create TTF variable font (requires designspace)
-$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR)
+$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR) $(BIN)
 	fontc -o $@ $(FAMILY).designspace
-	cargo run --release -- postprocess $@
+	$(BIN) postprocess $@
 
 # Package the master UFOs into fonts directory (copy master sources)
 $(FONTSDIR)/ufo: $(UFODIR) | $(FONTSDIR)
@@ -59,12 +67,11 @@ $(FONTSDIR)/ufo: $(UFODIR) | $(FONTSDIR)
 	cp -r $(UFODIR)/ $@/
 
 # Create WOFF2 webfont from variable TTF (single VF file)
-$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(FONTSDIR)
-	cargo run --release -- woff2 $(FONTSDIR)/$(FAMILY)-variable.ttf $@
+$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(FONTSDIR) $(BIN)
+	$(BIN) woff2 $(FONTSDIR)/$(FAMILY)-variable.ttf $@
 
 clean: ## Remove build artifacts
-	@find . -name '__pycache__' -type d -prune -exec rm -rf {} +
-	@find . -iname "*.pyc" -delete
+	@cargo clean
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
 	@rm -rf $(SOURCEDIR)/svgs/*/*.svg
 
@@ -100,8 +107,8 @@ install: $(FAMILY)
 	@fc-cache -fr
 
 # Vertical Metrics Reporting
-metrics-report: ## Report vertical metrics
-	cargo run --release -- report $(FONTSDIR)/$(FAMILY)-variable.ttf
+metrics-report: $(BIN) ## Report vertical metrics
+	$(BIN) report $(FONTSDIR)/$(FAMILY)-variable.ttf
 
 # Release packaging
 VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)
