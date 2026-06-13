@@ -4,7 +4,7 @@ use std::collections::HashMap;
 #[derive(Debug, Deserialize, Clone)]
 pub struct FontConfig {
     pub name: String,
-    //pub styles: Vec<String>,
+    pub styles: Vec<String>,
     pub version: String,
     #[serde(rename = "unitsPerEm")]
     pub units_per_em: u32,
@@ -19,6 +19,7 @@ pub struct FontConfig {
     pub license: LicenseInfo,
     pub manufacturer: ManufacturerInfo,
     pub glyphs: GlyphConfig,
+    pub variablefonts: HashMap<String, VariableFontConfig>,
     // #[serde(default)]
     // pub sources: Option<String>,
     // #[serde(default)]
@@ -100,4 +101,31 @@ impl KernSide {
             KernSide::List(v) => v.clone(),
         }
     }
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct VariableFontConfig {
+    pub stat: StatConfig,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct StatConfig {
+    pub axes: Vec<StatAxis>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct StatAxis {
+    pub tag: String,
+    pub name: String,
+    pub values: Vec<StatValue>,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct StatValue {
+    pub value: f64,
+    pub name: String,
+    #[serde(default)]
+    pub flags: Option<u16>,
+    #[serde(rename = "linkedValue", default)]
+    pub linked_value: Option<f64>,
 }

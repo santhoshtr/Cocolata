@@ -1,0 +1,50 @@
+# Fontspector configuration (migrated from fontbakery.yaml).
+# Overrides are matched by result code; check IDs are fontspector's own.
+
+exclude_checks = [
+  "googlefonts/font_names",
+  "googlefonts/version_bump",
+  "soft_dotted",
+  # fontbakery's repo/zip_files and fontbakery_version have no fontspector
+  # equivalent and are simply dropped.
+]
+
+[[overrides]]
+code = "bad-italic"          # STAT_strings
+status = "WARN"
+reason = "Italic STAT strings are intentional for this family."
+
+[[overrides]]
+code = "invalid-name"        # googlefonts/STAT/axisregistry
+status = "WARN"
+reason = "Custom STAT axis value names are intentional."
+
+[[overrides]]
+code = "bad-fvar-instances"  # googlefonts/fvar_instances
+status = "WARN"
+reason = "fvar instances are intentional for this family."
+
+[[overrides]]
+code = "bad-filename"        # googlefonts/canonical_filename
+status = "WARN"
+reason = "Filename convention is intentional."
+
+[[overrides]]
+code = "network-check"       # fontdata_namecheck (was namecheck-service)
+status = "WARN"
+reason = "namecheck.fontdata.com is a network service; do not fail on it."
+
+[[overrides]]
+code = "legacy-accents-gdef"   # legacy_accents (was legacy-accents-component)
+status = "WARN"
+reason = "Legacy accent components are intentional."
+
+[[overrides]]
+code = "legacy-accents-width"  # legacy_accents (was legacy-accents-component)
+status = "WARN"
+reason = "Legacy accent components are intentional."
+
+[[overrides]]
+code = "failed-language-shaping"  # googlefonts/glyphsets/shape_languages
+status = "WARN"
+reason = "Some GF glyphset language shaping is not yet supported."

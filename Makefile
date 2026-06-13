@@ -10,7 +10,6 @@ MAKEFLAGS += --no-builtin-rules
 
 # Configurable variables (can be overridden by env/CLI)
 FAMILY ?= Cocolata
-PY ?= uv run
 SOURCEDIR ?= sources
 FONTSDIR ?= fonts
 PROOFDIR ?= proofs
@@ -18,16 +17,24 @@ TESTSDIR ?= tests
 UFODIR ?= $(SOURCEDIR)/ufo
 INSTALLDIR ?= $(HOME)/.local/share/fonts/$(FAMILY)
 
-# Read styles from config
-STYLES := $(shell $(PY) tools/read_config.py styles)
+# The compiled Rust font tool, built by the `init` target
+BIN := target/release/$(FAMILY)
+
+# Read styles from config (build the tool first if it is missing)
+STYLES := $(shell test -x $(BIN) || cargo build --release --quiet; $(BIN) styles)
 
 # Derived paths
 UFO := $(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
 
-.PHONY: help build dev glyphs ufo clean proofs test install release metrics-report $(STYLES)
+.PHONY: help init build dev glyphs ufo clean proofs test install release metrics-report $(STYLES)
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage: make [target]\n\nTargets:\n"} /^[a-zA-Z0-9][^:]*:.*##/ {printf "  %-28s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+init: $(BIN) ## Build the Rust font tool
+
+$(BIN): $(wildcard src/*.rs) Cargo.toml Cargo.lock
+	cargo build --release
 
 build: ufo $(FAMILY) ## Build master UFOs and all font outputs
 
@@ -43,42 +50,34 @@ $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-ufo: glyphs ## Build all master UFOs
-	cargo run --release --  --designspace $(FAMILY).designspace
+ufo: glyphs $(BIN) ## Build all master UFOs
+	$(BIN) build --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
 
 # Create TTF variable font (requires designspace)
-$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR)
+$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR) $(BIN)
 	fontc -o $@ $(FAMILY).designspace
-	$(PY) tools/fix_font.py $@
-	$(PY) tools/stat.py $(FAMILY) $@
+	$(BIN) postprocess $@
 
 # Package the master UFOs into fonts directory (copy master sources)
 $(FONTSDIR)/ufo: $(UFODIR) | $(FONTSDIR)
 	mkdir -p $@
 	cp -r $(UFODIR)/ $@/
 
-# Create WOFF2 webfont from variable OTF (single VF file)
-$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FAMILY).designspace | $(FONTSDIR)
-	$(PY) python -m fontTools.ttLib.woff2 compress -o $@ $(FONTSDIR)/$(FAMILY)-variable.ttf
+# Create WOFF2 webfont from variable TTF (single VF file)
+$(FONTSDIR)/$(FAMILY)-variable.woff2: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(FONTSDIR) $(BIN)
+	$(BIN) woff2 $(FONTSDIR)/$(FAMILY)-variable.ttf $@
 
 clean: ## Remove build artifacts
-	@find . -name '__pycache__' -type d -prune -exec rm -rf {} +
-	@find . -iname "*.pyc" -delete
+	@cargo clean
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
 	@rm -rf $(SOURCEDIR)/svgs/*/*.svg
 
-proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
-	hb-view $(FONTSDIR)/ttf/$(FAMILY)-Regular.otf \
-		--font-ptem 10 \
-		--margin 100 \
-		--line-space 2.4 \
-		--foreground=333333 \
-		--text-file $(TESTSDIR)/ligatures.txt \
-		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.ttf \
+proofs: $(FONTSDIR)/$(FAMILY)-variable.ttf ## Generate PDF proofs with HarfBuzz
+	@mkdir -p $(PROOFDIR)
+	hb-view $(FONTSDIR)/$(FAMILY)-variable.ttf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -86,14 +85,7 @@ proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.ttf \
-		--font-ptem 10 \
-		--margin 100 \
-		--line-space 2.4 \
-		--foreground=333333 \
-		--text-file $(TESTSDIR)/kerning.txt \
-		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/$(FAMILY)-variable.ttf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -101,11 +93,14 @@ proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
 		--output-file $(PROOFDIR)/paragraphs.english.pdf ;
 
 # Test (depends on proofs to ensure outputs exist)
-test: proofs ## Run fontbakery checks
-	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when upstream is fixed
-	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/$(FAMILY)-VF.ttf
-	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/$(FAMILY)-VF.ttf
+# Requires the fontspector binary on PATH (see https://github.com/fonttools/fontspector).
+test: proofs ## Run fontspector checks
+	ots-sanitize $(FONTSDIR)/$(FAMILY)-variable.ttf
+	fontspector --profile googlefonts --full-lists \
+		--configuration fontspector.toml \
+		--html $(TESTSDIR)/fontspector-report.html \
+		--ghmarkdown $(TESTSDIR)/fontspector-report.md \
+		$(FONTSDIR)/$(FAMILY)-variable.ttf
 
 install: $(FAMILY)
 	@mkdir -p $(INSTALLDIR);
@@ -113,9 +108,8 @@ install: $(FAMILY)
 	@fc-cache -fr
 
 # Vertical Metrics Reporting
-metrics-report: ## Report vertical metrics
-	# May need `pip install font-line` to install font-line
-	$(PY) font-line report $(FONTSDIR)/ttf-variable/*.ttf
+metrics-report: $(BIN) ## Report vertical metrics
+	$(BIN) report $(FONTSDIR)/$(FAMILY)-variable.ttf
 
 # Release packaging
 VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)
@@ -131,5 +125,5 @@ release: build ## Create release archives
 	md5sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.md5
 
 # Directory targets
-$(UFODIR) $(FONTSDIR) $(PROOFDIR) $(FONTSDIR)/webfonts:
+$(UFODIR) $(FONTSDIR) $(FONTSDIR)/webfonts:
 	mkdir -p $@
