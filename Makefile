@@ -70,15 +70,8 @@ clean: ## Remove build artifacts
 	@rm -rf $(FONTSDIR) $(PROOFDIR)
 	@rm -rf $(SOURCEDIR)/svgs/*/*.svg
 
-proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
-	hb-view $(FONTSDIR)/ttf/$(FAMILY)-Regular.otf \
-		--font-ptem 10 \
-		--margin 100 \
-		--line-space 2.4 \
-		--foreground=333333 \
-		--text-file $(TESTSDIR)/ligatures.txt \
-		--output-file $(PROOFDIR)/ligatures.pdf;
-	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.ttf \
+proofs: $(FONTSDIR)/$(FAMILY)-variable.ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
+	hb-view $(FONTSDIR)/$(FAMILY)-variable.ttf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -86,14 +79,7 @@ proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
 		--text-file $(TESTSDIR)/content.txt \
 		--output-file $(PROOFDIR)/content.pdf;
 
-	hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.ttf \
-		--font-ptem 10 \
-		--margin 100 \
-		--line-space 2.4 \
-		--foreground=333333 \
-		--text-file $(TESTSDIR)/kerning.txt \
-		--output-file $(PROOFDIR)/kerning.pdf ;
-	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/otf/$(FAMILY)-Regular.otf \
+	cat $(TESTSDIR)/paragraphs.english.txt | fold -sw 80 | hb-view $(FONTSDIR)/$(FAMILY)-variable.ttf \
 		--font-ptem 10 \
 		--margin 100 \
 		--line-space 2.4 \
@@ -101,11 +87,14 @@ proofs: $(FONTSDIR)/ttf | $(PROOFDIR) ## Generate PDF proofs with HarfBuzz
 		--output-file $(PROOFDIR)/paragraphs.english.pdf ;
 
 # Test (depends on proofs to ensure outputs exist)
-test: proofs ## Run fontbakery checks
-	# fontbakery check-fontval $(FONTSDIR)/$(FAMILY)-Regular.ttf <- enable when upstream is fixed
-	# fontbakery check-ufo-sources $(SOURCEDIR)/ufo/$(FAMILY)-Regular.ufo
-	$(PY) fontbakery check-opentype $(FONTSDIR)/otf-variable/$(FAMILY)-VF.ttf
-	$(PY) fontbakery check-googlefonts --full-lists --config fontbakery.yaml --html tests/fontbakery-report.html --ghmarkdown tests/fontbakery-report.md $(FONTSDIR)/ttf-variable/$(FAMILY)-VF.ttf
+# Requires the fontspector binary on PATH (see https://github.com/fonttools/fontspector).
+test: proofs ## Run fontspector checks
+	ots-sanitize $(FONTSDIR)/$(FAMILY)-variable.ttf
+	fontspector --profile googlefonts --full-lists \
+		--configuration fontspector.toml \
+		--html $(TESTSDIR)/fontspector-report.html \
+		--ghmarkdown $(TESTSDIR)/fontspector-report.md \
+		$(FONTSDIR)/$(FAMILY)-variable.ttf
 
 install: $(FAMILY)
 	@mkdir -p $(INSTALLDIR);
