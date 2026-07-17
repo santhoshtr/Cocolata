@@ -50,7 +50,12 @@ $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-ufo: glyphs $(BIN) ## Build all master UFOs
+ufo: $(UFO) ## Build all master UFOs
+
+# Grouped target: one builder run produces every master UFO. Gives the
+# variable-TTF rule a real dependency edge so parallel builds order
+# correctly (a phony ufo target alone breaks under -j).
+$(UFO) &: glyphs $(BIN)
 	$(BIN) build --designspace $(FAMILY).designspace
 
 # Meta target building all deliverables
