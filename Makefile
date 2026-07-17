@@ -56,8 +56,8 @@ ufo: glyphs $(BIN) ## Build all master UFOs
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
 
-# Create TTF variable font (requires designspace)
-$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace | $(FONTSDIR) $(BIN)
+# Create TTF variable font (requires designspace and master UFOs)
+$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace $(UFO) | $(FONTSDIR) $(BIN)
 	fontc -o $@ $(FAMILY).designspace
 	$(BIN) postprocess $@
 
