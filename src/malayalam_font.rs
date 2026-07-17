@@ -117,8 +117,25 @@ impl MalayalamFont {
         }
 
         config = config.with_name(glyph_name.clone());
-        let glyph: Glyph = convert_svg_to_glyph(svg_path, &config)
+        let mut glyph: Glyph = convert_svg_to_glyph(svg_path, &config)
             .map_err(|e| format!("Failed to convert {:?}: {}", svg_path, e))?;
+
+        // Every SVG-sourced glyph gets a fallback "right" anchor at its
+        // advance width. Composites attach through it (right-edge alignment)
+        // when base and mark share no designed anchor.
+        if !glyph
+            .anchors
+            .iter()
+            .any(|a| a.name.as_ref().is_some_and(|n| n.as_str() == "right"))
+        {
+            glyph.anchors.push(norad::Anchor::new(
+                glyph.width,
+                0.0,
+                Some(norad::Name::new("right")?),
+                None,
+                None,
+            ));
+        }
 
         if let Some(ref variant) = metadata.variant {
             match variant.as_str() {
