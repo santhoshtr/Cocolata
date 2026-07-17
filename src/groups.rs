@@ -36,16 +36,7 @@ impl MalayalamFont {
         let mut glyph_names = Vec::new();
 
         for item in items {
-            let first_char = item.chars().next().unwrap_or(' ');
-            let codepoint = first_char as u32;
-
-            let prefix = if (0x0D00..=0x0D7F).contains(&codepoint) {
-                "ml_"
-            } else {
-                "ml_"
-            };
-
-            let glyph_name = get_glyph_name(&item, prefix);
+            let glyph_name = get_glyph_name(&item, "ml_");
             glyph_names.push(glyph_name);
         }
 
