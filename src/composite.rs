@@ -1,6 +1,5 @@
-use crate::glyphnames::get_glyph_name;
+use crate::glyphnames::{get_glyph_name, get_unicode_for_name};
 use crate::malayalam_font::MalayalamFont;
-use fontdrasil::agl::char_for_agl_name;
 use log::{debug, warn};
 use norad::{AffineTransform, Component, Glyph};
 
@@ -14,12 +13,13 @@ impl MalayalamFont {
     }
 
     fn build_space(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let i_width = self
-            .font
-            .default_layer()
-            .get_glyph("i")
-            .map(|g| g.width)
-            .unwrap_or(500.0);
+        let i_width = match self.font.default_layer().get_glyph("i") {
+            Some(g) => g.width,
+            None => {
+                warn!("Glyph 'i' not found; using width 500 for space");
+                500.0
+            }
+        };
 
         let mut space = Glyph::new("space");
         space.width = i_width * 1.5;
@@ -28,6 +28,7 @@ impl MalayalamFont {
         let layer = self.font.default_layer_mut();
         layer.insert_glyph(space);
 
+        // NBSP width must be same as space width
         if let Some(nbsp) = layer.get_glyph_mut("uni00A0") {
             nbsp.width = i_width * 1.5;
         }
@@ -58,7 +59,8 @@ impl MalayalamFont {
 
                 let composite_glyph_name = items.join("");
 
-                let composite_unicode = char_for_agl_name(&composite_glyph_name).map(|c| c as u32);
+                let composite_unicode = get_unicode_for_name(&composite_glyph_name, false)
+                    .and_then(|codes| codes.first().copied());
 
                 if composite_unicode.is_none() {
                     continue;
@@ -66,9 +68,10 @@ impl MalayalamFont {
 
                 if let Some(unicode) = composite_unicode
                     && let Some(c) = char::from_u32(unicode)
-                        && !latin_extra.contains(&c.to_string()) {
-                            continue;
-                        }
+                    && !latin_extra.contains(&c.to_string())
+                {
+                    continue;
+                }
 
                 if base == "i" || base == "j" {
                     base_name = format!("dotless{}", base_name);
@@ -181,21 +184,22 @@ impl MalayalamFont {
                 ) {
                     debug!("Failed to build {}: {}", u_form_name, e);
                 } else if let Some(alts) = self.salts.get(&base_name)
-                    && let Some(alt_base) = alts.first() {
-                        let u_form_name_alt = u_form_name.replace(&base_name, alt_base);
-                        if let Err(e) = self.build_composite_glyph(
-                            &u_form_name_alt,
-                            None,
-                            vec![alt_base.clone(), "u_drop_sign".to_string()],
-                        ) {
-                            debug!("Failed to build {}: {}", u_form_name_alt, e);
-                        } else {
-                            self.salts
-                                .entry(u_form_name.clone())
-                                .or_default()
-                                .push(u_form_name_alt);
-                        }
+                    && let Some(alt_base) = alts.first()
+                {
+                    let u_form_name_alt = u_form_name.replace(&base_name, alt_base);
+                    if let Err(e) = self.build_composite_glyph(
+                        &u_form_name_alt,
+                        None,
+                        vec![alt_base.clone(), "u_drop_sign".to_string()],
+                    ) {
+                        debug!("Failed to build {}: {}", u_form_name_alt, e);
+                    } else {
+                        self.salts
+                            .entry(u_form_name.clone())
+                            .or_default()
+                            .push(u_form_name_alt);
                     }
+                }
             }
 
             let uu_form = format!("{}ൂ", base);
@@ -215,21 +219,22 @@ impl MalayalamFont {
                 ) {
                     debug!("Failed to build {}: {}", uu_form_name, e);
                 } else if let Some(alts) = self.salts.get(&base_name)
-                    && let Some(alt_base) = alts.first() {
-                        let uu_form_name_alt = uu_form_name.replace(&base_name, alt_base);
-                        if let Err(e) = self.build_composite_glyph(
-                            &uu_form_name_alt,
-                            None,
-                            vec![alt_base.clone(), "uu_drop_sign".to_string()],
-                        ) {
-                            debug!("Failed to build {}: {}", uu_form_name_alt, e);
-                        } else {
-                            self.salts
-                                .entry(uu_form_name.clone())
-                                .or_default()
-                                .push(uu_form_name_alt);
-                        }
+                    && let Some(alt_base) = alts.first()
+                {
+                    let uu_form_name_alt = uu_form_name.replace(&base_name, alt_base);
+                    if let Err(e) = self.build_composite_glyph(
+                        &uu_form_name_alt,
+                        None,
+                        vec![alt_base.clone(), "uu_drop_sign".to_string()],
+                    ) {
+                        debug!("Failed to build {}: {}", uu_form_name_alt, e);
+                    } else {
+                        self.salts
+                            .entry(uu_form_name.clone())
+                            .or_default()
+                            .push(uu_form_name_alt);
                     }
+                }
             }
         }
 
@@ -245,9 +250,10 @@ impl MalayalamFont {
         let mut composite = Glyph::new(name);
 
         if let Some(cp) = unicode
-            && let Some(c) = char::from_u32(cp) {
-                composite.codepoints = vec![c].into_iter().collect();
-            }
+            && let Some(c) = char::from_u32(cp)
+        {
+            composite.codepoints = vec![c].into_iter().collect();
+        }
 
         let base_name = &components[0];
         let base_glyph = self
@@ -326,9 +332,10 @@ impl MalayalamFont {
             if let Some(base_name) = &base_anchor.name {
                 for mark_anchor in &mark.anchors {
                     if let Some(mark_name) = &mark_anchor.name
-                        && base_name == mark_name {
-                            return Some((base_name.to_string(), base_anchor, mark_anchor));
-                        }
+                        && base_name == mark_name
+                    {
+                        return Some((base_name.to_string(), base_anchor, mark_anchor));
+                    }
                 }
             }
         }
