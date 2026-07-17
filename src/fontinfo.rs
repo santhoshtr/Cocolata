@@ -45,8 +45,8 @@ impl MalayalamFont {
             _ => norad::fontinfo::Os2WidthClass::Normal,
         });
 
-        let typo_ascender = (self.config.ascender * 1.25) as i32;
-        let typo_descender = -((self.config.descender * 1.25) as i32);
+        let typo_ascender = (self.config.ascender * 1.25).round_ties_even() as i32;
+        let typo_descender = -((self.config.descender * 1.25).round_ties_even() as i32);
 
         info.open_type_os2_typo_ascender = Some(typo_ascender);
         info.open_type_os2_typo_descender = Some(typo_descender);
@@ -80,7 +80,7 @@ impl MalayalamFont {
             // Panose midline.
             midline: 0,
             // Panose x-height.
-            x_height: self.config.xheight as u32,
+            x_height: 0,
         });
         info.open_type_os2_family_class = Some(Os2FamilyClass {
             class_id: 0,
