@@ -1,13 +1,10 @@
-use std::fs;
-
 use crate::malayalam_font::MalayalamFont;
 use chrono::{Datelike, Utc};
 use log::info;
 use norad::{
-    Glyph, Guideline, Name,
+    Guideline, Name,
     fontinfo::{GaspBehavior, GaspRangeRecord, Os2FamilyClass, Os2Panose},
 };
-use std::path::Path;
 impl MalayalamFont {
     pub fn set_font_info(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let info = &mut self.font.font_info;
@@ -181,33 +178,6 @@ impl MalayalamFont {
             "public.glyphOrder".to_string(),
             plist::Value::Array(glyph_names.into_iter().map(plist::Value::String).collect()),
         );
-
-        Ok(())
-    }
-
-    pub fn write_glyphs(&self, path: &Path) -> Result<(), Box<dyn std::error::Error>> {
-        let default_layer = self.font.default_layer();
-
-        default_layer.iter().try_for_each(|glyph: &Glyph| {
-            let glyph_filename = default_layer
-                .get_path(glyph.name())
-                .map(|p| p.to_string_lossy().to_string())
-                .unwrap_or_else(|| glyph.name().to_string());
-
-            let glyph_path = path.join(glyph_filename);
-            let glif_data = glyph.encode_xml()?;
-
-            if !glyph_path.exists() {
-                return Err(format!("Glyph file does not exist: {}", glyph_path.display()).into());
-            }
-
-            let existing_data = fs::read(&glyph_path)?;
-            if existing_data != glif_data {
-                fs::write(glyph_path, glif_data)?;
-            }
-
-            Ok::<(), Box<dyn std::error::Error>>(())
-        })?;
 
         Ok(())
     }

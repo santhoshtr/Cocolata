@@ -1,51 +1,144 @@
 use crate::config::FontConfig;
-use crate::features::{AnchorData, FeaturesData, MalayalamFeatures};
+use crate::features::{AnchorData, FeaturesData, MalayalamFeatures, MarkClass};
 use crate::malayalam_font::MalayalamFont;
 use log::{info, warn};
 use minijinja::{Environment, context};
-use norad::designspace::DesignSpaceDocument;
+use norad::designspace::{DesignSpaceDocument, Source};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
+/// One designspace source: its style key and full axis location.
+pub struct Master {
+    /// Hyphenated style identifier (e.g. "Thin-Display"). Matches the
+    /// config.yaml styles list, the sources/svgs/<style> directories and the
+    /// UFO filenames.
+    pub style: String,
+    /// (axis tag, userspace value) for every designspace axis, in axis order.
+    pub location: Vec<(String, f64)>,
+}
+
+impl Master {
+    /// Location in FEA variable-value syntax: "wght=400,wdth=100,slnt=0,opsz=12"
+    fn fea_location(&self) -> String {
+        self.location
+            .iter()
+            .map(|(tag, value)| format!("{}={}", tag, value))
+            .collect::<Vec<_>>()
+            .join(",")
+    }
+
+    pub fn weight(&self) -> u32 {
+        self.location
+            .iter()
+            .find(|(tag, _)| tag == "wght")
+            .map(|(_, value)| *value as u32)
+            .unwrap_or(400)
+    }
+}
+
+/// Style key of a designspace source: the UFO filename stem without the family
+/// prefix ("Malini-Thin-Display.ufo" -> "Thin-Display"). The stylename
+/// attribute is unsuitable as a key: it can contain spaces while the SVG
+/// directories and config styles are hyphenated.
+pub fn style_key(family: &str, source: &Source) -> Result<String, String> {
+    let stem = Path::new(&source.filename)
+        .file_stem()
+        .and_then(|s| s.to_str())
+        .ok_or_else(|| format!("Invalid source filename {:?}", source.filename))?;
+
+    stem.strip_prefix(&format!("{}-", family))
+        .map(str::to_string)
+        .ok_or_else(|| {
+            format!(
+                "Source filename {:?} does not follow the {}-<Style>.ufo convention",
+                source.filename, family
+            )
+        })
+}
+
+pub fn masters_from_designspace(
+    config: &FontConfig,
+    designspace: &DesignSpaceDocument,
+) -> Result<Vec<Master>, Box<dyn std::error::Error>> {
+    let mut masters: Vec<Master> = Vec::new();
+
+    for source in &designspace.sources {
+        let style = style_key(&config.name, source)?;
+        if masters.iter().any(|m| m.style == style) {
+            return Err(format!("Duplicate master style '{}' in designspace", style).into());
+        }
+
+        // Full location in designspace axis order; missing dimensions take the
+        // axis default.
+        let location = designspace
+            .axes
+            .iter()
+            .map(|axis| {
+                let value = source
+                    .location
+                    .iter()
+                    .find(|dim| dim.name == axis.name)
+                    .and_then(|dim| dim.xvalue)
+                    .unwrap_or(axis.default);
+                (axis.tag.clone(), value as f64)
+            })
+            .collect();
+
+        masters.push(Master { style, location });
+    }
+
+    if masters.is_empty() {
+        return Err("No sources found in designspace".into());
+    }
+
+    Ok(masters)
+}
+
+/// Per-master (x, y) positions keyed by master style
+type PositionsByMaster = HashMap<String, (i32, i32)>;
+
 pub struct MalayalamVariableFont {
     pub config: FontConfig,
-    pub weights: Vec<u32>,
-    pub master_fonts: HashMap<u32, MalayalamFont>,
-    pub feature_data_by_weight: HashMap<u32, FeaturesData>,
-    pub weight_to_style: HashMap<u32, String>,
+    pub masters: Vec<Master>,
+    /// Style of the master at the default location of every axis. Its feature
+    /// data is the base for all non-GPOS (GSUB, GDEF, classes) sections.
+    pub default_style: String,
+    pub master_fonts: HashMap<String, MalayalamFont>,
+    pub feature_data: HashMap<String, FeaturesData>,
 }
 
 impl MalayalamVariableFont {
-    pub fn new(config: FontConfig, designspace: &DesignSpaceDocument) -> Self {
-        let mut weights = Vec::new();
-        let mut weight_to_style = HashMap::new();
+    pub fn new(
+        config: FontConfig,
+        designspace: &DesignSpaceDocument,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        let masters = masters_from_designspace(&config, designspace)?;
 
-        // Extract weights and styles from designspace sources
-        for source in &designspace.sources {
-            if let Some(style) = &source.stylename {
-                let weight = source
-                    .location
-                    .iter()
-                    .find(|dim| dim.name.to_lowercase() == "weight")
-                    .and_then(|dim| dim.xvalue)
-                    .unwrap_or(400.0) as u32;
+        let defaults: Vec<(String, f64)> = designspace
+            .axes
+            .iter()
+            .map(|axis| (axis.tag.clone(), axis.default as f64))
+            .collect();
 
-                if !weights.contains(&weight) {
-                    weights.push(weight);
-                    weight_to_style.insert(weight, style.clone());
-                }
+        let default_style = match masters.iter().find(|m| m.location == defaults) {
+            Some(master) => master.style.clone(),
+            None => {
+                let fallback = masters[0].style.clone();
+                warn!(
+                    "No master at the designspace default location; using '{}' as base",
+                    fallback
+                );
+                fallback
             }
-        }
+        };
 
-        weights.sort();
-
-        Self {
+        Ok(Self {
             config,
-            weights,
+            masters,
+            default_style,
             master_fonts: HashMap::new(),
-            feature_data_by_weight: HashMap::new(),
-            weight_to_style,
-        }
+            feature_data: HashMap::new(),
+        })
     }
 
     pub fn build_masters(
@@ -55,19 +148,15 @@ impl MalayalamVariableFont {
     ) -> Result<(), Box<dyn std::error::Error>> {
         info!("Building master fonts for variable font...");
 
-        for weight in &self.weights {
-            let style = self
-                .weight_to_style
-                .get(weight)
-                .ok_or(format!("No style found for weight {}", weight))?;
-
-            info!("Building master for weight {} ({})...", weight, style);
+        for master in &self.masters {
+            info!("Building master {}...", master.style);
 
             let design_dir = design_dirs
-                .get(style)
-                .ok_or(format!("No design directory for style {}", style))?;
+                .get(&master.style)
+                .ok_or(format!("No design directory for style {}", master.style))?;
 
-            let mut font = MalayalamFont::new(self.config.clone(), style.clone(), *weight);
+            let mut font =
+                MalayalamFont::new(self.config.clone(), master.style.clone(), master.weight());
             font.build(design_dir)?;
             font.set_font_info()?;
             font.update_font_version()?;
@@ -75,17 +164,12 @@ impl MalayalamVariableFont {
             font.build_kern()?;
             font.set_glyph_order()?;
             // Save the master UFO
-            let output_path = output_dir.join(format!("{}-{}.ufo", self.config.name, style));
+            let output_path = output_dir.join(format!("{}-{}.ufo", self.config.name, master.style));
+            font.font.save(&output_path)?;
 
-            if let Err(e) = font.write_glyphs(&output_path.join("glyphs")) {
-                info!("write_glyphs failed: {}, falling back to font.save()", e);
-                font.font.save(&output_path)?;
-            }
+            info!("✓ Master {} built successfully!", master.style);
 
-            info!("✓ Master {} built successfully!", style);
-
-            // Store the font instance
-            self.master_fonts.insert(*weight, font);
+            self.master_fonts.insert(master.style.clone(), font);
         }
 
         // After building all masters, write unified features
@@ -97,191 +181,155 @@ impl MalayalamVariableFont {
     pub fn collect_feature_data(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         info!("Collecting feature data from all masters...");
 
-        for (weight, font) in &self.master_fonts {
+        for (style, font) in &self.master_fonts {
             let ml_features = MalayalamFeatures::new(font);
-            self.feature_data_by_weight
-                .insert(*weight, ml_features.prepare_template_data());
+            self.feature_data
+                .insert(style.clone(), ml_features.prepare_template_data());
         }
 
         Ok(())
     }
 
-    fn merge_top_anchors(
+    /// Merge per-master anchors into variable anchors located at each master's
+    /// full axis position.
+    fn merge_anchors(
         &self,
-        anchors_by_weight: &HashMap<u32, Vec<AnchorData>>,
+        anchors_by_master: &HashMap<String, Vec<AnchorData>>,
     ) -> Vec<AnchorData> {
-        // Group anchors by their base glyphs and class_name
-        let mut anchor_groups: HashMap<(Vec<String>, String), HashMap<u32, (i32, i32)>> =
-            HashMap::new();
+        // Group anchor positions by (base glyphs, mark class)
+        let mut anchor_groups: HashMap<(Vec<String>, String), PositionsByMaster> = HashMap::new();
 
-        for (weight, anchors) in anchors_by_weight {
+        for (style, anchors) in anchors_by_master {
             for anchor in anchors {
                 let mut bases_key = anchor.bases.clone();
                 bases_key.sort();
-                let key = (bases_key.clone(), anchor.class_name.clone());
+                let key = (bases_key, anchor.class_name.clone());
 
                 let positions = anchor_groups.entry(key).or_default();
-                positions.insert(*weight, (anchor.x, anchor.y));
+                positions.insert(style.clone(), (anchor.x, anchor.y));
             }
         }
 
-        // Convert to merged format
+        let default_anchors = anchors_by_master.get(&self.default_style);
+
         let mut merged_anchors = Vec::new();
         for ((bases, class_name), positions) in anchor_groups {
-            // Extract first bases from the sorted key for output
-            let output_bases = if let Some((_, first_anchors)) = anchors_by_weight.iter().next() {
-                first_anchors
-                    .iter()
-                    .find(|a| {
-                        let mut a_bases = a.bases.clone();
-                        a_bases.sort();
-                        a_bases == bases && a.class_name == class_name
-                    })
-                    .map(|a| a.bases.clone())
-                    .unwrap_or(bases.clone())
-            } else {
-                bases
-            };
-
-            let x_values: HashMap<u32, i32> =
-                positions.iter().map(|(w, (x, _))| (*w, *x)).collect();
-            let y_values: HashMap<u32, i32> =
-                positions.iter().map(|(w, (_, y))| (*w, *y)).collect();
+            // Preserve the base-glyph order the default master produced; the
+            // group key had to be sorted to be comparable across masters.
+            let output_bases = default_anchors
+                .and_then(|anchors| {
+                    anchors
+                        .iter()
+                        .find(|a| {
+                            let mut a_bases = a.bases.clone();
+                            a_bases.sort();
+                            a_bases == bases && a.class_name == class_name
+                        })
+                        .map(|a| a.bases.clone())
+                })
+                .unwrap_or(bases);
 
             merged_anchors.push(AnchorData {
                 bases: output_bases,
-                x: 0, // Will be ignored when anchor is Some
-                y: 0, // Will be ignored when anchor is Some
+                x: 0, // Ignored when anchor is Some
+                y: 0, // Ignored when anchor is Some
                 class_name,
-                anchor: Some(self.format_variable_anchor(&x_values, &y_values)),
+                anchor: Some(self.format_variable_anchor(&positions)),
             });
         }
+
+        // HashMap grouping is unordered; sort for deterministic output.
+        merged_anchors.sort_by(|a, b| (&a.class_name, &a.bases).cmp(&(&b.class_name, &b.bases)));
 
         merged_anchors
     }
 
-    fn merge_bottom_anchors(
+    /// Merge per-master mark class positions into variable anchors, the same
+    /// way base anchors are merged.
+    fn merge_mark_classes(
         &self,
-        anchors_by_weight: &HashMap<u32, Vec<AnchorData>>,
-    ) -> Vec<AnchorData> {
-        // Group anchors by their base glyphs and class_name
-        let mut anchor_groups: HashMap<(Vec<String>, String), HashMap<u32, (i32, i32)>> =
-            HashMap::new();
+        marks_by_master: &HashMap<String, Vec<MarkClass>>,
+    ) -> Vec<MarkClass> {
+        let mut groups: HashMap<(String, String), PositionsByMaster> = HashMap::new();
 
-        for (weight, anchors) in anchors_by_weight {
-            for anchor in anchors {
-                let mut bases_key = anchor.bases.clone();
-                bases_key.sort();
-                let key = (bases_key.clone(), anchor.class_name.clone());
-
-                let positions = anchor_groups.entry(key).or_default();
-                positions.insert(*weight, (anchor.x, anchor.y));
+        for (style, marks) in marks_by_master {
+            for mark in marks {
+                groups
+                    .entry((mark.glyph.clone(), mark.class_name.clone()))
+                    .or_default()
+                    .insert(style.clone(), (mark.x, mark.y));
             }
         }
 
-        // Convert to merged format
-        let mut merged_anchors = Vec::new();
-        for ((bases, class_name), positions) in anchor_groups {
-            // Extract first bases from the sorted key for output
-            let output_bases = if let Some((_, first_anchors)) = anchors_by_weight.iter().next() {
-                first_anchors
-                    .iter()
-                    .find(|a| {
-                        let mut a_bases = a.bases.clone();
-                        a_bases.sort();
-                        a_bases == bases && a.class_name == class_name
-                    })
-                    .map(|a| a.bases.clone())
-                    .unwrap_or(bases.clone())
-            } else {
-                bases
-            };
-
-            let x_values: HashMap<u32, i32> =
-                positions.iter().map(|(w, (x, _))| (*w, *x)).collect();
-            let y_values: HashMap<u32, i32> =
-                positions.iter().map(|(w, (_, y))| (*w, *y)).collect();
-
-            merged_anchors.push(AnchorData {
-                bases: output_bases,
-                x: 0, // Will be ignored when anchor is Some
-                y: 0, // Will be ignored when anchor is Some
+        let mut merged: Vec<MarkClass> = groups
+            .into_iter()
+            .map(|((glyph, class_name), positions)| MarkClass {
+                glyph,
                 class_name,
-                anchor: Some(self.format_variable_anchor(&x_values, &y_values)),
-            });
-        }
-
-        merged_anchors
-    }
-
-    fn format_variable_anchor(
-        &self,
-        x_values: &HashMap<u32, i32>,
-        y_values: &HashMap<u32, i32>,
-    ) -> String {
-        // Sort by weight
-        let mut sorted_weights: Vec<u32> = x_values.keys().copied().collect();
-        sorted_weights.sort();
-
-        // Build x coordinates part
-        let x_parts: Vec<String> = sorted_weights
-            .iter()
-            .map(|weight| format!("wght={}.0:{}", weight, x_values[weight]))
+                x: 0, // Ignored when anchor is Some
+                y: 0, // Ignored when anchor is Some
+                anchor: Some(self.format_variable_anchor(&positions)),
+            })
             .collect();
 
-        // Build y coordinates part
-        let y_parts: Vec<String> = sorted_weights
+        // HashMap grouping is unordered; sort for deterministic output.
+        merged.sort_by(|a, b| (&a.class_name, &a.glyph).cmp(&(&b.class_name, &b.glyph)));
+
+        merged
+    }
+
+    fn format_variable_anchor(&self, positions: &PositionsByMaster) -> String {
+        // Masters in designspace order; skip masters lacking this anchor.
+        let located: Vec<(&Master, (i32, i32))> = self
+            .masters
             .iter()
-            .map(|weight| format!("wght={}.0:{}", weight, y_values[weight]))
+            .filter_map(|m| positions.get(&m.style).map(|pos| (m, *pos)))
+            .collect();
+
+        let x_parts: Vec<String> = located
+            .iter()
+            .map(|(m, (x, _))| format!("{}:{}", m.fea_location(), x))
+            .collect();
+
+        let y_parts: Vec<String> = located
+            .iter()
+            .map(|(m, (_, y))| format!("{}:{}", m.fea_location(), y))
             .collect();
 
         format!("<anchor ({}) ({})>", x_parts.join(" "), y_parts.join(" "))
     }
 
     fn merge_gpos_data(&self) -> Result<FeaturesData, Box<dyn std::error::Error>> {
-        info!("Merging GPOS anchor data across weights...");
+        info!("Merging GPOS anchor data across masters...");
 
-        // Collect top anchors by weight
-        let top_anchors_by_weight: HashMap<u32, Vec<AnchorData>> = self
-            .feature_data_by_weight
+        let top_anchors_by_master: HashMap<String, Vec<AnchorData>> = self
+            .feature_data
             .iter()
-            .map(|(w, data)| (*w, data.top_anchors.clone()))
+            .map(|(style, data)| (style.clone(), data.top_anchors.clone()))
             .collect();
 
-        // Collect bottom anchors by weight
-        let bottom_anchors_by_weight: HashMap<u32, Vec<AnchorData>> = self
-            .feature_data_by_weight
+        let bottom_anchors_by_master: HashMap<String, Vec<AnchorData>> = self
+            .feature_data
             .iter()
-            .map(|(w, data)| (*w, data.bottom_anchors.clone()))
+            .map(|(style, data)| (style.clone(), data.bottom_anchors.clone()))
             .collect();
 
-        // Merge anchors
-        let merged_top_anchors = self.merge_top_anchors(&top_anchors_by_weight);
-        let merged_bottom_anchors = self.merge_bottom_anchors(&bottom_anchors_by_weight);
-
-        // Use Regular weight (400) as base for non-GPOS features
-        let base_weight = if self.feature_data_by_weight.contains_key(&400) {
-            400
-        } else {
-            *self.weights.first().ok_or("No weights available")?
-        };
-
-        if base_weight != 400 {
-            warn!(
-                "Regular weight (400) not found, using weight {} as base",
-                base_weight
-            );
-        }
+        let marks_by_master: HashMap<String, Vec<MarkClass>> = self
+            .feature_data
+            .iter()
+            .map(|(style, data)| (style.clone(), data.mark_classes.clone()))
+            .collect();
 
         let mut base_data = self
-            .feature_data_by_weight
-            .get(&base_weight)
-            .ok_or(format!("No feature data for weight {}", base_weight))?
+            .feature_data
+            .get(&self.default_style)
+            .ok_or(format!("No feature data for master {}", self.default_style))?
             .clone();
 
         // Replace GPOS data with merged versions
-        base_data.top_anchors = merged_top_anchors;
-        base_data.bottom_anchors = merged_bottom_anchors;
+        base_data.top_anchors = self.merge_anchors(&top_anchors_by_master);
+        base_data.bottom_anchors = self.merge_anchors(&bottom_anchors_by_master);
+        base_data.mark_classes = self.merge_mark_classes(&marks_by_master);
 
         Ok(base_data)
     }
@@ -324,23 +372,19 @@ impl MalayalamVariableFont {
             calt_rules => template_data.calt_rules,
             salts => template_data.salts,
             sups => template_data.sups,
+            onums => template_data.onums,
             aalts => template_data.aalts,
         })?;
 
         // Write this feature file to each Master UFO directory
-        for weight in &self.weights {
-            let style = self
-                .weight_to_style
-                .get(weight)
-                .ok_or(format!("No style found for weight {}", weight))?;
-
-            let ufo_dir = output_dir.join(format!("{}-{}.ufo", self.config.name, style));
+        for master in &self.masters {
+            let ufo_dir = output_dir.join(format!("{}-{}.ufo", self.config.name, master.style));
             let features_path = ufo_dir.join("features.fea");
 
             std::fs::write(&features_path, &features_code)
                 .map_err(|e| format!("Failed to write features to {:?}: {}", features_path, e))?;
 
-            info!("✓ Features written to {}", style);
+            info!("✓ Features written to {}", master.style);
         }
 
         Ok(())
