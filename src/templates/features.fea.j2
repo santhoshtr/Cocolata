@@ -9,7 +9,11 @@ table GDEF {
 
 {% if mark_classes %}
 {% for mark_class in mark_classes %}
+{% if mark_class.anchor %}
+    markClass {{ mark_class.glyph }} {{ mark_class.anchor }} @{{ mark_class.class_name }};
+{% else %}
     markClass {{ mark_class.glyph }} <anchor {{ mark_class.x }} {{ mark_class.y }}> @{{ mark_class.class_name }};
+{% endif %}
 {% endfor %}
 
 {% endif %}
@@ -63,8 +67,10 @@ lookup akhn_conjunctsDFLT_dflt_Chaining_1 {
     lookupflag 0;
 
 {% for rule in conjuncts.chaining_rules %}
-    ignore sub {{ rule.ignore_pattern }};
-    sub {{ rule.pattern }} lookup conditional_stack_lookup;
+{% for ignore_pattern in rule.ignore_patterns %}
+    ignore sub {{ ignore_pattern }};
+{% endfor %}
+    sub {{ rule.pattern }};
 {% endfor %}
 } akhn_conjunctsDFLT_dflt_Chaining_1;
 {% endif %}
@@ -205,6 +211,16 @@ lookup salts_lookup {
 } salts_lookup;
 {% endif %}
 
+{% if onums %}
+lookup onum_lookup {
+    lookupflag 0;
+
+{% for base, alts in onums|items() %}
+    sub {{ base }} by {{ alts | join(' ') }};
+{% endfor %}
+} onum_lookup;
+{% endif %}
+
 {% if sups %}
 lookup sups_lookup {
     lookupflag 0;
@@ -213,24 +229,6 @@ lookup sups_lookup {
     sub {{ base }} by {{ alt | join(' ') }};
 {% endfor %}
 } sups_lookup;
-{% endif %}
-
-{% if aalts %}
-lookup aalts_lookupDFLT_dflt_Substitution_3 {
-    lookupflag 0;
-
-{% for rule in aalts.latin %}
-    sub {{ rule.base }} from [{{ rule.alts | join(' ') }}];
-{% endfor %}
-} aalts_lookupDFLT_dflt_Substitution_3;
-
-lookup aalts_lookupDFLT_dflt_Substitution_1 {
-    lookupflag 0;
-
-{% for rule in aalts.malayalam %}
-    sub {{ rule.base }} by {{ rule.alt }};
-{% endfor %}
-} aalts_lookupDFLT_dflt_Substitution_1;
 {% endif %}
 
 {# === FEATURE DEFINITIONS === #}
@@ -245,13 +243,6 @@ feature liga {
 
 feature liga {
     script latn;
-    language dflt;
-            lookup latin_ligatures;
-
-} liga;
-
-feature liga {
-    script mlm2;
     language dflt;
             lookup latin_ligatures;
 
@@ -371,6 +362,20 @@ feature calt {
 {% endfor %}
 {% endif %}
 
+{# Aalt Feature #}
+{# fea-rs allows only single/alternate sub rules inside aalt, no lookup refs #}
+{% if aalts %}
+feature aalt {
+{% for rule in aalts %}
+{% if rule.alts | length == 1 %}
+    sub {{ rule.base }} by {{ rule.alts[0] }};
+{% else %}
+    sub {{ rule.base }} from [{{ rule.alts | join(' ') }}];
+{% endif %}
+{% endfor %}
+} aalt;
+{% endif %}
+
 {# Salt Feature #}
 {% if salts %}
 feature salt {
@@ -379,6 +384,30 @@ feature salt {
             lookup salts_lookup;
 
 } salt;
+{% endif %}
+
+{# Onum Feature #}
+{% if onums %}
+feature onum {
+    script DFLT;
+    language dflt;
+            lookup onum_lookup;
+
+} onum;
+
+feature onum {
+    script latn;
+    language dflt;
+            lookup onum_lookup;
+
+} onum;
+
+feature onum {
+    script mlm2;
+    language dflt;
+            lookup onum_lookup;
+
+} onum;
 {% endif %}
 
 {# Sups Feature #}

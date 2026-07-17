@@ -1,7 +1,8 @@
 use crate::glyphnames::get_glyph_name;
 use crate::malayalam_font::MalayalamFont;
 use minijinja::{Environment, context};
-use std::collections::HashMap;
+use norad::Glyph;
+use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
 
 /// Handles OpenType feature generation for Malayalam fonts.
@@ -35,13 +36,14 @@ impl<'a> MalayalamFeatures<'a> {
             calt_rules: self.prepare_calt_rules(),
             salts: self.font.salts.clone(),
             sups: self.font.sups.clone(),
+            onums: self.font.onums.clone(),
             aalts: self.prepare_aalt_data(),
         }
     }
 
     /// Prepare glyph classes for templates
-    fn prepare_glyph_classes(&self) -> HashMap<String, Vec<String>> {
-        let mut classes = HashMap::new();
+    fn prepare_glyph_classes(&self) -> BTreeMap<String, Vec<String>> {
+        let mut classes = BTreeMap::new();
 
         for gclass in self.font.config.glyphs.classes.keys() {
             let glyph_names: Vec<String> = self
@@ -126,34 +128,55 @@ impl<'a> MalayalamFeatures<'a> {
         }
     }
 
-    /// Prepare mark class definitions
+    /// Prepare mark class definitions. Positions come from each mark glyph's
+    /// own anchor ("vc" for top marks, "bottom" for bottom marks), with the
+    /// same fallbacks the anchor collection uses for base glyphs.
     fn prepare_mark_classes(&self) -> Vec<MarkClass> {
-        vec![
-            MarkClass {
-                glyph: "ml_combining_anusvara_above".to_string(),
-                x: 148,
-                y: 0,
-                class_name: "vc_vc".to_string(),
-            },
-            MarkClass {
-                glyph: "ml_dot_reph".to_string(),
-                x: -54,
-                y: 0,
-                class_name: "vc_vc".to_string(),
-            },
-            MarkClass {
-                glyph: "ml_sign_vocalic_l".to_string(),
-                x: 50,
-                y: 0,
-                class_name: "bottom_bottom".to_string(),
-            },
-            MarkClass {
-                glyph: "ml_sign_vocalic_ll".to_string(),
-                x: 166,
-                y: 0,
-                class_name: "bottom_bottom".to_string(),
-            },
-        ]
+        let mut mark_classes =
+            self.collect_mark_class("ML_TOP_MARKS", "vc", "vc_vc", |g| g.width / 2.0);
+        mark_classes.extend(self.collect_mark_class(
+            "ML_BOTTOM_MARKS",
+            "bottom",
+            "bottom_bottom",
+            |g| g.width,
+        ));
+        mark_classes
+    }
+
+    fn collect_mark_class(
+        &self,
+        class_name: &str,
+        anchor_name: &str,
+        fea_class: &str,
+        default_x: impl Fn(&Glyph) -> f64,
+    ) -> Vec<MarkClass> {
+        let mut marks = self.font.get_glyphs_from_class(class_name);
+        marks.sort();
+
+        let mut result = Vec::new();
+        for mark in marks {
+            let glyph_name = get_glyph_name(&mark, "ml_");
+            let Some(glyph) = self.font.font.default_layer().get_glyph(&glyph_name) else {
+                continue;
+            };
+
+            let (x, y) = glyph
+                .anchors
+                .iter()
+                .find(|a| a.name.as_ref().is_some_and(|n| n.as_str() == anchor_name))
+                .map(|a| (a.x, a.y))
+                .unwrap_or((default_x(glyph), 0.0));
+
+            result.push(MarkClass {
+                glyph: glyph_name,
+                x: x as i32,
+                y: y as i32,
+                class_name: fea_class.to_string(),
+                anchor: None,
+            });
+        }
+
+        result
     }
 
     /// Prepare ligature data
@@ -355,8 +378,8 @@ impl<'a> MalayalamFeatures<'a> {
     }
 
     /// Prepare contextual alternates rules
-    fn prepare_calt_rules(&self) -> HashMap<String, Vec<CaltRule>> {
-        let mut calt_rules = HashMap::new();
+    fn prepare_calt_rules(&self) -> BTreeMap<String, Vec<CaltRule>> {
+        let mut calt_rules = BTreeMap::new();
 
         let calts = &self.font.config.glyphs.calts;
 
@@ -421,35 +444,40 @@ impl<'a> MalayalamFeatures<'a> {
                 output: conjunct_glyph_name.clone(),
             };
 
-            if prevent_stack_contexts.contains_key(conjunct.as_str()) {
+            if let Some(post_stack_conjs) = prevent_stack_contexts.get(conjunct.as_str()) {
                 conditional_conjuncts.push(conjunct_data);
 
-                // Create chaining rules
-                if let Some(post_stack_conjs) = prevent_stack_contexts.get(conjunct.as_str()) {
-                    for post_stack_conj in post_stack_conjs {
-                        let mut ignore_parts: Vec<String> = conjunct
-                            .chars()
-                            .map(|c| format!("{}'", get_glyph_name(&c.to_string(), "ml_")))
-                            .collect();
+                let marked_glyphs: Vec<String> = conjunct
+                    .chars()
+                    .map(|c| format!("{}'", get_glyph_name(&c.to_string(), "ml_")))
+                    .collect();
+
+                // One ignore rule per preventing context
+                let ignore_patterns: Vec<String> = post_stack_conjs
+                    .iter()
+                    .map(|post_stack_conj| {
+                        let mut ignore_parts = marked_glyphs.clone();
                         ignore_parts.extend(
                             post_stack_conj
                                 .chars()
                                 .map(|c| get_glyph_name(&c.to_string(), "ml_")),
                         );
-                        let ignore_pattern = ignore_parts.join(" ");
+                        ignore_parts.join(" ")
+                    })
+                    .collect();
 
-                        let pattern = conjunct
-                            .chars()
-                            .map(|c| format!("{}'", get_glyph_name(&c.to_string(), "ml_")))
-                            .collect::<Vec<_>>()
-                            .join(" ");
+                // The lookup applies at the first glyph of the conjunct, where
+                // the ligature substitution starts matching.
+                let pattern = format!(
+                    "{} lookup conditional_stack_lookup {}",
+                    marked_glyphs[0],
+                    marked_glyphs[1..].join(" ")
+                );
 
-                        chaining_rules.push(ChainingRule {
-                            ignore_pattern,
-                            pattern,
-                        });
-                    }
-                }
+                chaining_rules.push(ChainingRule {
+                    ignore_patterns,
+                    pattern,
+                });
             } else {
                 basic_conjuncts.push(conjunct_data);
             }
@@ -513,6 +541,7 @@ impl<'a> MalayalamFeatures<'a> {
             }
 
             let mut missing_vowels = Vec::new();
+            let mut missing_vowel_names = Vec::new();
             for (i, vowel_sign) in vowel_signs.iter().enumerate() {
                 let ligature_vowel = format!("{}{}", ligature, vowel_sign);
                 let replacement_ligature_glyphname = get_glyph_name(&ligature_vowel, "ml_");
@@ -522,20 +551,23 @@ impl<'a> MalayalamFeatures<'a> {
                     .default_layer()
                     .contains_glyph(&replacement_ligature_glyphname)
                 {
-                    missing_vowels.push(vowel_sign_names[i].clone());
+                    missing_vowels.push(vowel_sign.clone());
+                    missing_vowel_names.push(vowel_sign_names[i].clone());
                 }
             }
 
             if !missing_vowels.is_empty() {
-                // Find largest sequence that has vowel support
+                // Find the largest trailing sequence that supports the first
+                // missing vowel; the ligature splits in front of it.
                 let mut parts = Vec::new();
                 let mut seq = String::new();
                 let mut largest_seq = seq.clone();
-                let first_vowel_sign = &vowel_signs[0];
+                let first_missing_vowel = &missing_vowels[0];
 
                 for c in ligature.chars().rev() {
                     seq = format!("{}{}", c, seq);
-                    let test_glyph = get_glyph_name(&format!("{}{}", seq, first_vowel_sign), "ml_");
+                    let test_glyph =
+                        get_glyph_name(&format!("{}{}", seq, first_missing_vowel), "ml_");
                     if self.font.font.default_layer().contains_glyph(&test_glyph) {
                         largest_seq = seq.clone();
                     }
@@ -559,9 +591,17 @@ impl<'a> MalayalamFeatures<'a> {
                     output: parts.iter().map(|p| get_glyph_name(p, "ml_")).collect(),
                 });
 
+                // When every conjoining vowel sign is missing, reference the
+                // class instead of listing all its members.
+                let context = if missing_vowels.len() == vowel_signs.len() {
+                    "@ML_VOWEL_SIGNS_CONJOINING".to_string()
+                } else {
+                    format!("[{}]", missing_vowel_names.join(" "))
+                };
+
                 fixup_rules.push(FixupRule {
                     input: get_glyph_name(&ligature, "ml_"),
-                    context: format!("[{}]", missing_vowels.join(" ")),
+                    context,
                 });
             }
         }
@@ -576,33 +616,17 @@ impl<'a> MalayalamFeatures<'a> {
         }
     }
 
-    /// Prepare access all alternates data
-    fn prepare_aalt_data(&self) -> AaltData {
-        let mut aalts = AaltData {
-            latin: Vec::new(),
-            malayalam: Vec::new(),
-        };
-
-        // Add Latin alternates (example data)
-        if let Some(a_alts) = self.font.salts.get("A") {
-            aalts.latin.push(AaltRule {
-                base: "A".to_string(),
-                alts: a_alts.clone(),
-            });
-        }
-
-        // Add Malayalam alternates
-        for (base, alts) in &self.font.salts {
-            if base.starts_with("ml_")
-                && let Some(first_alt) = alts.first() {
-                    aalts.malayalam.push(MalayalamAaltRule {
-                        base: base.clone(),
-                        alt: first_alt.clone(),
-                    });
-                }
-        }
-
-        aalts
+    /// Prepare access-all-alternates data: every glyph with stylistic
+    /// alternates gets an aalt rule listing them all.
+    fn prepare_aalt_data(&self) -> Vec<AaltRule> {
+        self.font
+            .salts
+            .iter()
+            .map(|(base, alts)| AaltRule {
+                base: base.clone(),
+                alts: alts.clone(),
+            })
+            .collect()
     }
 
     /// Prepare top anchor positioning data
@@ -821,6 +845,7 @@ impl<'a> MalayalamFeatures<'a> {
             calt_rules => template_data.calt_rules,
             salts => template_data.salts,
             sups => template_data.sups,
+            onums => template_data.onums,
             aalts => template_data.aalts,
         })?;
 
@@ -836,7 +861,7 @@ impl<'a> MalayalamFeatures<'a> {
 // Main data structure for template rendering
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct FeaturesData {
-    pub glyph_classes: HashMap<String, Vec<String>>,
+    pub glyph_classes: BTreeMap<String, Vec<String>>,
     pub gdef: GdefData,
     pub mark_classes: Vec<MarkClass>,
     pub ligatures: LigatureData,
@@ -850,10 +875,11 @@ pub struct FeaturesData {
     pub top_anchors: Vec<AnchorData>,
     pub bottom_anchors: Vec<AnchorData>,
     pub aam_rules: Vec<SubstitutionRule>,
-    pub calt_rules: HashMap<String, Vec<CaltRule>>,
-    pub salts: HashMap<String, Vec<String>>,
-    pub sups: HashMap<String, Vec<String>>,
-    pub aalts: AaltData,
+    pub calt_rules: BTreeMap<String, Vec<CaltRule>>,
+    pub salts: BTreeMap<String, Vec<String>>,
+    pub sups: BTreeMap<String, Vec<String>>,
+    pub onums: BTreeMap<String, Vec<String>>,
+    pub aalts: Vec<AaltRule>,
 }
 
 // Data structures for template rendering
@@ -870,6 +896,8 @@ pub struct MarkClass {
     pub x: i32,
     pub y: i32,
     pub class_name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub anchor: Option<String>,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
@@ -896,7 +924,7 @@ pub struct OrderRule {
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct ChainingRule {
-    pub ignore_pattern: String,
+    pub ignore_patterns: Vec<String>,
     pub pattern: String,
 }
 
@@ -930,21 +958,9 @@ pub struct CaltRule {
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
-pub struct AaltData {
-    pub latin: Vec<AaltRule>,
-    pub malayalam: Vec<MalayalamAaltRule>,
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
 pub struct AaltRule {
     pub base: String,
     pub alts: Vec<String>,
-}
-
-#[derive(Debug, Clone, serde::Serialize)]
-pub struct MalayalamAaltRule {
-    pub base: String,
-    pub alt: String,
 }
 
 #[derive(Debug, Clone, serde::Serialize)]

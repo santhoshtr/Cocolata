@@ -2,7 +2,7 @@ use crate::config::FontConfig;
 use crate::glyphnames::{get_glyph_name, get_unicode_for_name, parse_glyph_filename};
 use log::{debug, info, warn};
 use norad::{Font, Glyph};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::path::Path;
 use svg2glif::{ConversionConfig, convert_svg_to_glyph};
 
@@ -11,9 +11,10 @@ pub struct MalayalamFont {
     pub config: FontConfig,
     pub style: String,
     pub weight: u32,
-    pub salts: HashMap<String, Vec<String>>,
-    pub onums: HashMap<String, Vec<String>>,
-    pub sups: HashMap<String, Vec<String>>,
+    // BTreeMaps keep the generated feature code deterministic
+    pub salts: BTreeMap<String, Vec<String>>,
+    pub onums: BTreeMap<String, Vec<String>>,
+    pub sups: BTreeMap<String, Vec<String>>,
 }
 
 impl MalayalamFont {
@@ -23,9 +24,9 @@ impl MalayalamFont {
             config,
             style,
             weight,
-            salts: HashMap::new(),
-            onums: HashMap::new(),
-            sups: HashMap::new(),
+            salts: BTreeMap::new(),
+            onums: BTreeMap::new(),
+            sups: BTreeMap::new(),
         }
     }
 
