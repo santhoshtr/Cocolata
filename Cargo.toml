@@ -7,9 +7,9 @@ rust-version ="1.96.0"
 [dependencies]
 norad = "0.18.0"
 svg2glif = "0.3.2"
-fontdrasil = "0.4.0"
+fontdrasil = "1.0.0"
 fontations = "0.3.0"
-ttf2woff2 = { version = "0.12", default-features = false }
+ttf2woff2 = { version = "0.13", default-features = false }
 sha1 = "0.11"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"

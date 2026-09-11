@@ -36,15 +36,15 @@ dependencies = [
 
 [[package]]
 name = "alloc-no-stdlib"
-version = "2.0.4"
+version = "3.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cc7bb162ec39d46ab1ca8c77bf72e890535becd1751bb45f64c597edb4c8c6b3"
+checksum = "c2fb6cfd47bf496ff64095c20eaba0c201404ee38714d4142fcfa1dc334fcc7a"
 
 [[package]]
 name = "alloc-stdlib"
-version = "0.2.2"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94fb8275041c72129eb51b7d0322c29b8387a0386127718b096429201a5d6ece"
+checksum = "0b5c1865780388bfa186411ab5f247819487fc4864c6e9c3106611fa347586e1"
 dependencies = [
  "alloc-no-stdlib",
 ]
@@ -152,9 +152,9 @@ dependencies = [
 
 [[package]]
 name = "brotli"
-version = "8.0.3"
+version = "9.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8119e4516436f5708bbc474a9d395bf12f1b5395e93a92a56e647ac3388c8610"
+checksum = "f8b851b75c23ca7873623d612fe49bd1989aeb03d08fb9432187eb253d3d4c6b"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
@@ -163,9 +163,9 @@ dependencies = [
 
 [[package]]
 name = "brotli-decompressor"
-version = "5.0.1"
+version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5962523e1b92ce1b5e793d9169b9943eece10d39f62550bc04bb605d75b94924"
+checksum = "46087801e40b785410c352bee60e9b6226312709cf52d5fff92776cdf5cf6490"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
@@ -399,9 +399,9 @@ dependencies = [
 
 [[package]]
 name = "font-types"
-version = "0.10.1"
+version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39a654f404bbcbd48ea58c617c2993ee91d1cb63727a37bf2323a4edeed1b8c5"
+checksum = "b8eb065f3251655b3c90e22e5e363f310fc5332fb3402e37bbc94752283248f6"
 dependencies = [
  "bytemuck",
  "serde",
@@ -421,18 +421,17 @@ dependencies = [
 
 [[package]]
 name = "fontdrasil"
-version = "0.4.0"
+version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa3a7a2fbc9d1817cd07298326376c8bd39868efe7c6149090c4fafea95eaf34"
+checksum = "f91acc7fba7639e042ba0b65ade604406921bff9b3304a722145ee707f4741e5"
 dependencies = [
- "env_logger",
- "kurbo 0.12.0",
+ "kurbo 0.13.0",
  "log",
  "ordered-float",
  "serde",
  "smol_str",
  "thiserror",
- "write-fonts 0.44.1",
+ "write-fonts 0.52.0",
 ]
 
 [[package]]
@@ -575,7 +574,6 @@ checksum = "ce9729cc38c18d86123ab736fd2e7151763ba226ac2490ec092d1dd148825e32"
 dependencies = [
  "arrayvec",
  "euclid",
- "serde",
  "smallvec",
 ]
 
@@ -587,6 +585,7 @@ checksum = "7564e90fe3c0d5771e1f0bc95322b21baaeaa0d9213fa6a0b61c99f8b17b3bfb"
 dependencies = [
  "arrayvec",
  "euclid",
+ "serde",
  "smallvec",
 ]
 
@@ -676,9 +675,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.21.3"
+version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
+checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "once_cell_polyfill"
@@ -796,12 +795,13 @@ dependencies = [
 
 [[package]]
 name = "read-fonts"
-version = "0.36.0"
+version = "0.43.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5eaa2941a4c05443ee3a7b26ab076a553c343ad5995230cc2b1d3e993bdc6345"
+checksum = "005c8acf251756c478b0bf402885bfd88a1476020c4c7e6060edc1aa68da38ea"
 dependencies = [
  "bytemuck",
- "font-types 0.10.1",
+ "font-types 0.12.5",
+ "once_cell",
  "serde",
 ]
 
@@ -1078,9 +1078,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "ttf2woff2"
-version = "0.12.0"
+version = "0.13.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "506210b990e44cedf6b298ca97a99f820bfa052b23b9c10be21cc7710d292645"
+checksum = "61405db12fdd9c3881ccd8a9881fea46abec68096fedd6d50b6ab8538b442b28"
 dependencies = [
  "brotli",
  "byteorder",
@@ -1274,14 +1274,14 @@ dependencies = [
 
 [[package]]
 name = "write-fonts"
-version = "0.44.1"
+version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "187aca250ee00f9d9ad3a1ebc9ed65c9c921fdd4690b095ca6e5a8df7246d871"
+checksum = "843cebb7bd36359861dbce43d54ac8b33dfdf7b80a95913adc1ef7c7bb881e62"
 dependencies = [
- "font-types 0.10.1",
+ "font-types 0.12.5",
  "indexmap",
- "kurbo 0.12.0",
+ "kurbo 0.13.0",
  "log",
- "read-fonts 0.36.0",
+ "read-fonts 0.43.3",
  "serde",
 ]
