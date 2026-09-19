@@ -381,6 +381,20 @@ feature aalt {
 {# Salt Feature #}
 {% if salts %}
 feature salt {
+    script DFLT;
+    language dflt;
+            lookup salts_lookup;
+
+} salt;
+
+feature salt {
+    script latn;
+    language dflt;
+            lookup salts_lookup;
+
+} salt;
+
+feature salt {
     script mlm2;
     language dflt;
             lookup salts_lookup;
