@@ -142,8 +142,8 @@ glyphs:
       1.j: j
       1.t: ["t","tt"]
       1.v: vwy
-      1.verticals_lower: imnquh
-      1.verticals_tall: dl
+      1.verticals_lower: mnquh
+      1.verticals_tall: idl
       1.z: z
       1.forwardslash: /
 
@@ -159,6 +159,7 @@ glyphs:
       2.u: u
       2.x: x
       2.v: vwy
+      2.z: z
       2.verticals_tall: bl
       2.verticals: ["m", "n", "p"]
       2.forwardslash: /
@@ -167,12 +168,14 @@ glyphs:
       1.A: AÆ
       1.B: B
       1.C: C
+      1.E: E
       1.F: F
       1.G: G
       1.K: K
       1.L: L
       1.P: P
       1.ROUNDS: OQD
+      1.R: R
       1.S: S
       1.T: T
       1.U: U
@@ -209,7 +212,7 @@ glyphs:
       - ["1.f", "2.rounds", -80] #  fo fe
       - ["1.f", "2.u", -40] #  fu
       - ["1.f", "2.a", -20] #  fa
-      - ["1.i", "2.v", -40] #  iv
+      - ["1.verticals_tall", "2.v", -40] #  iv
       - ["1.f", "2.r", -20] #  fr
       - ["1.f", "2.v", -60]
       - ["1.f", "2.verticals", -40]
