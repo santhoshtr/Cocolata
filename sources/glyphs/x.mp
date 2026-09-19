@@ -4,7 +4,7 @@ r := 0.8;
 z0=(0, 0.9s);
 z1=(x0 + r*sw, 0.1s);
 
-paths[p] = z0{dir -30}..z1;
+paths[p] = z0{dir -60}..z1;
 pen_stroke(
    nib(thicknib)(0,1)
 )(paths[0])(strokes[0]);
