@@ -5,7 +5,8 @@ z1 = (0.5(x0 + x2), undershoot);
 z2 = (0.6Xw, y0);
 
 
-paths[p] =  z0{dir -80} ...z1...{dir 80}z2 ;
+paths[p] =  z0{dir -66}..z1--z2 ;
+
 pen_stroke(
     nib(thicknib)(0, 1, 2, 3, 4 )
 )(paths[p])(strokes[p]);
