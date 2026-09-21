@@ -12,5 +12,5 @@ pen_stroke(
 )(paths[p])(strokes[p]);
 
 rbearing := 0;
-anchor( "top", (xpart(point 0 of paths[0]), 1.2s));
+anchor( "top", (xpart(point 0.5 of paths[0]), 1.2s));
 endglyph;
