@@ -11,11 +11,6 @@ z5=(x4 + mw, y0);
 paths[0] = z0{right}..{down}z1..{left}z2..z3{up}..z4---z5;
 
 pen_stroke(
-    nib(top_nib)(0, 4)
-    nib(middle_down_nib)(1)
-    nib(middle_up_nib)(3)
-    nib(down_nib)(2)
-    nib(top_nib)(4)
-    nib(top_nib)(infinity)
+    nib(thicknib)(0, 1,2,3,4,5)
 )(paths[0])(strokes[0]);
 endglyph;

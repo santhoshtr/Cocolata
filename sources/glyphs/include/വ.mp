@@ -16,5 +16,5 @@ pen_stroke(
     nib(thicknib)(3)
     nib(thicknib)(4)
     nib(thicknib)(5)
-    nib(thicknib scaled 1.1 )(6)
+    nib(thicknib)(6)
 )(paths[p])(strokes[p]);

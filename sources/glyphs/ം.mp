@@ -11,7 +11,7 @@ z4=(x0, y0);
 paths[0] = z0{up}..{right}z1..{down}z2..z3{left}..{up}z4 ;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(thicknib )(0)
+   nib(thicknib)(0)
     nib(thicknib  )(1)
     nib(thicknib rotated -30)(2)
     nib(thicknib scaled 1.3)(3)

@@ -49,6 +49,7 @@ glyphs: $(STYLES) ## Generate per-style SVGs
 $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
+	VARIANT=debug $(MAKE) -C $(SOURCEDIR)
 
 ufo: $(UFO) ## Build all master UFOs
 

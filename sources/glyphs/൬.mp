@@ -9,14 +9,14 @@ input ./glyphs/include/middle_arch;
 p:=p+1;
 input ./glyphs/include/right_arch;
 clearxy;
-z4= (xpart point 1 of paths[p], -descent);
-paths[p]:=subpath(0,3) of paths[p] ..z4;
+z4= (xpart point 0 of paths[p], -descent/2);
+paths[p]:=subpath(0,2) of paths[p] ..{left}z4;
 pen_stroke(
-    cut(thin_vertical_nib, -45)(0)
-    nib(thin_vertical_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+    cut(thicknib, -45)(0)
+    nib(thicknib)(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib rotated terminalangle 4 of paths[p])(4)
 )(paths[p])(strokes[p]);
 
 

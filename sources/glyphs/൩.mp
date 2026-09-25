@@ -6,36 +6,21 @@ input ./glyphs/include/left_arch;
 
 p:=p+1;
 clearxy;
-z0=(thick/2-thin/2*middle_up_nib_scale, thin/2*middle_up_nib_scale);
-z1=(x0, 0.6m);
-z2=((x1+x3)/2.2, m-overshoot); % Top of arch
-x3-x1 = 0.7*mw;
-z3=(x3, (y2+y4)/1.86);
-z4=(x3 - mw/3 + thin*1.2/2, thin/2);
-z5=(x4, 0);
-paths[p] = z0---z1..z2{right}..z3{down}..z4--z5;
-paths[p] := paths[p] shifted point infinity of paths[p-1];
-
+z0= point infinity of paths[p-1];
+z1 = ( (x0 + x2)/2, 0.9m); % top
+z2 = ( x0 +  0.8mw, (y1+y3)/1.6);
+z3 = ( x1, 0); % bottom middle
+z4 = ( x2 + mw/3, y3);
+paths[p]:=z0..z1{dir 20}..z2..{left}z3{right}..{right}z4;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-   cut(middle_up_nib, -45)(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(end_nib)(4,5)
-)(paths[p])(strokes[p]);
-
-p:=p+1;
-clearxy;
-z0=  (0,0);
-z1=(x0 + 0.7mw, y0);
-
-
-paths[p]:= z0--z1 ;
-paths[p]:= paths[2] shifted ( point infinity of paths[p-1] + (thin*1.2/2, thick*thin_horizontal_nib_scale/2) );
-
-pen_stroke(
-    nib(thin_horizontal_nib)(0)
-    nib(thin_horizontal_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib )(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
+    nib(thicknib scaled 1.1 )(6)
 )(paths[p])(strokes[p]);
 
 endglyph;

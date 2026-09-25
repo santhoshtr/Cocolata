@@ -1,20 +1,24 @@
 input glyph;
 beginglyph;
-paths[p] := va_mouth;
-strokes[p] := pa_mouth_stroke(paths[p]);
-% Horizontal stem
-p:=p+1;
+
 clearxy;
-z0=(0,0);
-z1=(x0 + 0.7mw, y0);
+z0= (0, 0.1m);
+z1 = ( (x0 + x2)/2, 0.9m); % top
+z2 = ( x0 +  0.8mw, (y1+y3)/1.6);
+z3 = ( x1, 0); % bottom middle
+z4 = ( x2 + mw/3, y3);
 
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1]) + thin/2, thick*thin_horizontal_nib_scale/2);
-
+paths[p]:=z0..z1{dir 20}..z2..{left}z3{right}..{right}z4 ;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    nib(thin_horizontal_nib)(0)
-    nib(thin_horizontal_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib )(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
+    nib(thicknib scaled 1.1 )(6)
 )(paths[p])(strokes[p]);
 
-
 endglyph;
+

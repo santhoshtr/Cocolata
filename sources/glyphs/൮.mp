@@ -1,43 +1,34 @@
 input glyph;
 beginglyph;
-paths[p] := va_mouth;
-strokes[p] := pa_mouth_stroke(paths[p]);
-% Horizontal stem
-p:=p+1;
-clearxy;
-z0=(0,0);
-z1=(x0 + 0.7mw, y0);
 
-paths[p]:= z0--z1 ;
-paths[p]:= paths[p] shifted ( xpart(point infinity of paths[p-1])+thin/2 , thick*thin_horizontal_nib_scale/2);
+z0= (0, 0.1m);
+z1 = ( (x0 + x2)/2, 0.9m); % top
+z2 = ( x0 +  0.8mw, (y1+y3)/1.6);
+z3 = ( x1, 0); % bottom middle
+z4 = ( x2 + mw/3, y3);
+z5 = ( x4, 1.1m);
 
+paths[p]:=z0..z1{dir 20}..z2..{left}z3{right}..{right}z4{dir 100}..{dir 80}z5  ;
+paths[p] :=harmonize(paths[p]);
 pen_stroke(
-    nib(thin_horizontal_nib)(0)
-    nib(thin_horizontal_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib )(1)
+    nib(thicknib)(2)
+    nib(thicknib)(3)
+    nib(thicknib)(4)
+    nib(thicknib)(5)
+    nib(thicknib scaled 1.1 )(6)
 )(paths[p])(strokes[p]);
-
-p:=p+1;
-clearxy;
-z0=(0, 0);
-z1=(x0, m);
-
-paths[p]:= z0--z1;
-paths[p]:= paths[p] shifted (xpart(point 1 of paths[p-1]), 0);
-pen_stroke(
-    nib(thick_vertical_nib)(0)
-    nib(thick_vertical_nib)(1)
-)(paths[p])(strokes[p]);
-
 
 p:=p+1;
 clearxy;
 % bottom tail
-z0 = point 1 of paths[p-2];
+z0 = point 4 of paths[p-1];
 z1 = (x0 - mw/2, -descent);
 paths[p] = z0{down}.. {left}z1;
 pen_stroke(
-    nib(thick_vertical_nib)(0)
-    nib(down_nib)(1)
+    nib(thicknib)(0)
+    nib(thicknib)(1)
 )(paths[p])(strokes[p]);
 
 
