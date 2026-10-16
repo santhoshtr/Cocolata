@@ -5,8 +5,8 @@ edition = "2024"
 rust-version ="1.96.0"
 
 [dependencies]
-norad = "0.18.0"
-svg2glif = "0.3.2"
+norad = "0.19.0"
+svg2glif = "0.3.3"
 fontdrasil = "1.0.0"
 fontations = "0.3.0"
 ttf2woff2 = { version = "0.13", default-features = false }
@@ -21,4 +21,4 @@ lazy_static = "1.4"
 plist = "1.6"
 chrono = "0.4"
 unicode-normalization = "0.1"
-minijinja = "2.0"
+minijinja = {version = "3.0", features=["serde"]}

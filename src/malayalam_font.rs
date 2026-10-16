@@ -1,7 +1,7 @@
 use crate::config::FontConfig;
 use crate::glyphnames::{get_glyph_name, get_unicode_for_name, parse_glyph_filename};
 use log::{debug, info, warn};
-use norad::{Font, Glyph};
+use norad::Font;
 use std::collections::BTreeMap;
 use std::path::Path;
 use svg2glif::{ConversionConfig, convert_svg_to_glyph};
@@ -50,7 +50,7 @@ impl MalayalamFont {
 
         let layer = self.font.default_layer_mut();
         for (name, unicode) in empty_glyphs {
-            let mut glyph = Glyph::new(name);
+            let mut glyph = norad::Glyph::new(name);
             if let Some(cp) = unicode
                 && let Some(c) = char::from_u32(cp)
             {
@@ -118,9 +118,9 @@ impl MalayalamFont {
         }
 
         config = config.with_name(glyph_name.clone());
-        let mut glyph: Glyph = convert_svg_to_glyph(svg_path, &config)
-            .map_err(|e| format!("Failed to convert {:?}: {}", svg_path, e))?;
 
+        let mut glyph: norad::Glyph = convert_svg_to_glyph(svg_path, &config)
+            .map_err(|e| format!("Failed to convert {:?}: {}", svg_path, e))?;
         // Every SVG-sourced glyph gets a fallback "right" anchor at its
         // advance width. Composites attach through it (right-edge alignment)
         // when base and mark share no designed anchor.

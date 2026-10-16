@@ -1,6 +1,6 @@
 use crate::glyphnames::get_glyph_name;
 use crate::malayalam_font::MalayalamFont;
-use minijinja::{Environment, context};
+use minijinja::{Environment, value::Serde};
 use norad::Glyph;
 use std::collections::{BTreeMap, HashMap};
 use std::path::Path;
@@ -827,27 +827,7 @@ impl<'a> MalayalamFeatures<'a> {
         let template = env.get_template("features.fea.j2")?;
 
         // Render the template
-        let features_code = template.render(context! {
-            glyph_classes => template_data.glyph_classes,
-            gdef => template_data.gdef,
-            mark_classes => template_data.mark_classes,
-            ligatures => template_data.ligatures,
-            chillus => template_data.chillus,
-            conjuncts => template_data.conjuncts,
-            cons_signs => template_data.cons_signs,
-            cons_signs_order_rules => template_data.cons_signs_order_rules,
-            reph => template_data.reph,
-            reph_conjuncts => template_data.reph_conjuncts,
-            vowel_sign_rules => template_data.vowel_sign_rules,
-            top_anchors => template_data.top_anchors,
-            bottom_anchors => template_data.bottom_anchors,
-            aam_rules => template_data.aam_rules,
-            calt_rules => template_data.calt_rules,
-            salts => template_data.salts,
-            sups => template_data.sups,
-            onums => template_data.onums,
-            aalts => template_data.aalts,
-        })?;
+        let features_code = template.render(Serde(&template_data))?;
 
         if let Some(path) = output_path {
             std::fs::write(path, &features_code)
