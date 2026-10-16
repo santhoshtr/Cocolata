@@ -52,7 +52,7 @@ impl MalayalamFont {
         info.open_type_os2_win_ascent = Some(1032);
         info.open_type_os2_win_descent = Some(617);
 
-        info.open_type_os2_selection = Some(vec![7]);
+        info.open_type_os2_selection = Some(vec![7, 8]);
 
         info.open_type_os2_type = Some(vec![]);
         info.open_type_os2_code_page_ranges = Some(vec![0, 1]);
