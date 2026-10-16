@@ -1,85 +1,78 @@
 # Cocolata Malayalam Typeface
 
-A Handwriting style variable typeface supporting English and Malayalam
+A handwriting-style variable typeface for Malayalam and Latin.
 
-![](./docs/sample-1-dark.jpg)
+Cocolata (കോക്കലാറ്റ) is a variable font with one axis, weight. One font file contains all weights from Thin (100) to Black (900). The font also has 9 *named instances*¹. Font menus show these as usual styles: Thin, ExtraLight, Light, Regular, Medium, SemiBold, Bold, ExtraBold and Black.
 
-Taking full advantage of variable font technology, Cocolata offers an unprecedented level of flexibility, all from a single font file. Cocolata has 4 variable axes: `Weight`, `Width`, `Slant` and `Optical Size`.
+¹ *Named instance*: a fixed location in the design space of a variable font. It works like a static font style.
 
-As a variable font, Cocolata gives you fine-grained control over each one of its styles. However, it also comes with 16 predefined styles that are easy to access through your font menu. Called *named instances¹*, these work just like regular static fonts do.
-
-¹ *Named instance*: a predetermined location in the designspace of a variable font, similar to the "static instances" that are familiar in traditional digital fonts.
-
-The Variable font capability makes Cocolata stylistically flexible and warmly energetic.
-
-Cocolata is also available as multiple fonts with different weights.
-
-![Cocolata weights](docs/varaxes.jpg "Cocolata weights")
+The glyphs are not drawn by hand. MetaPost programs describe each glyph with parameters. A build tool then makes the font from these programs.
 
 ## Variation axes
 
-Cocolata has the following axes:
+| Axis   | Tag    | Range      | Default | Description                                        |
+| ------ | ------ | ---------- | ------- | -------------------------------------------------- |
+| Weight | `wght` | 100 to 900 | 400     | Thin to Black. Use the usual `font-weight` property. |
 
-| Axis       | Tag    | Range        | Default | Description                                                     |
-| ---------- | ------ | ------------ | ------- | --------------------------------------------------------------- |
-| Weight  | `wght` | 100 to 900       | 400       | Thin to Black. Can be defined with usual font-weight property.                      |
+## OpenType features
 
-### Axis Definitions
-
-* **Weight** `wght`: 100 to 900. The overall thickness of letters and the darkness of text composed with them.
-
-    Recommended use: Differences in weight can provide emphasis in text, show user interaction, or adjust the tone of communication. For light text on dark backgrounds, 400 (“Regular”) tends to be appropriate for text and code. For dark text on a light background, it can be beneficial to adjust the weight upwards to 500 (“Medium”).
-
+* Malayalam conjuncts, reph forms, La-conjuncts and stacked u/uu forms.
+* Chillu letters, also from the virama + ZWJ sequence.
+* `calt`: contextual alternates. Some repeated letters change their shape, as in handwriting.
+* `salt`: stylistic alternates for some Latin and Malayalam letters.
+* `liga`: Latin ligatures ff and ft. `<3` gives a heart.
+* `sups`: superior figures ¹ ² ³.
+* `kern`: kerning for Latin and Malayalam.
 
 ## Using the fonts
 
-* Download the latest fonts from the [Releases](https://gitlab.com/smc/fonts/Cocolata/-/releases/) (Look under the "Assets" of the latest release, download the zip, and then open that zip)
-* Install the fonts on your system. Depending on the Operating system, the installation steps vary. In general, Clicking on the font file give the option to install it.
+* Download the latest fonts from the [Releases](https://gitlab.com/smc/fonts/Cocolata/-/releases/). Look under the "Assets" of the latest release, download the zip, and then open that zip.
+* Install the fonts on your system. The installation steps are different for each operating system. Usually, when you click the font file, you get an option to install it.
 
-### Using Variable font in web pages
+### Using the variable font in web pages
 
-Variable fonts save bandwidth in web pages by having a single font to download, while providing all style variations. Using them on webpages is a big topic. Please use a [good tutorial like MDN](https://developer.mozilla.org/en-US/docs/images/Web/CSS/CSS_Fonts/Variable_Fonts_Guide)
+A variable font saves bandwidth on web pages: you download one file and you get all weights. For a full guide, see the [MDN variable fonts guide](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/Variable_fonts_guide).
 
-In general, you should link in the font with @font-face
+Link the font with `@font-face`:
 
 ```css
 @font-face {
  font-family: 'Cocolata';
- src: url('path/to/font/Cocolata-VF.woff2') format('woff2-variations');
+ src: url('path/to/font/Cocolata-variable.woff2') format('woff2');
  font-weight: 100 900;
- font-stretch: 75% 125%;
- font-style: oblique 0deg -12deg;
 }
 ```
 
-Then, you can use the font with both `font-weight` and `font-variation-settings`. Using CSS [custom properties will help](https://pixelambacht.nl/2019/fixing-variable-font-inheritance/) to avoid some caveats of property inheritance.
+Then use the font with `font-weight` or `font-variation-settings`. [CSS custom properties](https://pixelambacht.nl/2019/fixing-variable-font-inheritance/) help to avoid some problems with property inheritance.
 
 ## Building the fonts
 
-Install the required software packages, assuming a debian based GNU/Linux Operating system
+The build needs these tools:
 
-```bash
-apt-get update -y
-apt-get install -y make python3-pip python3-venv python3-yaml texlive-metapost libharfbuzz-bin
-```
+* Rust and Cargo (see `rust-version` in `Cargo.toml`)
+* `mpost` from TeX Live (`texlive-metapost` on Debian)
+* [`fontc`](https://github.com/googlefonts/fontc)
+* `hb-view` (`libharfbuzz-bin`), `ots-sanitize` and [`fontspector`](https://github.com/fonttools/fontspector), for proofs and tests only
 
-Then run make to build everything
+The devcontainer in `.devcontainer/` installs all of these.
+
+To build everything, run make:
 
 ```bash
 make
 ```
 
-This will take more than 15 minutes to build everything. But if you have a multi core processor, you can speed up this by using parallel build. Assuming you have 8 core system(8 CPUs)
+A full build takes about 15 minutes. On a computer with more processors, a parallel build is faster. For example, on a computer with 8 CPUs:
 
-```
+```bash
 make -j8
 ```
 
-A directory named fonts will be generated.
+The fonts are in the `fonts` directory.
 
 ## Language support
 
-All the Malayalam characters defined in Unicode version 15 are present in the font. Cocolata also has latin script support. Cocolata supports 294 languages convering approximately 2.8B speakers(Calculated using [hyperglot tool](https://hyperglot.rosettatype.com/))
+The font has all the characters of the Malayalam block in Unicode. Cocolata also supports the Latin script. Cocolata supports 294 languages, with approximately 2.8 billion speakers (calculated with the [hyperglot tool](https://hyperglot.rosettatype.com/)).
 
 <details>
   <summary><strong>Supported languages</strong></summary>
