@@ -49,8 +49,8 @@ impl MalayalamFont {
         info.open_type_os2_typo_descender = Some(typo_descender);
         info.open_type_os2_typo_line_gap = Some(0);
 
-        info.open_type_os2_win_ascent = Some(1032);
-        info.open_type_os2_win_descent = Some(617);
+        info.open_type_os2_win_ascent = Some(1086);
+        info.open_type_os2_win_descent = Some(721);
 
         info.open_type_os2_selection = Some(vec![7, 8]);
 
