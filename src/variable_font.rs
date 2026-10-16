@@ -80,7 +80,7 @@ pub fn masters_from_designspace(
                     .find(|dim| dim.name == axis.name)
                     .and_then(|dim| dim.xvalue)
                     .unwrap_or(axis.default);
-                (axis.tag.clone(), value as f64)
+                (axis.tag.clone(), value)
             })
             .collect();
 
@@ -117,7 +117,7 @@ impl MalayalamVariableFont {
         let defaults: Vec<(String, f64)> = designspace
             .axes
             .iter()
-            .map(|axis| (axis.tag.clone(), axis.default as f64))
+            .map(|axis| (axis.tag.clone(), axis.default))
             .collect();
 
         let default_style = match masters.iter().find(|m| m.location == defaults) {
