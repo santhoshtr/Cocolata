@@ -393,7 +393,7 @@ impl<'a> MalayalamFeatures<'a> {
                         replacement: format!(
                             "{}.{}",
                             get_glyph_name(&calt_def[1], "ml_"),
-                            &calt_def[2]
+                            calt_def[2]
                         ),
                     });
                 }
