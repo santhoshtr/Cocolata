@@ -206,7 +206,7 @@ lookup salts_lookup {
     lookupflag 0;
 
 {% for base, alts in salts|items() %}
-    sub {{ base }} from [{{ ([base] + alts) | join(' ') }}];
+    sub {{ base }} from [{{ alts | join(' ') }}];
 {% endfor %}
 } salts_lookup;
 {% endif %}
