@@ -2,30 +2,6 @@
   "name": "Cocolata",
   "image": "mcr.microsoft.com/devcontainers/rust:1-trixie",
 
-  // Claude Code CLI. The claude-code feature installs @anthropic-ai/claude-code
-  // (npm), so it needs Node; install the node feature first (installsAfter
-  // orders it before claude-code).
-  "features": {
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
-  },
-
-  // Browser OAuth cannot complete inside the container, and Team plans can have
-  // `claude setup-token` disabled. Instead, share the already-authenticated host
-  // login (remoteUser vscode is uid 1000, matching the host login):
-  //   - ~/.claude (directory bind): shares ~/.claude/.credentials.json as a
-  //     single source of truth so OAuth refresh-token rotation stays in sync;
-  //     directory bind survives Claude's atomic credential rewrites.
-  //   - ~/.claude.json (read-only): the host config holding oauthAccount and
-  //     hasCompletedOnboarding, which interactive `claude` checks to decide it
-  //     is logged in. postCreate copies it to the container's own writable
-  //     ~/.claude.json (avoids a fragile rw single-file mount and concurrent
-  //     host/container writes corrupting the host config).
-  "mounts": [
-    "source=${localEnv:HOME}/.claude,target=/home/vscode/.claude,type=bind",
-    "source=${localEnv:HOME}/.claude.json,target=/tmp/host-claude.json,type=bind,readonly"
-  ],
-
   // System packages needed by the Makefile pipeline:
   //   texlive-metapost   -> mpost (glyph SVGs in sources/Makefile)
   //   libharfbuzz-bin    -> hb-view (make proofs)
@@ -34,8 +10,9 @@
   //   inotify-tools      -> inotifywait (make dev)
   "onCreateCommand": "sudo apt-get update && sudo apt-get install -y --no-install-recommends texlive-metapost libharfbuzz-bin opentype-sanitizer fontconfig inotify-tools && sudo rm -rf /var/lib/apt/lists/*",
 
-  // Seed Claude's account/onboarding config from the host (see mounts), switch
-  // to a stable toolchain (Cargo.toml needs rustc >= 1.96), then cargo-binstall
-  // the fontc and fontspector binaries.
-  "postCreateCommand": "cp /tmp/host-claude.json $HOME/.claude.json && chmod 600 $HOME/.claude.json && rustup default stable && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo-binstall -y fontc fontspector"
+  // The base image pins an older default toolchain; the project's Cargo.toml
+  // requires rustc >= 1.96 (rust-version), so switch the default to stable.
+  // Then cargo-binstall fetches/builds the fontc and fontspector binaries.
+ "postCreateCommand": "rustup default stable && curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash && cargo-binstall -y --locked fontc && cargo-binstall -y --locked --pkg-url '{ repo }/releases/download/fontspector-v{ version }/fontspector-{ version }-{ target }.tar.gz' --pkg-fmt tgz --bin-dir 'fontspector-{ version }-{ target }/{ bin }{ binary-ext }' fontspector"
+
 }
