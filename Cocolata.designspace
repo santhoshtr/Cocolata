@@ -51,70 +51,70 @@
     </source>
   </sources>
   <instances>
-    <instance familyname="Cocolata" stylename="Thin" filename="fonts/Cocolata/ufo/Cocolata-Thin.ufo">
+    <instance familyname="Cocolata" stylename="Thin" postscriptfontname="Cocolata-Thin" filename="fonts/Cocolata/ufo/Cocolata-Thin.ufo">
       <location>
         <dimension name="weight" xvalue="100"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="ExtraLight" filename="fonts/Cocolata/ufo/Cocolata-ExtraLight.ufo">
+    <instance familyname="Cocolata" stylename="ExtraLight" postscriptfontname="Cocolata-ExtraLight" filename="fonts/Cocolata/ufo/Cocolata-ExtraLight.ufo">
       <location>
         <dimension name="weight" xvalue="200"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Light" filename="fonts/Cocolata/ufo/Cocolata-Light.ufo">
+    <instance familyname="Cocolata" stylename="Light" postscriptfontname="Cocolata-Light" filename="fonts/Cocolata/ufo/Cocolata-Light.ufo">
       <location>
         <dimension name="weight" xvalue="300"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Regular" filename="fonts/Cocolata/ufo/Cocolata-Regular.ufo">
+    <instance familyname="Cocolata" stylename="Regular" postscriptfontname="Cocolata-Regular" filename="fonts/Cocolata/ufo/Cocolata-Regular.ufo">
       <location>
         <dimension name="weight" xvalue="400"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Medium" filename="fonts/Cocolata/ufo/Cocolata-Medium.ufo">
+    <instance familyname="Cocolata" stylename="Medium" postscriptfontname="Cocolata-Medium" filename="fonts/Cocolata/ufo/Cocolata-Medium.ufo">
       <location>
         <dimension name="weight" xvalue="500"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="SemiBold" filename="fonts/Cocolata/ufo/Cocolata-SemiBold.ufo">
+    <instance familyname="Cocolata" stylename="SemiBold" postscriptfontname="Cocolata-SemiBold" filename="fonts/Cocolata/ufo/Cocolata-SemiBold.ufo">
       <location>
         <dimension name="weight" xvalue="600"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Bold" filename="fonts/Cocolata/ufo/Cocolata-Bold.ufo">
+    <instance familyname="Cocolata" stylename="Bold" postscriptfontname="Cocolata-Bold" filename="fonts/Cocolata/ufo/Cocolata-Bold.ufo">
       <location>
         <dimension name="weight" xvalue="700"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="ExtraBold" filename="fonts/Cocolata/ufo/Cocolata-ExtraBold.ufo">
+    <instance familyname="Cocolata" stylename="ExtraBold" postscriptfontname="Cocolata-ExtraBold" filename="fonts/Cocolata/ufo/Cocolata-ExtraBold.ufo">
       <location>
         <dimension name="weight" xvalue="800"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Black" filename="fonts/Cocolata/ufo/Cocolata-Black.ufo">
+    <instance familyname="Cocolata" stylename="Black" postscriptfontname="Cocolata-Black" filename="fonts/Cocolata/ufo/Cocolata-Black.ufo">
       <location>
         <dimension name="weight" xvalue="900"/>
       </location>
       <kerning/>
       <info/>
     </instance>
-    <instance familyname="Cocolata" stylename="Black Oblique" filename="fonts/Cocolata/ufo/Cocolata-Black.ufo">
+    <instance familyname="Cocolata" stylename="Black Oblique" postscriptfontname="Cocolata-BlackOblique" filename="fonts/Cocolata/ufo/Cocolata-Black.ufo">
       <location>
         <dimension name="weight" xvalue="900"/>
       </location>
