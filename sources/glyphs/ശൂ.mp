@@ -1,29 +1,7 @@
 input glyph;
 beginglyph;
-clearxy;
-z0 = (x1 + thick/2 , 0.85m);
-z1 = (0, (y0+y2)/2);
-z2 = (x1 + mw/3, undershoot);
-z3 = (x2 + mw/4, (y2 + y4)/2);
-z4 = (x3 + mw/4, 0.85m);
-z5 = (x4 + mw/2, y1);
-z6 = (x5 - mw/4, 0);
-z7 = (x6 -  mw/4, y3);
-z8 = (x7 +  mw/3, 0.7m);
-z9 = (x8 +  0.6mw, 0.6m);
-z10 = (x9 - mw/4, 0.4m); % <
-z11 = (x9, 0.25m);
-z12 = (x7 , -descent/2);
-z13 = (x9 + thick, y12);
 
+input ./glyphs/include/ശൂ;
 
-paths[p] = z0{dir -110} ..z1 ..z2{dir 30} ..z3 ..z4{dir 30}..z5
-    ..z6{dir 190}..z7..z8..z9..{dir 190}z10{dir -10}
-    ..z11..{dir 190}z12{right}..z13;
-paths[p]:=harmonize(paths[p]);
-pen_stroke(
-    nib(thicknib rotated 20)(0)
-    nib(thicknib )(1,2,3,4,5,6,7,8,9,10,11,12,13)
-)(paths[p])(strokes[p]);
 rbearing:=rbearing - thick;
 endglyph;
