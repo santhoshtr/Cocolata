@@ -134,6 +134,11 @@ impl<'a> MalayalamFeatures<'a> {
     fn prepare_mark_classes(&self) -> Vec<MarkClass> {
         let mut mark_classes =
             self.collect_mark_class("ML_TOP_MARKS", "vc", "vc_vc", |g| g.width / 2.0);
+        // The "vc" anchor sets only the horizontal position. Top marks are
+        // drawn at their final height, so they must not move vertically.
+        for mark_class in &mut mark_classes {
+            mark_class.y = 0;
+        }
         mark_classes.extend(self.collect_mark_class(
             "ML_BOTTOM_MARKS",
             "bottom",
@@ -713,10 +718,11 @@ impl<'a> MalayalamFeatures<'a> {
 
             if let Some(anchor) = top_bases.get(&glyph_name) {
                 let base_set = self.get_base_set(&glyph_name, &vowel_signs);
+                // Only x: the y of a base "vc" anchor is not a real height.
                 template_data.push(AnchorData {
                     bases: base_set,
                     x: anchor.0,
-                    y: anchor.1,
+                    y: 0,
                     class_name: "vc_vc".to_string(),
                     anchor: None,
                 });
