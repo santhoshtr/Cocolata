@@ -20,7 +20,7 @@ pen_stroke(
     nib(thin_nib rotated 90)(0, 1, 3, 4)
     nib(middle_down_nib)(2)
 )(paths[1])(strokes[1]);
-anchor( "top", (xpart(point 1 of paths[1]), 1.2X));
+anchor( "top", (xpart(point 1 of paths[1]), 1.1X));
 
 clearxy;
 z0 = (-sw/3, 0.525X);

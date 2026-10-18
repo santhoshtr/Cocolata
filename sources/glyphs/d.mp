@@ -23,7 +23,7 @@ paths[p] := z0{dir -100}...{dir -80}z1;
 pen_stroke(
    nib(thicknib)(0,1)
 )(paths[p])(strokes[p]);
-anchor( "top", (xpart(point 1 of paths[0]), 1.2X));
+anchor( "top", (xpart(point 1 of paths[0]), 1.1X));
 anchor( "bottom", (xpart(point 3 of paths[0]), 0));
 
 endglyph;

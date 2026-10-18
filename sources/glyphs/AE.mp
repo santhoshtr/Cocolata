@@ -94,5 +94,5 @@ strokes[p] := subpath(0, 1) of strokes[p]{right}
    -- z0---z1.. controls z3 and z4 .. subpath(2.4, length(strokes[p])-1) of strokes[p]  -- cycle;
 
 
-anchor( "top", (xpart(point 1 of paths[0]), 1.2X));
+anchor( "top", (xpart(point 1 of paths[0]), 1.1X));
 endglyph;
