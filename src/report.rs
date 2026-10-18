@@ -9,7 +9,9 @@ use std::path::Path;
 
 use fontations::read::tables::os2::SelectionFlags;
 use fontations::read::{FontRef, TableProvider};
+use fontations::skrifa::instance::{Location, Size};
 use fontations::skrifa::string::StringId;
+use fontations::skrifa::{GlyphId, MetadataProvider};
 use sha1::{Digest, Sha1};
 
 pub fn report(fonts: &[std::path::PathBuf]) -> Result<(), Box<dyn std::error::Error>> {
@@ -81,6 +83,8 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
         .fs_selection()
         .contains(SelectionFlags::USE_TYPO_METRICS);
 
+    let (highest, lowest) = glyph_extremes(&font);
+
     let rule = ":".repeat(50);
     let mut r: Vec<String> = Vec::new();
     r.push(format!("=== {} ===", path.display()));
@@ -94,6 +98,14 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     r.push(format!("[head] Units per Em:   {upm}"));
     r.push(format!("[head] yMax:           {ymax}"));
     r.push(format!("[head] yMin:          {ymin}"));
+    r.push(format!(
+        "[glyf] Max ascent:     {} ({} @ {})",
+        highest.y, highest.glyph, highest.location
+    ));
+    r.push(format!(
+        "[glyf] Max descent:   {} ({} @ {})",
+        lowest.y, lowest.glyph, lowest.location
+    ));
     r.push(format!("[OS/2] CapHeight:      {cap_height}"));
     r.push(format!("[OS/2] xHeight:        {x_height}"));
     r.push(format!("[OS/2] TypoAscender:   {typo_asc}"));
@@ -172,4 +184,68 @@ fn font_report(path: &Path) -> Result<String, Box<dyn std::error::Error>> {
     ));
 
     Ok(r.join("\n"))
+}
+
+/// The y value of a glyph extreme, with the glyph and the location.
+struct GlyphExtreme {
+    y: f32,
+    glyph: String,
+    location: String,
+}
+
+/// Find the glyph that goes highest and the glyph that goes lowest, at the
+/// default location and at all named instances. `head` gives only the
+/// default location. Glyph points move linearly between masters, so the
+/// extremes are at master locations; in this font they are the instances.
+fn glyph_extremes(font: &FontRef) -> (GlyphExtreme, GlyphExtreme) {
+    let axes = font.axes();
+    let label = |coords: Vec<f32>| {
+        let label = axes
+            .iter()
+            .zip(coords)
+            .map(|(axis, value)| format!("{}={value}", axis.tag()))
+            .collect::<Vec<_>>()
+            .join(",");
+        if label.is_empty() {
+            "default".to_string()
+        } else {
+            label
+        }
+    };
+
+    let mut locations = vec![(
+        label(axes.iter().map(|a| a.default_value()).collect()),
+        Location::default(),
+    )];
+    for instance in font.named_instances().iter() {
+        locations.push((label(instance.user_coords().collect()), instance.location()));
+    }
+
+    let names = font.glyph_names();
+    let extreme = |y: f32, gid: GlyphId, location: &str| GlyphExtreme {
+        y,
+        glyph: names
+            .get(gid)
+            .map(|n| n.to_string())
+            .unwrap_or_else(|| gid.to_string()),
+        location: location.to_string(),
+    };
+    let mut highest = extreme(f32::MIN, GlyphId::NOTDEF, "");
+    let mut lowest = extreme(f32::MAX, GlyphId::NOTDEF, "");
+    for (location_label, location) in &locations {
+        let metrics = font.glyph_metrics(Size::unscaled(), location);
+        for gid in 0..metrics.glyph_count() {
+            let gid = GlyphId::new(gid);
+            let Some(bounds) = metrics.bounds(gid) else {
+                continue;
+            };
+            if bounds.y_max > highest.y {
+                highest = extreme(bounds.y_max, gid, location_label);
+            }
+            if bounds.y_min < lowest.y {
+                lowest = extreme(bounds.y_min, gid, location_label);
+            }
+        }
+    }
+    (highest, lowest)
 }
