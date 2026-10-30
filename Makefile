@@ -124,13 +124,13 @@ VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo 0.0.0)
 release: build ## Create release archives
 	@echo "Creating release for version $(VERSION)"
 	# Tar files - $(FAMILY)
-	tar czvf $(FONTSDIR)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
-	sha256sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.sha256
-	md5sum $(FONTSDIR)-$(VERSION).tar.gz > $(FONTSDIR)-$(VERSION).tar.gz.md5
+	tar czvf $(FAMILY)-$(VERSION).tar.gz *.conf OFL.txt README.md $(FONTSDIR)
+	sha256sum $(FAMILY)-$(VERSION).tar.gz > $(FAMILY)-$(VERSION).tar.gz.sha256
+	md5sum $(FAMILY)-$(VERSION).tar.gz > $(FAMILY)-$(VERSION).tar.gz.md5
 	# Zip files
-	zip -r $(FONTSDIR)-$(VERSION).zip README.md OFL.txt $(FONTSDIR)
-	sha256sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.sha256
-	md5sum $(FONTSDIR)-$(VERSION).zip > $(FONTSDIR)-$(VERSION).zip.md5
+	zip -r $(FAMILY)-$(VERSION).zip README.md OFL.txt $(FONTSDIR)
+	sha256sum $(FAMILY)-$(VERSION).zip > $(FAMILY)-$(VERSION).zip.sha256
+	md5sum $(FAMILY)-$(VERSION).zip > $(FAMILY)-$(VERSION).zip.md5
 
 # Directory targets
 $(UFODIR) $(FONTSDIR) $(FONTSDIR)/webfonts:

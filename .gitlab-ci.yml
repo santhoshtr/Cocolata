@@ -50,6 +50,8 @@ build:
   artifacts:
     paths:
       - fonts
+      - Cocolata-*.zip
+      - Cocolata-*.tar.gz
 
 test:
   stage: test
@@ -94,9 +96,9 @@ upload:
     - |
       curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${COCOLATA_VAR_WOFF2} ${PACKAGE_REGISTRY_URL}/${COCOLATA_VAR_WOFF2}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${COCOLATA_ZIP} ${PACKAGE_REGISTRY_URL}/${COCOLATA_ZIP}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${COCOLATA_ZIP} ${PACKAGE_REGISTRY_URL}/${COCOLATA_ZIP}
     - |
-      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file fonts/${COCOLATA_TAR_BALL} ${PACKAGE_REGISTRY_URL}/${COCOLATA_TAR_BALL}
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${COCOLATA_TAR_BALL} ${PACKAGE_REGISTRY_URL}/${COCOLATA_TAR_BALL}
 
 release:
   stage: release
