@@ -71,7 +71,7 @@ pages:
     - echo "Pass. Just overriding"
   script:
     - mkdir public
-    - cp -rf fonts tests specimen proofs public
+    - cp -rf fonts tests proofs public
   artifacts:
     expire_in: 1000 yrs
     paths:
