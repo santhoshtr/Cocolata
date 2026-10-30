@@ -178,6 +178,13 @@ async () => {
 - Fontra caches glyphs in the page. A navigation that changes only the `#hash`
   does not reload the page. After a source change, call
   `fc.reloadGlyphs([...])` or reload the page.
+- The Fontra server also caches glyphs. It uses a file watcher to see changes
+  to the UFOs, and sometimes the watcher does not see a rebuild. Then the
+  server gives the old outline, also after a page reload. Before you trust a
+  result, compare the number of points: `(await fc.getGlyph(name))` has a
+  layer per master; `layer.glyph.path.numPoints` must be equal to the number
+  of `<point` elements in `sources/ufo/Cocolata-<Style>.ufo/glyphs/<name>.glif`.
+  If they are different, ask the maintainer to restart Fontra.
 
 Reference values at weight 400: the tops of the capitals `A` and `T` are at 735
 (`0.95X` in MetaPost plus the stroke). Round shapes go a little above this
