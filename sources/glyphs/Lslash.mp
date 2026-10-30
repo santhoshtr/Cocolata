@@ -1,43 +1,22 @@
 input glyph;
 beginglyph;
-z0=(thick/2, X);
+
+% The stroke of L
+z0=(0, X);
 z1=(x0, 0);
-paths[p] := z0--z1;
+z2=(x0+0.75mw, 0);
+paths[p] := z0{dir -80}..{dir -100}z1{dir 10}..z2;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+   nib(thicknib)(0, 1, 2)
 )(paths[p])(strokes[p]);
 
-p:=p+1;
-clearxy;
-z3=(xpart(point 0 of paths[p-1]), thin*1.2/2);
-z4=(x3 + Xw/1.5, y3);
-
-paths[p] = z3--z4;
-pen_stroke(
-   nib(thin_nib scaled 1.2 rotated 90)(0,1)
-)(paths[p])(strokes[p]);
-
-% Serifs
-strokes[0] := top_serif(strokes[0], 0);
-strokes[0] := bottom_left_serif(strokes[0], 3);
-
-% Bottom bar serif
-strokes[p] := subpath(0, 1) of strokes[p]{right}
-   -- (xpart point 1 of strokes[p]+0.01Xw, X-s)
-   -- (xpart point 1 of strokes[p] - serif_height, X-s){down}
-  .. {left}subpath(2.3, length(strokes[p])-1) of strokes[p]
-  -- cycle;
-
-
-% Slash
+% Slash, across the middle of the stem
 clearxy;
 p:=p+1;
-z0=(-serif_width*0.5, ypart(point 0.5 of paths[0]));
-z1=(x0+sw/2, y0 +s/4);
+z0=point 0.5 of paths[0] - (sw/4, s/8);
+z1=point 0.5 of paths[0] + (sw/4, s/8);
 paths[p]=z0--z1;
 pen_stroke(
-    nib(end_nib rotated terminalangle 0 of paths[p])(0)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+   nib(thicknib)(0, 1)
 )(paths[p])(strokes[p]);
-lbearing:=serif_width-lbearing;
 endglyph;

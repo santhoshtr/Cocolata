@@ -1,52 +1,37 @@
 input glyph;
 beginglyph;
-clearxy;
 
-paths[1]:= p_loop xyscaled(-1, -1) shifted (xpart(point 2 of p_loop), m);
+% The strokes of d
+z0 = (x1+0.2sw, y1-0.1s);
+z1 = (sw/2, 0.9s);
+z2 = (0, 0.5s);
+z3 = ((x2+x4)/2, undershoot);
+z4 = (x0, 0.5s );
 
-clearxy;
-z0=(0, X+serif_height);
-z1=(x0, 0);
-
-paths[p] := z0--z1;
-paths[p] :=paths[p] shifted (xpart(point 0 of paths[1]), 0);
+paths[p]:=z0...z1{dir 190}...z2{dir 250}...z3 ...{up}z4;
+paths[p] := harmonize(paths[p]);
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+     nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 
-strokes[p] := top_left_serif(strokes[p], 0);
-% Leave some extra gap at bottom, near serif
-strokes[p] :=  subpath(0, 2.75) of strokes[p]{down}
-    .. {dir -80}subpath(3.15, 6) of strokes[p]
-    --  cycle;
-strokes[p] := bottom_right_serif(strokes[p], 4);
-
-p:=p+1;
-pen_stroke(
-    nib(middle_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(down_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[0])(4)
-
-)(paths[p])(strokes[p]);
-
-
-% cross
 clearxy;
 p:=p+1;
-z0=(xpart(point 0.6 of paths[1]), ypart(point 0.2 of paths[0]));
-z1=(x0+sw/2, y0);
+z0=(xpart point 4 of strokes[p-1], X);
+z1=(x0 , 0);
+paths[p] := z0{dir -100}...{dir -80}z1;
+pen_stroke(
+   nib(thicknib)(0, 1)
+)(paths[p])(strokes[p]);
+
+% Bar, across the stem above the bowl
+clearxy;
+p:=p+1;
+z0=point 0.2 of paths[1] - (sw/4, 0);
+z1=(x0 + sw/2, y0);
 paths[p]=z0--z1;
 pen_stroke(
-    nib(end_nib rotated terminalangle 0 of paths[p])(0)
-    nib(end_nib rotated terminalangle infinity of paths[p])(infinity)
+   nib(thicknib)(0, 1)
 )(paths[p])(strokes[p]);
 
-lbearing:=sw/3*0.2;
-rbearing:=sw/3*0.1;
-
-anchor( "top", (xpart(point 1 of paths[1]), X));
-
+anchor( "top", (xpart(point 1 of paths[0]), 1.1X));
 endglyph;
-
