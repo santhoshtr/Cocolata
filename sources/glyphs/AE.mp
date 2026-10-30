@@ -2,11 +2,13 @@ input glyph;
 beginglyph;
 
 % Left diagonal of A, up to the top of the E stem
-z0=(0, 0);
-z1=(0.45Xw, 0.95X);
-paths[p] = z0{dir 70}..z1;
+
+z0 = (0, overshoot);
+z1 = (x0 + 0.5Xw, 0.95X);
+
+paths[p] =  z0{dir 80} ...{right}z1;
 pen_stroke(
-    nib(thicknib)(0, 1)
+    nib(thicknib)(0, 1, 2, 3, 4 )
 )(paths[p])(strokes[p]);
 
 % Stem and bottom bar of E, in one stroke as in E
