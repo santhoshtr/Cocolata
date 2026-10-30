@@ -1,14 +1,8 @@
-z0=(0, s);
-z1=(x0, 0);
-z2=(x1 - sw/4, -descent);
-z3=(x2 - sw/4, y2 + s/4);
-paths[p] = z0--z1{down}..z2..z3;
-paths[p] := paths[p] shifted (thick, 0);
+% The stroke of j, without the dot
+z1=(x2, s-overshoot);
+z2=(x3 + 0.4sw, 0.8*-descent);
+z3=(-0.2sw, y2 + s/4);
+paths[p] = z1{dir -80}...z2..{up}z3;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
-    nib(down_nib )(2)
-    cut(thick_nib scaled 1.1 rotated terminalangle 3 of paths[p], 15)(3)
+   nib(thicknib)(0, 1, 2)
 )(paths[p])(strokes[p]);
-
-% Serifs
-strokes[p] := top_left_serif(strokes[p], 0);

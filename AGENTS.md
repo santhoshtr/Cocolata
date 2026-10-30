@@ -136,7 +136,13 @@ than one second.
   the UFOs do not show (see below). Then inspect the result in Fontra.
 - `make dev` watches only the top level of `sources/glyphs/`. Changes in
   `sources/glyphs/include/`, `sources/pens.mp` or `sources/config/` do not
-  start a rebuild. `make -j build` includes these changes.
+  start a rebuild.
+- An SVG depends only on its own `.mp` file, `sources/pens.mp` and
+  `sources/config/<Style>.mp` (see `sources/Makefile`). If you change a file
+  in `sources/glyphs/include/`, or `glyph.mp`, `latin.mp` or `malayalam.mp`,
+  `make -j build` does not rebuild the glyphs that use it. Touch these
+  glyphs first, for example:
+  `grep -l 'include/dotlessi' sources/glyphs/*.mp | xargs touch`
 
 ### Interpolation compatibility
 
