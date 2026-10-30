@@ -10,15 +10,7 @@ z10=(x9, m-thin/2);
 paths[p] := paths[p]{down}..{right}z8{right}..z9---z10;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(thicknib)(0)
-    nib(thicknib)(2,6)
-    nib(thicknib)(3, 7)
-    nib(thicknib)(4)
-    nib(thicknib)(1,5)
-    nib(thicknib)(7)
-    nib(downnib)(8)
-    nib(thicknib)(9)
-    nib(thicknib)(10)
+    nib(thicknib)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 )(paths[p])(strokes[p]);
 
 
