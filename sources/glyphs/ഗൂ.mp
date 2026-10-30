@@ -7,24 +7,14 @@ clearxy;
 z5 = point 4 of paths[p];
 z6 = (x5 + mw/3, (y5+y7)/2);
 z7 = (x6 - mw/3, (y6+y8)/2);
-z8 = (x7 + mw/2.5, (y7+y9)/2);
-z9 = (x8 - mw/2, -m/6);
-z10 = ( xpart point 2 of paths[p], y9);
-z11 = ( xpart point 1 of paths[p], (y10+y12)/2);
-z12 = ( x10, -descent);
-z13 = ( x8+thick/2, y12);
-paths[p] := paths[p].. z6{down}..{left}z7{right}..z8{down}..z9---z10..z11{down}..z12---z13;
+z8 = (x7 + mw/2.5, 0.2m);
+% The bottom tail is the same as in ഗു: a corner, then a flat stroke.
+z9 = (xpart point 2 of paths[p], -descent/2);
+z10 = (x8, y9);
+paths[p] := paths[p].. z6{down}..{left}z7{right}..z8{down}..{dir 200}z9{dir 10}..z10;
 
 pen_stroke(
-   nib(end_nib rotated terminalangle 0 of paths[p])(0)
-   nib(middle_up_nib scaled 1.2 rotated 30)(1)
-   nib(middledownnib)(3)
-   nib(middle_down_nib)(5, 7)
-   nib(top_nib rotated 20)(4)
-   nib(end_nib rotated 90)(6)
-   nib(down_nib)(8, 9)
-   nib(down_nib rotated 70)(10)
-   nib(thick_horizontal_nib)(11,12)
+   nib(thicknib)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 3 of paths[p]);

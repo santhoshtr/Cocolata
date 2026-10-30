@@ -31,10 +31,7 @@ z3=point 0 of paths[p-1];
 paths[p] := z0{left}..z1{up}..z2{right}..{down}z3;
 paths[p] := harmonize(paths[p]);
 pen_stroke(
-   nib(thin_vertical_nib rotated 90)(0, 4)
-   nib(middle_down_nib scaled 0.9)(1)
-   nib(top_nib)(2)
-   nib(middle_up_nib)(3)
+   nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", z2);
