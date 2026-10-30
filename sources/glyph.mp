@@ -36,25 +36,14 @@ nib_rotation := -30;
 vardef thicknib = fix_nib(thick, thin, nib_rotation) enddef;
 vardef thinnib = fix_nib(thin, thin, nib_rotation) enddef;
 
-% Razor nibs
-vardef thick_nib = fix_nib(thick, 0, 0) enddef;
-vardef thin_nib = fix_nib(thin, 0, 0) enddef;
-
 if contrast = 0:
-    middle_up_nib_scale = 1;
-    end_nib_scale = 1;
     top_nib_scale = 1;
-
     down_nib_scale = 1;
-    horizontal_nib_scale = 1;
     thin_horizontal_nib_scale = 1;
     thin_vertical_nib_scale = 1;
 else:
-    middle_up_nib_scale = 1.3;
-    end_nib_scale = 1.15;
     top_nib_scale = 1.4;
     down_nib_scale = 1.4;
-    horizontal_nib_scale = 0.8;
     thin_horizontal_nib_scale = sind(45);
     thin_vertical_nib_scale = 1;
 fi;
@@ -63,43 +52,6 @@ fi;
 overshoot := thin*top_nib_scale/4;
 undershoot := thin*down_nib_scale/4;
 vertical_thin_nib_size := thin*thin_vertical_nib_scale;
-serif_height := u/3;
-serif_width :=  thick/2 + u/2;
-inktrap_width := thin/2;
-
-vardef start_up_nib = thin_nib enddef;
-vardef middle_up_nib = thin_nib scaled middle_up_nib_scale rotated -10 enddef;
-vardef top_nib = thin_nib scaled top_nib_scale rotated 70 enddef;
-vardef middle_down_nib = thick_nib   rotated 10 enddef;
-vardef down_nib = thin_nib scaled down_nib_scale rotated 110 enddef;
-vardef end_nib = thin_nib scaled end_nib_scale enddef;
-vardef thick_horizontal_nib = fix_nib(0, thick*horizontal_nib_scale,0) enddef;
-vardef thin_horizontal_nib = fix_nib(0, thick*thin_horizontal_nib_scale,0) enddef;
-vardef thick_vertical_nib = thick_nib enddef;
-vardef thin_vertical_nib = thin_nib scaled thin_vertical_nib_scale enddef;
-vardef serif_nib = fix_nib(serif_height, 0, 0) enddef;
-vardef middleupnib = thinnib scaled middle_up_nib_scale enddef;
-vardef middledownnib = thicknib enddef;
-vardef downnib = thinnib scaled down_nib_scale enddef;
-vardef topnib = thinnib scaled top_nib_scale enddef;
-vardef endnib = thinnib scaled end_nib_scale enddef;
-
-vardef terminalnib =
-    if terminalround = 0:
-        fix_nib(thick, 0, 0)
-    else:
-        fix_nib(thick, thick*terminalround, 0) xyscaled(1, terminalround)
-    fi
-enddef;
-
-vardef thinterminalnib =
-    if terminalround = 0:
-        fix_nib(thin, 0, 0)
-    else:
-        fix_nib(thin, thick*terminalround, 0)
-    fi
-enddef;
-
 
 % Show bezier controls
 vardef show_controls (expr p) =
@@ -151,23 +103,6 @@ vardef right_extrema(expr p) =
     x_extreme
 enddef;
 
-vardef top_extrema(expr p) =
-    save t, y_extreme, time_step, n;
-    pair point_on_path, y_extreme;
-
-    n := length(p);
-    y_extreme := point 0 of p;
-    time_step := 1/10;
-
-    for t := 0 step time_step until n:
-        point_on_path := point t of p;
-        if ypart point_on_path > ypart y_extreme:
-            y_extreme := point_on_path;
-        fi;
-    endfor;
-
-    y_extreme
-enddef;
 
 
 % For the given point t of path p, calculate the terminal angle. That is
@@ -187,38 +122,6 @@ vardef boundingbox(expr p, lbearing, rbearing) =
 enddef;
 
 
-% Function to edit a path by replacing a point with a new point at a given offset. Also edits the precontrol and postcontrol points of the replaced point.
-%
-%  p The path to be edited.
-%  t The index of the point to be replaced.
-%  point_offset The offset for the point.
-%  pre_offset The precontrol offset for the point.
-%  post_offset The postcontrol offset for the point.
-% returns The edited path.
-% Assumes that the path is cyclic.
-
-vardef edit_path(expr p, t, point_offset, pre_offset, post_offset) =
- save q, edited_point, in_angle, out_angle,  pre_control, post_control;
- path q;
- pair edited_point, pre_control, post_control;
- numeric in_angle, out_angle;
-
- edited_point := point t of p + point_offset;
- % We can use epsilon to denote a very small number.
- % But, using 0.00001 so that the number is even smaller.
- in_angle := angle(direction t - 0.00001 of p);
- out_angle := angle(direction t+ 0.00001 of p);
-
- pre_control := precontrol t   of p + pre_offset;
- post_control := postcontrol t of p + post_offset;
-
- q := subpath (0, t-1) of p
-      .. controls postcontrol t - 1 of p  and pre_control
-      .. {dir in_angle}edited_point{dir out_angle}
-      .. controls post_control and precontrol t+1 of p
-      .. subpath (t+1, length p-1) of p--cycle;
- q
-enddef;
 
 % Returns the cross product between two given vectors w and z
 primarydef w crossprod z =

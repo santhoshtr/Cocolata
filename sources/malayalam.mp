@@ -10,33 +10,6 @@ u_drop_sign_radius:= condense*(descent-thick)/2;
 u_drop_sign_vshift:=thick*0.8*contrast*0.75;
 
 
-vardef va_mouth =
-    clearxy;
-    z0=(x1 + mw/3 , undershoot);
-    z1=(0, (y0+y2)/2.08);
-    z2=((x1+x3)/2, m-overshoot);
-    x3-x1 = mw*0.9;
-    z3=(x3, (y2+y4)/2);
-    z4=(x3 - mw/3 + thin*1.2/2, thin/2);
-    z5=(x4, 0);
-
-    z0..z1{up}..z2{right}..z3{down}..z4--z5
-enddef;
-
-vardef va_mouth_stroke (expr va_path) =
-    clearxy;
-    path va_stroke;
-    pen_stroke(
-        nib(start_up_nib rotated terminalangle 0 of va_path)(0)
-        nib(middle_up_nib)(1)
-        nib(top_nib)(2)
-        nib(middle_down_nib)(3)
-        nib(end_nib)(4,5)
-    )(va_path)(va_stroke);
-    va_stroke
-enddef;
-
-
 vardef pa_mouth =
     clearxy;
     z0=(x1 + mw/6 , thin/4);
@@ -50,21 +23,6 @@ vardef pa_mouth =
 
     z0..z1{up}..z2{right}..z3{down}..z4--z5
 enddef;
-
-
-vardef pa_mouth_stroke (expr va_path) =
-    clearxy;
-    path va_stroke;
-    pen_stroke(
-        nib(start_up_nib rotated terminalangle 0 of va_path)(0)
-        nib(middle_up_nib)(1)
-        nib(top_nib)(2)
-        nib(middle_down_nib)(3)
-        nib(end_nib)(4,5)
-    )(va_path)(va_stroke);
-    va_stroke
-enddef;
-
 
 
 % ഋ sign
