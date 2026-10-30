@@ -1,34 +1,24 @@
 input glyph;
 beginglyph;
 
-z0=(0, s);
-z1=(x0, 0);
-paths[p] := z0--z1;
+% The strokes of n. The right leg continues below the baseline as a hook.
+z0=(0, s-overshoot);
+z1=(x0+0.1sw, undershoot);
+paths[p] := z0{dir -60}..{dir -90}z1;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+     nib(thicknib)(0, 1)
 )(paths[p])(strokes[p]);
 
 p:=p+1;
-paths[p]:=n_arch;
-paths[p]:=paths[p] shifted(xpart(point 1 of paths[p-1]) ,0);
+clearxy;
+z0=point infinity of paths[p-1];
+z1=(0.67(x0+x2), 0.9s);
+z2=(x0 + 0.7sw, 0);
+z3=(x2 - s/3, -descent*0.9);
+paths[p] := z0{dir 70}...{dir 20}z1{dir -60}..{down}z2..{dir 160}z3;
 pen_stroke(
-    cut(end_nib scaled 0.9, rel 90)(0)
-    nib(top_nib)(1)
-    nib(thick_vertical_nib)(2,3)
-    ignore_directions(1r )
+   nib(thicknib)(0, 1, 2, 3)
 )(paths[p])(strokes[p]);
 
-
-% Serifs
-strokes[0] := top_left_serif(strokes[0], 0);
-strokes[0] := bottom_serif(strokes[0], 3);
-
-clearxy;
-z0=point infinity of paths[1] + (0, undershoot);
-z1=(x0-s/3, -descent*0.9);
-paths[2]=z0{down}..{dir 160}z1;
-pen_stroke(
-    nib(middle_down_nib)(0)
-    nib(thicknib)(1)
-)(paths[2])(strokes[2]);
+rbearing:=rbearing/2;
 endglyph;
