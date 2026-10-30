@@ -4,7 +4,7 @@ z0=(thick/2, X);
 z1=(x0  ,0);
 paths[p] := z0--z1;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+    nib(thicknib)(0, 1)
 )(paths[p])(strokes[p]);
 
 clearxy;
@@ -16,8 +16,6 @@ z2=(x0 , X-y0);
 paths[p] := z0{right}..z1..{left}z2;
 
 pen_stroke(
-    cut(top_nib, 90)(0)
-    nib(middle_down_nib rotated terminalangle 1 of paths[p])(1)
-    cut(down_nib, 90)(2)
+    nib(thicknib)(0, 1, 2)
 )(paths[p])(strokes[p]);
 endglyph;

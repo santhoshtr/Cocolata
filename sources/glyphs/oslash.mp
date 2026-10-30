@@ -10,18 +10,18 @@ z4 = (x0, y0);
 paths[0]:=  z0{up}..{right}z1..{down}z2..z3{left}..{up}z4 ;
 
 pen_stroke(
-    nib(middle_down_nib)(0, 2, 4)
-   nib(top_nib)(1)
-   nib(down_nib)(3)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[0])(strokes[0]);
 clearxy;
-z0= (xpart(point 2 of paths[0]), X*0.8);
-z1=( xpart(point 0 of paths[0]), -X*0.05);
+% A steep slash, about 75 degrees as in slash.mp. A less steep slash is
+% almost perpendicular to the nib, and becomes heavier than the bowl.
+z0= (xpart(point 1 of paths[0]) + 0.11X, X*0.8);
+z1=( xpart(point 1 of paths[0]) - 0.11X, -X*0.05);
 
 paths[1] = z0--z1;
 
 pen_stroke(
-    nib(thin_vertical_nib rotated terminalangle 0 of paths[1])(0,1)
+    nib(thicknib)(0, 1)
 )(paths[1])(strokes[1]);
 
 endglyph;

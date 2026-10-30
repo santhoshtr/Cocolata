@@ -14,11 +14,10 @@ z7 = (0, thin/2);
 paths[1] = z3---z4..z5{down}..z6---z7 ;
 
 pen_stroke(
-    nib(thick_vertical_nib)(0, 1, 2)
+    nib(thicknib)(0, 1, 2)
 )(paths[0])(strokes[0]);
 pen_stroke(
-    nib(thin_nib rotated 90)(0, 1, 3, 4)
-    nib(middle_down_nib)(2)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[1])(strokes[1]);
 anchor( "top", (xpart(point 1 of paths[1]), 1.1X));
 
@@ -27,7 +26,7 @@ z0 = (-sw/3, 0.525X);
 z1 = (x0 + sw*0.75, y0);
 paths[2]=z0--z1;
 pen_stroke(
-    nib(thin_nib rotated 90)(0, 1, 3, 4)
+    nib(thicknib)(0, 1, 3, 4)
 )(paths[2])(strokes[2]);
 
 endglyph;
