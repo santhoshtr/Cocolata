@@ -13,16 +13,7 @@ z9 = (x6, 0.88(y7 + y10));
 z10 = (x9-mw/2, 0.85ascent);
 paths[p] = z0..z1{down}..z2..z3{up}..z4..z5{down}..z6{down}..{left}z7..z8..z9{dir 80}..{dir 260}z10;
 pen_stroke(
-    nib(end_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_down_nib rotated 10 scaled 0.8)(1)
-    nib(down_nib rotated -30 scaled 0.9)(2)
-    nib(middle_up_nib scaled 1.2 rotated 20)(3)
-    nib(top_nib)(4)
-    nib(middle_down_nib scaled 0.95)(5,6)
-    nib(down_nib)(7)
-    nib(middle_up_nib)(8)
-    nib(middle_down_nib rotated terminalangle 9 of paths[p])(9)
-    nib(end_nib scaled 2/3  rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, infinity)
 )(paths[p])(strokes[p]);
 
 

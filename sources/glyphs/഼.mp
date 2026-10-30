@@ -12,10 +12,7 @@ paths[0] := paths[0] shifted (-x1, 0);
 rbearing:= -x1 - thick;
 
 pen_stroke(
-   nib(middle_up_nib)(0,4)
-   nib(middle_down_nib)(2)
-   nib(top_nib)(1)
-   nib(down_nib)(3)
+   nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[0])(strokes[0]);
 
 endglyph;
