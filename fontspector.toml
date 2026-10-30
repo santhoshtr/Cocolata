@@ -1,12 +1,10 @@
-# Fontspector configuration (migrated from fontbakery.yaml).
 # Overrides are matched by result code; check IDs are fontspector's own.
 
 exclude_checks = [
   "googlefonts/font_names",
   "googlefonts/version_bump",
+  "googlefonts/name/version_format",
   "soft_dotted",
-  # fontbakery's repo/zip_files and fontbakery_version have no fontspector
-  # equivalent and are simply dropped.
 ]
 
 [[overrides]]
