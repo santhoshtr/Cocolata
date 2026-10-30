@@ -23,8 +23,10 @@ BIN := target/release/$(FAMILY)
 # Read styles from config (build the tool first if it is missing)
 STYLES := $(shell test -x $(BIN) || cargo build --release --quiet; $(BIN) styles)
 
-# Derived paths
-UFO := $(STYLES:%=$(UFODIR)/$(FAMILY)-%.ufo)
+# The builder updates the master UFOs in place: files that did not change keep
+# their mtime, and the UFO directories are not replaced. So this stamp file
+# records when the UFOs were last built.
+UFO_STAMP := $(UFODIR)/.stamp
 
 .PHONY: help init build dev glyphs ufo clean proofs test install release metrics-report $(STYLES)
 
@@ -50,19 +52,20 @@ $(STYLES): ## Generate SVGs for a style variant
 	@mkdir -p $(SOURCEDIR)/svgs/$@
 	VARIANT=$@ $(MAKE) -C $(SOURCEDIR)
 
-ufo: $(UFO) ## Build all master UFOs
+ufo: $(UFO_STAMP) ## Build all master UFOs
 
-# Grouped target: one builder run produces every master UFO. Gives the
+# One builder run produces every master UFO. The stamp gives the
 # variable-TTF rule a real dependency edge so parallel builds order
 # correctly (a phony ufo target alone breaks under -j).
-$(UFO) &: glyphs $(BIN)
+$(UFO_STAMP): glyphs $(BIN)
 	$(BIN) build --designspace $(FAMILY).designspace
+	touch $@
 
 # Meta target building all deliverables
 $(FAMILY): ufo $(FONTSDIR)/$(FAMILY)-variable.ttf  $(FONTSDIR)/$(FAMILY)-variable.woff2
 
 # Create TTF variable font (requires designspace and master UFOs)
-$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace $(UFO) | $(FONTSDIR) $(BIN)
+$(FONTSDIR)/$(FAMILY)-variable.ttf: $(FAMILY).designspace $(UFO_STAMP) | $(FONTSDIR) $(BIN)
 	fontc -o $@ $(FAMILY).designspace
 	$(BIN) postprocess $@
 

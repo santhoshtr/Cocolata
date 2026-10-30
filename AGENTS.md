@@ -26,8 +26,10 @@ The full chain, orchestrated by the root `Makefile`:
    it in place (adds a `prep` program, strips AAT tables, builds STAT).
 4. **WOFF2**: Rust `woff2` subcommand compresses the TTF.
 
-`STYLES` and `UFO` make variables are derived dynamically by invoking the Rust
+The `STYLES` make variable is derived dynamically by invoking the Rust
 binary (`Cocolata styles`), so the binary is built first if missing.
+The builder updates the master UFOs in place (`src/ufo.rs`), so the TTF rule
+depends on the stamp file `sources/ufo/.stamp`, not on the UFO folders.
 
 ## Commands
 
@@ -128,14 +130,35 @@ The maintainer usually has `make dev` running. It runs `make ufo` when a file
 in `sources/glyphs/` changes. The UFOs in `sources/ufo/` are updated in less
 than one second.
 
-- After you edit `sources/glyphs/*.mp`, do not start your own render or build
-  to check the result. Wait for `make dev`, then inspect in Fontra (see below).
-  To wait, compare file times:
-  `until [ sources/ufo/Cocolata-Regular.ufo/glyphs/<name>.glif -nt sources/glyphs/<file>.mp ]; do sleep 2; done`
+- After you edit glyph sources, run `make -j build` in the devcontainer. It
+  takes approximately one second, and it does not depend on the file watcher
+  of `make dev`. It also builds the variable font, so `fontc` finds errors that
+  the UFOs do not show (see below). Then inspect the result in Fontra.
 - `make dev` watches only the top level of `sources/glyphs/`. Changes in
   `sources/glyphs/include/`, `sources/pens.mp` or `sources/config/` do not
-  start a rebuild. For these, ask the maintainer to run `make ufo`.
-- If `make dev` is not running, ask before you start a build.
+  start a rebuild. `make -j build` includes these changes.
+
+### Interpolation compatibility
+
+MetaPost renders each master separately. A glyph is correct only if the
+outline has the same segments in all 9 masters. If it does not, `fontc` stops
+with `'<glyph>' has interpolation-incompatible paths`.
+
+A frequent cause is the end cap of an elliptical nib. At some weights the cap
+has an extra small segment (1–2 units long). To fix this, turn the nib at the
+stroke ends to the stroke direction:
+
+```metapost
+pen_stroke(
+    nib(thicknib rotated terminalangle 0 of paths[p])(0)
+    nib(thicknib)(1, 2, 3)
+    nib(thicknib rotated terminalangle infinity of paths[p])(infinity)
+)(paths[p])(strokes[p]);
+```
+
+Do not change a stroke outline by node index (`soften_node(strokes[p], …, 12)`,
+`point 7 of strokes[p]`). The node numbers can be different in each master and
+for each nib.
 
 ## Inspect glyphs in Fontra
 
@@ -179,12 +202,16 @@ async () => {
   does not reload the page. After a source change, call
   `fc.reloadGlyphs([...])` or reload the page.
 - The Fontra server also caches glyphs. It uses a file watcher to see changes
-  to the UFOs, and sometimes the watcher does not see a rebuild. Then the
-  server gives the old outline, also after a page reload. Before you trust a
-  result, compare the number of points: `(await fc.getGlyph(name))` has a
-  layer per master; `layer.glyph.path.numPoints` must be equal to the number
-  of `<point` elements in `sources/ufo/Cocolata-<Style>.ufo/glyphs/<name>.glif`.
-  If they are different, ask the maintainer to restart Fontra.
+  to the UFOs. The watcher stops if a `.ufo` folder is deleted, so the build
+  must update the UFOs in place (`src/ufo.rs`), and must not replace them
+  (`norad::Font::save` deletes the folder). This in-place writing is a
+  temporary workaround: the maintainer plans to fix the watcher in Fontra
+  upstream. When Fontra handles a replaced `.ufo` folder more than once,
+  `src/ufo.rs` and the stamp file can be removed. If Fontra shows an old outline,
+  compare it with the glif on disk: `(await fc.getGlyph(name))` has a layer
+  per master; compare `layer.glyph.path` (number of points, first coordinates)
+  with `sources/ufo/Cocolata-<Style>.ufo/glyphs/<name>.glif`. If they are
+  different, ask the maintainer to restart Fontra.
 
 Reference values at weight 400: the tops of the capitals `A` and `T` are at 735
 (`0.95X` in MetaPost plus the stroke). Round shapes go a little above this

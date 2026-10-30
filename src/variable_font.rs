@@ -1,6 +1,7 @@
 use crate::config::FontConfig;
 use crate::features::{AnchorData, FeaturesData, MalayalamFeatures, MarkClass};
 use crate::malayalam_font::MalayalamFont;
+use crate::ufo;
 use log::{info, warn};
 use minijinja::{Environment, value::Serde};
 use norad::designspace::{DesignSpaceDocument, Source};
@@ -163,17 +164,23 @@ impl MalayalamVariableFont {
             font.build_glyph_groups()?;
             font.build_kern()?;
             font.set_glyph_order()?;
-            // Save the master UFO
-            let output_path = output_dir.join(format!("{}-{}.ufo", self.config.name, master.style));
-            font.font.save(&output_path)?;
 
             info!("✓ Master {} built successfully!", master.style);
 
             self.master_fonts.insert(master.style.clone(), font);
         }
 
-        // After building all masters, write unified features
-        self.write_unified_features(output_dir)?;
+        // After building all masters, add the unified features and save the UFOs
+        let features_code = self.unified_features()?;
+        for master in &self.masters {
+            let font = self
+                .master_fonts
+                .get_mut(&master.style)
+                .ok_or(format!("No font for master {}", master.style))?;
+            font.font.features = features_code.clone();
+            let output_path = output_dir.join(format!("{}-{}.ufo", self.config.name, master.style));
+            ufo::save(&font.font, &output_path)?;
+        }
 
         Ok(())
     }
@@ -334,11 +341,9 @@ impl MalayalamVariableFont {
         Ok(base_data)
     }
 
-    pub fn write_unified_features(
-        &mut self,
-        output_dir: &Path,
-    ) -> Result<(), Box<dyn std::error::Error>> {
-        info!("Writing unified features to all masters...");
+    /// Render one features.fea for all masters, with merged GPOS data.
+    pub fn unified_features(&mut self) -> Result<String, Box<dyn std::error::Error>> {
+        info!("Rendering unified features for all masters...");
 
         // Collect feature data from all masters
         self.collect_feature_data()?;
@@ -354,18 +359,6 @@ impl MalayalamVariableFont {
         let template = env.get_template("features.fea.j2")?;
 
         // Render the template
-        let features_code = template.render(Serde(&template_data))?;
-        // Write this feature file to each Master UFO directory
-        for master in &self.masters {
-            let ufo_dir = output_dir.join(format!("{}-{}.ufo", self.config.name, master.style));
-            let features_path = ufo_dir.join("features.fea");
-
-            std::fs::write(&features_path, &features_code)
-                .map_err(|e| format!("Failed to write features to {:?}: {}", features_path, e))?;
-
-            info!("✓ Features written to {}", master.style);
-        }
-
-        Ok(())
+        Ok(template.render(Serde(&template_data))?)
     }
 }

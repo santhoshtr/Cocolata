@@ -14,6 +14,7 @@ mod kerning;
 mod malayalam_font;
 mod postprocess;
 mod report;
+mod ufo;
 mod variable_font;
 
 use features::MalayalamFeatures;
@@ -204,12 +205,10 @@ fn build_static_fonts(
         font.build_kern()?;
         font.set_glyph_order()?;
 
-        font.font.save(&output)?;
-
-        // Generate and write features for static font
-        let features = MalayalamFeatures::new(&font);
-        let features_path = output.join("features.fea");
-        features.write_features(Some(&features_path))?;
+        // Generate features for static font, and save them with the UFO
+        let features = MalayalamFeatures::new(&font).write_features(None)?;
+        font.font.features = features;
+        ufo::save(&font.font, &output)?;
 
         info!("✓ Font {:?} built successfully!", output);
         info!("  Design directory: {:?}", design_dir);
