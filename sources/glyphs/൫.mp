@@ -14,15 +14,7 @@ dt := directiontime dir 90 of subpath( 6, 7) of paths[p];
 paths[p] := insert_nodes(paths[p])(6 + dt);
 
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_up_nib)(1, 7)
-    nib(top_nib)(2)
-    nib(thin_vertical_nib rotated 90)(4)
-    nib(middle_down_nib)(5)
-    nib(middle_down_nib rotated terminalangle 6 of paths[p] scaled 0.9)(6)
-    nib(end_nib rotated terminalangle 7 of paths[p])(7)
-    nib(end_nib rotated terminalangle 8 of paths[0])(8)
-    nib(middle_down_nib)(9)
+    nib(thicknib)(0, 1, 2, 4, 5, 6, 7, 8, 9)
 )(paths[0])(strokes[0]);
 
 anchor( "vc", point 2 of paths[0]);

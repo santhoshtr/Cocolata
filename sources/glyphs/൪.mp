@@ -10,13 +10,7 @@ z6= (x4, ascent);
 paths[0] = z0..z1{up}..z2{right}..z3{down}..z4..z5{up}..{up}z6;
 paths[0] := paths[0] ;
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(5)
-    nib(end_nib rotated terminalangle 6 of paths[0])(6)
+    nib(thicknib)(0, 1, 2, 3, 4, 5, 6)
 )(paths[0])(strokes[0]);
 
 endglyph;

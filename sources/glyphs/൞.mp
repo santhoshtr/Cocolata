@@ -18,17 +18,7 @@ z12=(x11 - mw/6, y11 + m/4);
 paths[0] = z0..z1..z2..{dir -80}z3..z4..z5..z6{right}..{dir 120}z7{right}..{right}z8{down}..z9{down}..z10{right}..z11..z12 ;
 
 pen_stroke(
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_up_nib)(1)
-    nib(top_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(down_nib)(4)
-    nib(middle_up_nib)(5)
-    nib(top_nib)(6)
-    nib(end_nib rotated 45)(7, 8,9)
-    nib(down_nib)(10)
-    nib(middle_down_nib scaled 0.9)(11)
-     nib(end_nib rotated terminalangle infinity of paths[0])(infinity)
+    nib(thicknib)(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, infinity)
 )(paths[0])(strokes[0]);
 
 endglyph;
