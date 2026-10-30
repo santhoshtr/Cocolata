@@ -1,10 +1,10 @@
 input glyph;
 beginglyph;
 
-z0=((x1+x3)/2, 0.8X);
+z0=((x1+x3)/2, 0.95X);
 z1=(0,(y0+y2)/2);
 z2=(x0,undershoot);
-z3=(x1+ 0.75mw, y1 );
+z3=(x1+ 0.89mw, y1 );
 z4=z0;
 
 paths[0] = z0{dir 200}..z1..z2..z3..{dir 170}z4;

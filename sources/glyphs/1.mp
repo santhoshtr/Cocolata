@@ -3,7 +3,7 @@ beginglyph;
 
 clearxy;
 
-z0=(0,0.8X);
+z0=(0,0.95X);
 z1=(x0, 0);
 paths[p]  = z0{dir 280}..z1 ;
 pen_stroke(

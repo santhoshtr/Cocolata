@@ -1,8 +1,8 @@
 input glyph;
 beginglyph;
-z0= (0,0.75m);
-z1 = ( (x0 + x2)/2, 0.8X); % top
-z2 = ( x0 +  0.68mw, (y1+y3)/1.5);
+z0= (0,0.89m);
+z1 = ( (x0 + x2)/2, 0.95X); % top
+z2 = ( x0 +  0.81mw, (y1+y3)/1.5);
 z3 = ( x0   , undershoot);
 z4 = ( x2   ,y3);
 
