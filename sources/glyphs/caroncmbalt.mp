@@ -11,8 +11,7 @@ z0 = (0, s);
 z1 = (x0, y0-s/3);
 paths[p] = z0{dir -75}..z1;
 pen_stroke(
-    cut(thick_nib, rel 90)(0)
-    nib(thin_nib rotated terminalangle infinity of paths[p])(infinity)
+    nib(thicknib)(0, infinity)
 )(paths[p])(strokes[p]);
 
 strokes[p] := reverse strokes[p];

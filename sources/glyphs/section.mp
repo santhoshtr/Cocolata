@@ -12,16 +12,10 @@ spath = z0{dir -40}..z1..z2..z3..{dir -40}z4;
 paths[0] := subpath(0.45, infinity) of spath;
 
 pen_stroke(
-   nib(middle_down_nib)(1, 3,5)
-   nib(thick_vertical_nib rotated 90)(2)
-    nib(start_up_nib rotated terminalangle 0 of paths[p])(0)
-   nib(start_up_nib rotated terminalangle 0 of paths[p])(4)
+   nib(thicknib)(0, 1, 2, 3, 4, 5)
 )(paths[0])(strokes[0]);
 paths[1] :=  subpath(0, 3.6) of spath shifted(0, -.45m);
 pen_stroke(
-   nib(middle_down_nib)(1, 3,5)
-   nib(thick_vertical_nib rotated 90)(2)
-   nib(start_up_nib rotated terminalangle 0 of paths[1])(0)
-   nib(start_up_nib rotated terminalangle 0 of paths[1])(4)
+   nib(thicknib)(0, 1, 2, 3, 4, 5)
 )(paths[1])(strokes[1]);
 endglyph;

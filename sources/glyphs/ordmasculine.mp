@@ -10,9 +10,7 @@ z4 = (x0, y0);
 paths[p]:= z0{up}..{right}z1..{down}z2..z3{left}..{up}z4 ;
 
 pen_stroke(
-   nib(middle_down_nib)(0, 2, 4)
-   nib(top_nib)(1)
-   nib(down_nib)(3)
+   nib(thicknib)(0, 1, 2, 3, 4)
    ignore_directions(1, 2, 3)
 )(paths[0])(strokes[0]);
 
