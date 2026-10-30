@@ -156,6 +156,15 @@ pen_stroke(
 )(paths[p])(strokes[p]);
 ```
 
+A second cause is a small corner in the centre line. For example,
+`(subpath(0, 3) of p){down}..z8` makes a corner if the curve does not arrive
+at node 3 exactly vertically. At a corner, `pen_stroke` adds a join segment
+only in some masters. Continue in the direction of the curve
+(`{direction 3 of p}`), or make the corner clearly sharp.
+
+To find the place, compare the on-curve points of the glif in a light and a
+bold master. The extra point is usually 1–2 units from its neighbour.
+
 Do not change a stroke outline by node index (`soften_node(strokes[p], …, 12)`,
 `point 7 of strokes[p]`). The node numbers can be different in each master and
 for each nib.
@@ -195,6 +204,10 @@ async () => {
   includes off-curve points, and the values are too large.
 - The axis name is `weight`, not `wght`. Fontra ignores an unknown key and
   gives the default location without an error.
+- To show one glyph, use `/glyphname` in the text (`/ml_ga_virama_da`, end
+  the name with a space or another `/`). The Fontra preview does not always
+  apply the Malayalam conjunct features, so a typed conjunct can show as
+  separate glyphs.
 - Use AGL glyph names (`zero`, `eight`). Malayalam glyphs use the `ml_` prefix
   (see `src/glyphnames.rs`).
 - Check more than one weight (100, 400, 900). The masters can be different.
