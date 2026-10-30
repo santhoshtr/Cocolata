@@ -13,10 +13,7 @@ z3 = (x2 - mw/4, y2 + mw/10);
 paths[p] = z0{right}..z1..z2..z3 ;
 
 pen_stroke(
-    nib(end_nib rotated terminalangle 0 of paths[p])(0)
-    nib(middle_down_nib)(1)
-    nib(down_nib)(2)
-    nib(end_nib rotated 60)(3)
+    nib(thicknib)(0, 1, 2, 3)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 2 of paths[0]);

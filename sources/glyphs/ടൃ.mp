@@ -10,11 +10,7 @@ z4 = (x0-down_nib_width/2, y3/2);
 paths[p] = z0..z1{left}..z2{down}..z3..{down}z4;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-   nib(end_nib rotated terminalangle 0 of paths[p])(0)
-   nib(endnib )(1)
-   nib(middle_down_nib scaled 0.9)(2,4)
-   nib(middledownnib)(3)
-   nib(middle_down_nib rotated terminalangle 4 of paths[p])(4)
+   nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 
 
@@ -29,11 +25,7 @@ z4 = (x1 + mw/3, y2);
 paths[p] = z0{dir angle(direction infinity of paths[p-1])}.. z1{left}..z2{up}..z3..z4;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    nib(middle_down_nib rotated (angle(direction infinity of paths[p-1])+90))(0)
-    nib(down_nib)(1)
-    nib(middleupnib scaled 1.2 rotated 20)(2)
-    nib(endnib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[p])(4)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 
 anchor( "vc", point 1 of paths[p-1]);
