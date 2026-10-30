@@ -4,11 +4,7 @@ beginglyph;
 paths[0] := a_loop shifted (sw/3, 0);
 
 pen_stroke(
-    nib(middle_up_nib rotated terminalangle 0 of paths[p])(0)
-    nib(top_nib)(1)
-    nib(middle_down_nib)(2)
-    nib(down_nib)(3)
-    nib(end_nib rotated terminalangle 4 of paths[0])(4)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[0])(strokes[0]);
 
 
@@ -24,14 +20,7 @@ z6=(xpart point 2 of paths[p-1]-sw/2, s/2);
 z7=(x5+sw/4, -0.3s);
 paths[p] := z0---z1..z2..z3..z4..{left}z5..{down}z6..{dir 20}z7;
 pen_stroke(
-    nib(thick_nib)(0)
-    nib(middle_down_nib)(1)
-    nib(down_nib)(2)
-    nib(middle_down_nib)(3)
-    nib(middle_down_nib)(4)
-    nib(top_nib rotated 20)(5)
-    nib(middle_down_nib)(6)
-    nib(end_nib rotated terminalangle 7 of paths[p])(7)
+    nib(thicknib)(0, 1, 2, 3, 4, 5, 6, 7)
 )(paths[p])(strokes[p]);
 
 anchor( "top", (xpart(point 1 of paths[1]), X));

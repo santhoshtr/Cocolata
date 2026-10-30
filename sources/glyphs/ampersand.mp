@@ -8,10 +8,7 @@ z3 =(0.8x1, 0.55X);
 paths[p] =z0..z1{left}..z2{up}..z3 ;
 paths[p]:=harmonize(paths[p]);
 pen_stroke(
-    cut(thick_nib rotated terminalangle 0 of paths[p], rel 90)(0)
-    nib(down_nib)(1)
-    nib(middle_down_nib)(2)
-    cut(top_nib, -45)(3)
+    nib(thicknib)(0, 1, 2, 3)
 )(paths[p])(strokes[p]);
 p:=p+1;
 
@@ -22,9 +19,7 @@ z7 =(0.5x0, 0.6y0);
 z8 =(1.5x0, 0);
 paths[p] =z0 ..z6..z7---z8;
 pen_stroke(
-    cut(thick_nib rotated terminalangle 0 of paths[p], rel 90)(0)
-    nib(middle_up_nib)(1)
-    nib(thick_nib rotated terminalangle 3 of paths[p])(2,3)
+    nib(thicknib)(0, 1, 2, 3)
 )(paths[p])(strokes[p]);
 
 endglyph;

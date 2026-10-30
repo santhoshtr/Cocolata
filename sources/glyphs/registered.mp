@@ -29,17 +29,15 @@ paths[p]:=paths[p] xscaled 0.6 yscaled 0.6 shifted (0.45sw, sw/3);
 
 p:=0;
 pen_stroke(
-    nib(thick_vertical_nib)(0,1)
+    nib(thicknib)(0, 1)
 )(paths[p])(strokes[p]);
 p:=p+1;
 pen_stroke(
-    nib(thin_nib rotated 90)(0,1)
-    nib(end_nib rotated 90)(3,4)
-    nib(middle_down_nib)(2)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 p:=p+1;
 pen_stroke(
-     nib(thick_vertical_nib)(0,1,2)
+     nib(thicknib)(0, 1, 2)
 )(paths[p])(strokes[p]);
 
 p:=p+1;
@@ -54,8 +52,6 @@ z4=(x0, y2);
 paths[p] = z0{up}..{right}z1..{down}z2..z3{left}..{up}z4 ;
 
 pen_stroke(
-    nib(middle_down_nib)(0,2,4)
-    nib(top_nib)(1)
-    nib(down_nib)(3)
+    nib(thicknib)(0, 1, 2, 3, 4)
 )(paths[p])(strokes[p]);
 endglyph;
