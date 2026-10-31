@@ -133,4 +133,4 @@ trigger_job:
   only:
     - tags
   trigger:
-    project: smc/smc.org.in
+    project: smc/website-2024
