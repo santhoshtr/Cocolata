@@ -13,7 +13,7 @@ p:=p+1;
 clearxy;
 z0=point infinity of paths[p-1];
 z1=(0.5(x0+x2), 0.8s);
-z2=(x0 + 0.5sw, undershoot);
+z2=(x0 + 0.66sw, undershoot);
 z3=(x2 + 0.3sw, 0.8s);
 z4 =(x3 + 0.3sw, 0);
 
